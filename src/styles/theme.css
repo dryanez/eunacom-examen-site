@@ -1,0 +1,305 @@
+/* Design system extracted from the approved design bundle (EUNACOM Sitio.html).
+   Flat and institutional: Montserrat for headings and UI, Open Sans for body,
+   3px radii on controls and 4-5px on cards, no gradients, restrained shadows. */
+
+:root {
+  /* Blues */
+  --navy-deep: #08365f;
+  --navy-dark: #08365f;
+  --blue-royal: #0b5ea8;
+  --blue-vivid: #0b5ea8;
+  --blue-sky: #a9d3f5;
+  --blue-pale: #bcdcf7;
+  --blue-ice: #eef5fb;
+  --blue-soft: #f6fafd;
+  --on-navy: #a9c6de;
+
+  /* Text */
+  --slate-dark: #2f3e4d;
+  --slate-text: #41556b;
+  --slate-muted: #5f6b76;
+  --slate-subtle: #8195a7;
+
+  /* Surfaces */
+  --card-bg: #ffffff;
+  --border-light: #dae8f4;
+  --border-blue: #cfdeeb;
+
+  /* Semantic — used only where colour carries meaning (answer feedback,
+     confirmations). The design itself has no green or amber decoration. */
+  --accent-green: #1f7a4d;
+  --accent-amber: #8a6d1f;
+  --accent-red: #b3352c;
+
+  --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --shadow-sm: 0 2px 10px rgba(8, 54, 95, 0.06);
+  --shadow-md: 0 3px 14px rgba(8, 54, 95, 0.06);
+  --shadow-lg: 0 6px 20px rgba(8, 54, 95, 0.10);
+  --shadow-xl: 0 18px 44px rgba(8, 54, 95, 0.22);
+
+  --radius-sm: 3px;
+  --radius-md: 3px;
+  --radius-lg: 5px;
+  --radius-xl: 5px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--slate-text);
+  background-color: #ffffff;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--navy-deep);
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+a {
+  color: var(--blue-royal);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--navy-deep);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 36px;
+}
+
+.container-narrow {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 36px;
+}
+
+/* Badges & pills — square in this design, never fully rounded */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-heading);
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pill-blue {
+  background-color: var(--blue-ice);
+  color: var(--blue-royal);
+  border: 1px solid var(--border-blue);
+}
+
+.pill-green,
+.pill-amber {
+  background-color: var(--blue-ice);
+  color: var(--blue-royal);
+  border: 1px solid var(--border-blue);
+}
+
+.pill-navy {
+  background-color: var(--navy-deep);
+  color: #ffffff;
+}
+
+/* Buttons — flat, uppercase, 3px corners */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 22px;
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.btn-primary {
+  background: var(--blue-royal);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: var(--navy-deep);
+  color: #ffffff;
+}
+
+.btn-secondary {
+  background-color: #ffffff;
+  color: var(--navy-deep);
+  border: 1px solid var(--border-blue);
+}
+
+.btn-secondary:hover {
+  background-color: var(--blue-ice);
+  border-color: var(--blue-royal);
+  color: var(--navy-deep);
+}
+
+.btn-whatsapp {
+  background-color: var(--navy-deep);
+  color: #ffffff;
+}
+
+.btn-whatsapp:hover {
+  background-color: var(--blue-royal);
+  color: #ffffff;
+}
+
+/* Cards — hairline border, barely-there shadow, no lift on hover */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-md);
+  transition: border-color 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--blue-royal);
+}
+
+.card-navy {
+  background: var(--navy-deep);
+  color: #ffffff;
+  border: 1px solid rgba(169, 198, 222, 0.2);
+}
+
+.card-navy h1, .card-navy h2, .card-navy h3, .card-navy h4 {
+  color: #ffffff;
+}
+
+/* Sections */
+.section {
+  padding: 72px 0;
+}
+
+.section-alt {
+  background-color: var(--blue-soft);
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.section-title-wrap {
+  text-align: center;
+  margin-bottom: 44px;
+}
+
+.section-kicker {
+  font-family: var(--font-heading);
+  color: var(--blue-royal);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+
+.section-title {
+  font-size: clamp(26px, 3.4vw, 38px);
+  color: var(--navy-deep);
+  margin-bottom: 12px;
+}
+
+.section-subtitle {
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--slate-muted);
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(8, 54, 95, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.modal-content {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-xl);
+  position: relative;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: var(--blue-ice);
+  border: none;
+  border-radius: var(--radius-sm);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--navy-deep);
+  transition: background-color 0.2s;
+  z-index: 10;
+}
+
+.modal-close-btn:hover {
+  background: var(--blue-sky);
+  color: var(--navy-deep);
+}
+
+@media (max-width: 768px) {
+  .section { padding: 48px 0; }
+  .container, .container-narrow { padding: 0 20px; }
+}
+
+/* Header nav */
+.nav-link:hover { color: var(--blue-royal); }
+
+@media (max-width: 1080px) {
+  .site-nav { display: none !important; }
+  .site-nav-toggle { display: flex !important; margin-left: auto; }
+}
