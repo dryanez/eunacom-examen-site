@@ -2,15 +2,16 @@ import React from 'react';
 import { CheckCircle2, ArrowRight, Play } from 'lucide-react';
 
 const CHECKLIST = [
-  '86 clases del temario oficial',
-  '4.000+ preguntas con justificación',
-  'Reconstrucciones de las pruebas desde 2013',
+  'Más de 460 clases en video del temario oficial',
+  'Más de 6.000 preguntas con justificación',
+  '16 exámenes reales reconstruidos (2013-2025)',
   'Seguimiento semanal con devolución escrita',
 ];
 
 const METRICS = [
-  { value: '4.000+', label: 'Preguntas comentadas' },
-  { value: '86', label: 'Clases del temario oficial' },
+  { value: '6.000+', label: 'Preguntas comentadas' },
+  { value: '468', label: 'Clases en video' },
+  { value: '16', label: 'Exámenes reales reconstruidos' },
   { value: '12 meses', label: 'Acompañamiento continuo' },
 ];
 
@@ -87,30 +88,21 @@ export default function Hero({ onOpenMentorship, onStartDiagnostic }) {
             </div>
           </div>
 
-          {/* Image slot, per the design's hero */}
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <div style={{
-              width: '100%',
-              maxWidth: '380px',
-              aspectRatio: '3/4',
-              background: 'rgba(255,255,255,.1)',
-              border: '1px dashed rgba(255,255,255,.45)',
-              borderRadius: '5px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textAlign: 'center',
-              fontFamily: 'var(--font-heading)',
-              fontSize: '11px',
-              fontWeight: '600',
-              letterSpacing: '.1em',
-              textTransform: 'uppercase',
-              color: '#bcdcf7',
-              lineHeight: '2.2',
-            }}>
-              placeholder<br />imagen
+          {/* Three real tomo covers, fanned */}
+          <a href="#manuales" aria-label="Ver los 21 manuales" style={{ display: 'flex', justifyContent: 'center' }}>
+            <div style={{ position: 'relative', width: '100%', maxWidth: '400px', aspectRatio: '4/4.2' }}>
+              {[
+                { src: '/covers/tomo_pediatria.jpg', style: { left: 0, top: '8%', transform: 'rotate(-8deg)' } },
+                { src: '/covers/tomo_neurologia.jpg', style: { right: 0, top: '8%', transform: 'rotate(8deg)' } },
+                { src: '/covers/tomo_cardiologia.jpg', style: { left: '50%', top: 0, transform: 'translateX(-50%)', zIndex: 1 } },
+              ].map(c => (
+                <img key={c.src} src={c.src} alt="Portada de manual EUNACOM" style={{
+                  position: 'absolute', width: '58%', aspectRatio: '210/297', objectFit: 'cover',
+                  borderRadius: '3px', boxShadow: '0 18px 40px rgba(0,0,0,.35)', ...c.style,
+                }} />
+              ))}
             </div>
-          </div>
+          </a>
         </div>
 
         <div style={{

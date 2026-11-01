@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { BRAND, CONTACTO } from '../site.config';
+import { useAccount } from '../lib/account';
 
 const NAV_LINKS = [
-  { href: '#clase-magistral', label: 'Clase magistral' },
   { href: '#cursos', label: 'Cursos' },
+  { href: '#aula', label: 'Aula virtual' },
+  { href: '#tienda', label: 'Tienda' },
+  { href: '#clase-magistral', label: 'Clase magistral' },
   { href: '#diagnostico', label: 'Pruebas gratis' },
   { href: '#revalidacion', label: 'Para médicos extranjeros' },
   { href: '#blog', label: 'Blog' },
@@ -25,6 +28,8 @@ const linkStyle = {
 
 export default function Navbar({ onOpenMentorship, currentView, onNavigateHome, onNavigateBlog, onNavigateRevalidacion }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const account = useAccount();
+  const accountLabel = account?.user ? 'Mi cuenta' : 'Entrar';
 
   const handleLinkClick = (href, e) => {
     if (e) e.preventDefault();
@@ -32,6 +37,9 @@ export default function Navbar({ onOpenMentorship, currentView, onNavigateHome, 
     if (href === '#blog') {
       if (onNavigateBlog) onNavigateBlog();
       else window.location.hash = '#blog';
+    } else if (href === '#aula' || href === '#tienda') {
+      window.location.hash = href;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (href === '#revalidacion') {
       if (onNavigateRevalidacion) onNavigateRevalidacion();
       else window.location.hash = '#revalidacion';
@@ -95,25 +103,29 @@ export default function Navbar({ onOpenMentorship, currentView, onNavigateHome, 
           <a
             href="#"
             onClick={handleLogoClick}
-            style={{ display: 'flex', alignItems: 'center', gap: '11px', flex: 'none', textDecoration: 'none' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 'none', textDecoration: 'none' }}
           >
             <span style={{
-              width: '44px',
-              height: '44px',
-              background: '#eef5fb',
-              border: '1px solid #a9c7e4',
-              borderRadius: '3px',
+              width: '68px',
+              height: '38px',
+              boxSizing: 'border-box',
+              background: '#08365f',
+              border: '2px solid #0bd9e7',
+              clipPath: 'polygon(0 0, 100% 0, 100% 66%, 82% 100%, 0 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontFamily: 'var(--font-heading)',
-              fontSize: '13px',
+              fontSize: '16px',
               fontWeight: '800',
-              letterSpacing: '.04em',
-              color: '#0b5ea8',
+              letterSpacing: '-0.02em',
+              lineHeight: 1,
               flex: 'none',
+              userSelect: 'none',
             }}>
-              {BRAND.sigla}
+              <span style={{ color: '#ffffff' }}>A</span>
+              <span style={{ color: '#0bd9e7' }}>E</span>
+              <span style={{ color: '#ffffff' }}>E</span>
             </span>
             <span style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.2' }}>
               <span style={{
@@ -128,12 +140,12 @@ export default function Navbar({ onOpenMentorship, currentView, onNavigateHome, 
               <span style={{
                 fontFamily: 'var(--font-heading)',
                 fontSize: '9.5px',
-                fontWeight: '600',
-                letterSpacing: '.11em',
+                fontWeight: '700',
+                letterSpacing: '.06em',
                 textTransform: 'uppercase',
-                color: '#8ba4bd',
+                color: '#0b5ea8',
               }}>
-                Prueba para el ejercicio<br />de la Medicina en Chile
+                {BRAND.bajada}
               </span>
             </span>
           </a>
@@ -151,6 +163,8 @@ export default function Navbar({ onOpenMentorship, currentView, onNavigateHome, 
               const isActive = 
                 (link.href === '#blog' && currentView === 'blog') || 
                 (link.href === '#revalidacion' && currentView === 'revalidacion') ||
+                (link.href === '#aula' && currentView === 'aula') ||
+                (link.href === '#tienda' && currentView === 'tienda') ||
                 (link.href === '#cursos' && (currentView === 'curso-teorico' || currentView === 'curso-practico'));
               return (
                 <button
@@ -172,6 +186,7 @@ export default function Navbar({ onOpenMentorship, currentView, onNavigateHome, 
             <button onClick={onOpenMentorship} style={linkStyle} className="nav-link">
               Contacto
             </button>
+            <a href={account?.user ? '#mi-cuenta' : '#entrar'} className="nav-account">{accountLabel}</a>
           </nav>
 
           <button
@@ -211,6 +226,7 @@ export default function Navbar({ onOpenMentorship, currentView, onNavigateHome, 
                 {link.label}
               </button>
             ))}
+            <a href={account?.user ? '#mi-cuenta' : '#entrar'} className="nav-account" onClick={() => setMobileMenuOpen(false)} style={{ textAlign: 'center' }}>{accountLabel}</a>
             <button
               onClick={() => { setMobileMenuOpen(false); onOpenMentorship(); }}
               className="btn btn-secondary"

@@ -355,7 +355,7 @@ export default function FreeMockExamsSection({ onOpenMentorship, onSelectCourse 
                 ) : scorePercent >= 60 ? (
                   'Aprobado en el límite. Cumples con el umbral mínimo (51%), pero el EUNACOM real castiga vacíos en áreas como Salud Pública GES y algoritmos terapéuticos específicos de Chile.'
                 ) : (
-                  'Rendimiento bajo el corte. Necesitas una metodología estructurada que cubra las 86 clases del temario oficial y un banco de preguntas comentado para consolidar la toma de decisiones clínicas.'
+                  'Rendimiento bajo el corte. Necesitas una metodología estructurada que cubra las más de 460 clases en video del temario oficial y un banco de preguntas comentado para consolidar la toma de decisiones clínicas.'
                 )}
               </p>
 

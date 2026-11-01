@@ -94,13 +94,13 @@ export default function CoursesSection({
                 textAlign: 'center',
                 fontWeight: '500'
               }}>
-                En tres modalidades
+                En dos modalidades
               </p>
 
-              {/* 3 Modalities Icons Row */}
+              {/* 2 Modalities Icons Row */}
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(3, 1fr)',
+                gridTemplateColumns: 'repeat(2, 1fr)',
                 gap: '12px',
                 textAlign: 'center',
                 alignItems: 'flex-start',
@@ -151,32 +151,6 @@ export default function CoursesSection({
                     lineHeight: '1.25'
                   }}>
                     online regular
-                  </span>
-                </div>
-
-                {/* Modality 3: Semipresencial */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <div style={{ height: '54px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
-                    {/* 3 People / Team SVG */}
-                    <svg width="44" height="38" viewBox="0 0 44 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      {/* Center Person */}
-                      <circle cx="22" cy="11" r="5" stroke="#ffffff" strokeWidth="2.2" fill="none" />
-                      <path d="M14 27C14 22.8 17.5 20 22 20C26.5 20 30 22.8 30 27" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" />
-                      {/* Left Person */}
-                      <circle cx="11" cy="14" r="3.8" stroke="#ffffff" strokeWidth="1.8" fill="none" />
-                      <path d="M5 28C5 25 7.5 22.5 11 22.5" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" />
-                      {/* Right Person */}
-                      <circle cx="33" cy="14" r="3.8" stroke="#ffffff" strokeWidth="1.8" fill="none" />
-                      <path d="M33 22.5C36.5 22.5 39 25 39 28" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" />
-                    </svg>
-                  </div>
-                  <span style={{
-                    fontSize: '0.88rem',
-                    color: '#ffffff',
-                    fontWeight: '600',
-                    lineHeight: '1.25'
-                  }}>
-                    semipresencial
                   </span>
                 </div>
 

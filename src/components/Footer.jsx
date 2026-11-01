@@ -70,24 +70,28 @@ export default function Footer({ onOpenMentorship, onOpenSEOStudio, onNavigateHo
           gap: '36px',
         }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '11px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
               <span style={{
-                width: '44px',
-                height: '44px',
-                background: 'rgba(255,255,255,.1)',
-                border: '1px solid rgba(169,198,222,.4)',
-                borderRadius: '3px',
+                width: '68px',
+                height: '38px',
+                boxSizing: 'border-box',
+                background: 'rgba(255,255,255,.06)',
+                border: '2px solid #0bd9e7',
+                clipPath: 'polygon(0 0, 100% 0, 100% 66%, 82% 100%, 0 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontFamily: 'var(--font-heading)',
-                fontSize: '13px',
+                fontSize: '16px',
                 fontWeight: '800',
-                letterSpacing: '.04em',
-                color: '#ffffff',
+                letterSpacing: '-0.02em',
+                lineHeight: 1,
                 flex: 'none',
+                userSelect: 'none',
               }}>
-                {BRAND.sigla}
+                <span style={{ color: '#ffffff' }}>A</span>
+                <span style={{ color: '#0bd9e7' }}>E</span>
+                <span style={{ color: '#ffffff' }}>E</span>
               </span>
               <span style={{
                 fontFamily: 'var(--font-heading)',
@@ -99,7 +103,7 @@ export default function Footer({ onOpenMentorship, onOpenSEOStudio, onNavigateHo
               </span>
             </div>
             <p style={{ fontSize: '14px', lineHeight: '1.9', margin: 0 }}>
-              Prueba para el ejercicio de la Medicina en Chile. Cursos Online Intensivo y Regular para el EUNACOM teórico.
+              Preparación médica de alto rendimiento para el examen EUNACOM Teórico (ST) y Práctico (ECOE). Cursos online, banco de preguntas comentadas y orientación especializada para la revalidación médica en Chile.
             </p>
           </div>
 

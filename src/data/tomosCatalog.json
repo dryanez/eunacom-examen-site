@@ -1,0 +1,563 @@
+{
+ "tomos": {
+  "cardiologia": {
+   "cover": "/covers/tomo_cardiologia.jpg",
+   "pages": 216,
+   "clases": 38,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": true,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_1_Medicina_Interna/Manual_EUNACOM_Cardiologia_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Cardiologia_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Cardiologia_2026.pdf",
+    "atlas": "06_Atlas/Atlas_Imagenes_Cardiologia_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Cardiología.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Cardiologia.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_cardiologia.jpg",
+    "gordo": "/covers/gordo_cardiologia.jpg",
+    "repaso": "/covers/repaso_cardiologia.jpg",
+    "atlas": "/covers/atlas_cardiologia.jpg",
+    "perfil": "/covers/perfil_cardiologia.jpg",
+    "clases": "/covers/clase_cardiologia.jpg"
+   }
+  },
+  "infectologia": {
+   "cover": "/covers/tomo_infectologia.jpg",
+   "pages": 118,
+   "clases": 25,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": true,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_1_Medicina_Interna/Manual_EUNACOM_Infectologia_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Infectologia_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Infectologia_2026.pdf",
+    "atlas": "06_Atlas/Atlas_Imagenes_Infectologia_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Enfermedades_Infecciosas.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Infectologia.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_infectologia.jpg",
+    "gordo": "/covers/gordo_infectologia.jpg",
+    "repaso": "/covers/repaso_infectologia.jpg",
+    "atlas": "/covers/atlas_infectologia.jpg",
+    "perfil": "/covers/perfil_infectologia.jpg",
+    "clases": "/covers/clase_infectologia.jpg"
+   }
+  },
+  "gastroenterologia": {
+   "cover": "/covers/tomo_gastroenterologia.jpg",
+   "pages": 123,
+   "clases": 26,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": true,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_1_Medicina_Interna/Manual_EUNACOM_Gastroenterologia_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Gastroenterologia_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Gastroenterologia_2026.pdf",
+    "atlas": "06_Atlas/Atlas_Imagenes_Gastroenterologia_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Gastroenterología.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Gastroenterologia.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_gastroenterologia.jpg",
+    "gordo": "/covers/gordo_gastroenterologia.jpg",
+    "repaso": "/covers/repaso_gastroenterologia.jpg",
+    "atlas": "/covers/atlas_gastroenterologia.jpg",
+    "perfil": "/covers/perfil_gastroenterologia.jpg",
+    "clases": "/covers/clase_gastroenterologia.jpg"
+   }
+  },
+  "neumologia": {
+   "cover": "/covers/tomo_neumologia.jpg",
+   "pages": 124,
+   "clases": 25,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": true,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_1_Medicina_Interna/Manual_EUNACOM_Respiratorio_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Respiratorio_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Respiratorio_2026.pdf",
+    "atlas": "06_Atlas/Atlas_Imagenes_Respiratorio_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Enfermedades_Respiratorias.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Neumologia.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_neumologia.jpg",
+    "gordo": "/covers/gordo_neumologia.jpg",
+    "repaso": "/covers/repaso_neumologia.jpg",
+    "atlas": "/covers/atlas_neumologia.jpg",
+    "perfil": "/covers/perfil_neumologia.jpg",
+    "clases": "/covers/clase_neumologia.jpg"
+   }
+  },
+  "nefrologia": {
+   "cover": "/covers/tomo_nefrologia.jpg",
+   "pages": 100,
+   "clases": 22,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": true,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_1_Medicina_Interna/Manual_EUNACOM_Nefrologia_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Nefrologia_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Nefrologia_2026.pdf",
+    "atlas": "06_Atlas/Atlas_Imagenes_Nefrologia_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Nefrología.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Nefrologia.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_nefrologia.jpg",
+    "gordo": "/covers/gordo_nefrologia.jpg",
+    "repaso": "/covers/repaso_nefrologia.jpg",
+    "atlas": "/covers/atlas_nefrologia.jpg",
+    "perfil": "/covers/perfil_nefrologia.jpg",
+    "clases": "/covers/clase_nefrologia.jpg"
+   }
+  },
+  "diabetes": {
+   "cover": "/covers/tomo_diabetes.jpg",
+   "pages": 118,
+   "clases": 25,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": true,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_1_Medicina_Interna/Manual_EUNACOM_Diabetes_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Diabetes_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Diabetes_2026.pdf",
+    "atlas": "06_Atlas/Atlas_Imagenes_Diabetes_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Diabetes_y_Nutrición.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Diabetes.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_diabetes.jpg",
+    "gordo": "/covers/gordo_diabetes.jpg",
+    "repaso": "/covers/repaso_diabetes.jpg",
+    "atlas": "/covers/atlas_diabetes.jpg",
+    "perfil": "/covers/perfil_diabetes.jpg",
+    "clases": "/covers/clase_diabetes.jpg"
+   }
+  },
+  "endocrinologia": {
+   "cover": "/covers/tomo_endocrinologia.jpg",
+   "pages": 124,
+   "clases": 25,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": true,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_1_Medicina_Interna/Manual_EUNACOM_Endocrinologia_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Endocrinologia_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Endocrinologia_2026.pdf",
+    "atlas": "06_Atlas/Atlas_Imagenes_Endocrinologia_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Endocrinología.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Endocrinologia.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_endocrinologia.jpg",
+    "gordo": "/covers/gordo_endocrinologia.jpg",
+    "repaso": "/covers/repaso_endocrinologia.jpg",
+    "atlas": "/covers/atlas_endocrinologia.jpg",
+    "perfil": "/covers/perfil_endocrinologia.jpg",
+    "clases": "/covers/clase_endocrinologia.jpg"
+   }
+  },
+  "hematologia": {
+   "cover": "/covers/tomo_hematologia.jpg",
+   "pages": 141,
+   "clases": 24,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": true,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_1_Medicina_Interna/Manual_EUNACOM_Hematologia_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Hematologia_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Hematologia_2026.pdf",
+    "atlas": "06_Atlas/Atlas_Imagenes_Hematologia_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Hemato-oncología.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Hematologia.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_hematologia.jpg",
+    "gordo": "/covers/gordo_hematologia.jpg",
+    "repaso": "/covers/repaso_hematologia.jpg",
+    "atlas": "/covers/atlas_hematologia.jpg",
+    "perfil": "/covers/perfil_hematologia.jpg",
+    "clases": "/covers/clase_hematologia.jpg"
+   }
+  },
+  "reumatologia": {
+   "cover": "/covers/tomo_reumatologia.jpg",
+   "pages": 145,
+   "clases": 24,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": true,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_1_Medicina_Interna/Manual_EUNACOM_Reumatologia_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Reumatologia_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Reumatologia_2026.pdf",
+    "atlas": "06_Atlas/Atlas_Imagenes_Reumatologia_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Reumatología.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Reumatologia.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_reumatologia.jpg",
+    "gordo": "/covers/gordo_reumatologia.jpg",
+    "repaso": "/covers/repaso_reumatologia.jpg",
+    "atlas": "/covers/atlas_reumatologia.jpg",
+    "perfil": "/covers/perfil_reumatologia.jpg",
+    "clases": "/covers/clase_reumatologia.jpg"
+   }
+  },
+  "neurologia": {
+   "cover": "/covers/tomo_neurologia.jpg",
+   "pages": 174,
+   "clases": 26,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": true,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_1_Medicina_Interna/Manual_EUNACOM_Neurologia_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Neurologia_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Neurologia_2026.pdf",
+    "atlas": "06_Atlas/Atlas_Imagenes_Neurologia_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Neurología.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Neurologia.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_neurologia.jpg",
+    "gordo": "/covers/gordo_neurologia.jpg",
+    "repaso": "/covers/repaso_neurologia.jpg",
+    "atlas": "/covers/atlas_neurologia.jpg",
+    "perfil": "/covers/perfil_neurologia.jpg",
+    "clases": "/covers/clase_neurologia.jpg"
+   }
+  },
+  "cirugia": {
+   "cover": "/covers/tomo_cirugia.jpg",
+   "pages": 129,
+   "clases": 21,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": true,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_2_Cirugia/Tomo_11_Cirugia_General_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Cirugia_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Cirugia_2026.pdf",
+    "atlas": "06_Atlas/Atlas_Imagenes_Cirugia_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Cirugía_General_y_Anestesia.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Cirugia.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_cirugia.jpg",
+    "gordo": "/covers/gordo_cirugia.jpg",
+    "repaso": "/covers/repaso_cirugia.jpg",
+    "atlas": "/covers/atlas_cirugia.jpg",
+    "perfil": "/covers/perfil_cirugia.jpg",
+    "clases": "/covers/clase_cirugia.jpg"
+   }
+  },
+  "traumatologia": {
+   "cover": "/covers/tomo_traumatologia.jpg",
+   "pages": 97,
+   "clases": 15,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": true,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_2_Cirugia/Tomo_12_Traumatologia_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Traumatologia_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Traumatologia_2026.pdf",
+    "atlas": "06_Atlas/Atlas_Imagenes_Traumatologia_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Traumatología.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Traumatologia.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_traumatologia.jpg",
+    "gordo": "/covers/gordo_traumatologia.jpg",
+    "repaso": "/covers/repaso_traumatologia.jpg",
+    "atlas": "/covers/atlas_traumatologia.jpg",
+    "perfil": "/covers/perfil_traumatologia.jpg",
+    "clases": "/covers/clase_traumatologia.jpg"
+   }
+  },
+  "urologia": {
+   "cover": "/covers/tomo_urologia.jpg",
+   "pages": 174,
+   "clases": 16,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": true,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_1_Medicina_Interna/Manual_EUNACOM_Neurologia_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Urologia_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Urologia_2026.pdf",
+    "atlas": "06_Atlas/Atlas_Imagenes_Urologia_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Urología.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Neurologia.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_urologia.jpg",
+    "gordo": "/covers/gordo_urologia.jpg",
+    "repaso": "/covers/repaso_urologia.jpg",
+    "atlas": "/covers/atlas_urologia.jpg",
+    "perfil": "/covers/perfil_urologia.jpg",
+    "clases": "/covers/clase_urologia.jpg"
+   }
+  },
+  "otorrino": {
+   "cover": "/covers/tomo_otorrino.jpg",
+   "pages": 115,
+   "clases": 20,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": true,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_2_Cirugia/Tomo_14_Otorrinolaringologia_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Otorrinolaringologia_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Otorrinolaringologia_2026.pdf",
+    "atlas": "06_Atlas/Atlas_Imagenes_Otorrinolaringologia_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Otorrinolaringología.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Otorrino.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_otorrino.jpg",
+    "gordo": "/covers/gordo_otorrino.jpg",
+    "repaso": "/covers/repaso_otorrino.jpg",
+    "atlas": "/covers/atlas_otorrino.jpg",
+    "perfil": "/covers/perfil_otorrino.jpg",
+    "clases": "/covers/clase_otorrino.jpg"
+   }
+  },
+  "oftalmologia": {
+   "cover": "/covers/tomo_oftalmologia.jpg",
+   "pages": 107,
+   "clases": 18,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": true,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_2_Cirugia/Tomo_15_Oftalmologia_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Oftalmologia_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Oftalmologia_2026.pdf",
+    "atlas": "06_Atlas/Atlas_Imagenes_Oftalmologia_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Oftalmología.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Oftalmologia.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_oftalmologia.jpg",
+    "gordo": "/covers/gordo_oftalmologia.jpg",
+    "repaso": "/covers/repaso_oftalmologia.jpg",
+    "atlas": "/covers/atlas_oftalmologia.jpg",
+    "perfil": "/covers/perfil_oftalmologia.jpg",
+    "clases": "/covers/clase_oftalmologia.jpg"
+   }
+  },
+  "dermatologia": {
+   "cover": "/covers/tomo_dermatologia.jpg",
+   "pages": 102,
+   "clases": 18,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": true,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_2_Cirugia/Tomo_16_Dermatologia_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Dermatologia_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Dermatologia_2026.pdf",
+    "atlas": "06_Atlas/Atlas_Imagenes_Dermatologia_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Dermatología.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Dermatologia.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_dermatologia.jpg",
+    "gordo": "/covers/gordo_dermatologia.jpg",
+    "repaso": "/covers/repaso_dermatologia.jpg",
+    "atlas": "/covers/atlas_dermatologia.jpg",
+    "perfil": "/covers/perfil_dermatologia.jpg",
+    "clases": "/covers/clase_dermatologia.jpg"
+   }
+  },
+  "psiquiatria": {
+   "cover": "/covers/tomo_psiquiatria.jpg",
+   "pages": 98,
+   "clases": 20,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": false,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_2_Cirugia/Tomo_17_Psiquiatria_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Psiquiatria_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Psiquiatria_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Psiquiatría.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Psiquiatria.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_psiquiatria.jpg",
+    "gordo": "/covers/gordo_psiquiatria.jpg",
+    "repaso": "/covers/repaso_psiquiatria.jpg",
+    "perfil": "/covers/perfil_psiquiatria.jpg",
+    "clases": "/covers/clase_psiquiatria.jpg"
+   }
+  },
+  "pediatria": {
+   "cover": "/covers/tomo_pediatria.jpg",
+   "pages": 158,
+   "clases": 28,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": true,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_3_Materno_Infantil/Tomo_18_Pediatria_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Pediatria_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Pediatria_2026.pdf",
+    "atlas": "06_Atlas/Atlas_Imagenes_Pediatria_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Pediatría.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Pediatria.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_pediatria.jpg",
+    "gordo": "/covers/gordo_pediatria.jpg",
+    "repaso": "/covers/repaso_pediatria.jpg",
+    "atlas": "/covers/atlas_pediatria.jpg",
+    "perfil": "/covers/perfil_pediatria.jpg",
+    "clases": "/covers/clase_pediatria.jpg"
+   }
+  },
+  "obstetricia": {
+   "cover": "/covers/tomo_obstetricia.jpg",
+   "pages": 116,
+   "clases": 21,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": true,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_3_Materno_Infantil/Tomo_19_Obstetricia_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Obstetricia_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Obstetricia_2026.pdf",
+    "atlas": "06_Atlas/Atlas_Imagenes_Obstetricia_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Obstetricia_y_Ginecología.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Obstetricia.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_obstetricia.jpg",
+    "gordo": "/covers/gordo_obstetricia.jpg",
+    "repaso": "/covers/repaso_obstetricia.jpg",
+    "atlas": "/covers/atlas_obstetricia.jpg",
+    "perfil": "/covers/perfil_obstetricia.jpg",
+    "clases": "/covers/clase_obstetricia.jpg"
+   }
+  },
+  "ginecologia": {
+   "cover": "/covers/tomo_ginecologia.jpg",
+   "pages": 99,
+   "clases": 16,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": true,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_3_Materno_Infantil/Tomo_20_Ginecologia_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Ginecologia_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_Ginecologia_2026.pdf",
+    "atlas": "06_Atlas/Atlas_Imagenes_Ginecologia_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Obstetricia_y_Ginecología.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_Ginecologia.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_ginecologia.jpg",
+    "gordo": "/covers/gordo_ginecologia.jpg",
+    "repaso": "/covers/repaso_ginecologia.jpg",
+    "atlas": "/covers/atlas_ginecologia.jpg",
+    "perfil": "/covers/perfil_ginecologia.jpg",
+    "clases": "/covers/clase_ginecologia.jpg"
+   }
+  },
+  "saludpublica": {
+   "cover": "/covers/tomo_saludpublica.jpg",
+   "pages": 74,
+   "clases": 15,
+   "preguntas": 90,
+   "repaso": true,
+   "guiaV3": true,
+   "atlas": false,
+   "anki": true,
+   "files": {
+    "tomo": "01_Tomos/Modulo_4_Salud_Publica/Tomo_21_Salud_Publica_Completo_2026.pdf",
+    "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_SaludPublica_90Q.pdf",
+    "repaso": "05_Repaso_Final/Repaso_Final_SaludPublica_2026.pdf",
+    "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Salud_Pública.pdf",
+    "anki": "07_Anki/AEE_EUNACOM_V3_SaludPublica.apkg"
+   },
+   "covers": {
+    "tomo": "/covers/tomo_saludpublica.jpg",
+    "gordo": "/covers/gordo_saludpublica.jpg",
+    "repaso": "/covers/repaso_saludpublica.jpg",
+    "perfil": "/covers/perfil_saludpublica.jpg",
+    "clases": "/covers/clase_saludpublica.jpg"
+   }
+  }
+ },
+ "extras": {
+  "gran-libro-gordo": {
+   "cover": "/covers/gran-libro-gordo.jpg",
+   "pages": 788,
+   "file": "02_Libros_Gordos_90Q/El_Gran_Libro_Gordo_EUNACOM_1890Q_Actualizado.pdf"
+  },
+  "reconstrucciones": {
+   "cover": "/covers/reconstrucciones.jpg",
+   "pages": 526,
+   "file": "03_Reconstrucciones/El_Gran_Libro_EUNACOM_Reconstrucciones_2013_2025.pdf"
+  },
+  "perfil-v3-completo": {
+   "cover": "/covers/perfil-v3-completo.jpg",
+   "pages": 2134,
+   "file": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Completo_2026.pdf"
+  }
+ }
+}

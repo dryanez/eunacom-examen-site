@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, CheckCircle2, Shield, CreditCard, Landmark, Globe, ArrowRight, Lock, PhoneCall } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, CheckCircle2, Shield, CreditCard, Landmark, Globe, ArrowRight, Lock, PhoneCall, Tag, ShoppingBag } from 'lucide-react';
 
 export default function EnrollmentModal({ course, onClose }) {
   const [formData, setFormData] = useState({
@@ -7,11 +7,41 @@ export default function EnrollmentModal({ course, onClose }) {
     documentId: '',
     email: '',
     phone: '',
-    paymentMethod: 'webpay'
+    paymentMethod: 'mercadopago'
   });
   const [isSuccess, setIsSuccess] = useState(false);
+  const [promoInput, setPromoInput] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search).get('promo');
+      if (p) return p.toUpperCase();
+    }
+    return '';
+  });
+  const [isPromoApplied, setIsPromoApplied] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search).get('promo');
+      if (p && (p.toUpperCase() === 'MANUAL50' || p.toUpperCase() === 'DOCTOR50')) return true;
+    }
+    return false;
+  });
+  const [promoError, setPromoError] = useState('');
 
   if (!course) return null;
+
+  const handleApplyPromo = (e) => {
+    if (e) e.preventDefault();
+    const clean = promoInput.trim().toUpperCase();
+    if (clean === 'MANUAL50' || clean === 'DOCTOR50') {
+      setIsPromoApplied(true);
+      setPromoError('');
+    } else {
+      setIsPromoApplied(false);
+      setPromoError('Cupón inválido. Prueba con MANUAL50.');
+    }
+  };
+
+  const activeClp = isPromoApplied ? (course.precioPromoClp || '$179.500') : course.precioClp;
+  const activeUsd = isPromoApplied ? (course.precioPromoUsd || '≈ US$ 195') : course.precioUsd;
 
   const handleChange = (e) => {
     setFormData({
@@ -26,14 +56,20 @@ export default function EnrollmentModal({ course, onClose }) {
   };
 
   const handleWhatsAppConfirm = () => {
+    const methodNames = {
+      mercadopago: 'Mercado Pago (Cuotas mensuales)',
+      webpay: 'Webpay Plus / Cuotas',
+      paypal: 'PayPal (Pago Internacional USD)',
+      transfer: 'Transferencia Bancaria'
+    };
     const text = `¡Hola! Acabo de registrarme para el curso:%0A%0A` +
       `*Curso:* ${course.nombre}%0A` +
-      `*Valor:* ${course.precioClp} (${course.precioUsd})%0A` +
+      `*Valor:* ${activeClp} (${activeUsd})${isPromoApplied ? ' (Cupón MANUAL50 aplicado - 50% OFF)' : ''}%0A` +
       `*Nombre:* ${formData.name}%0A` +
       `*RUT/Doc:* ${formData.documentId}%0A` +
       `*Email:* ${formData.email}%0A` +
       `*Teléfono:* ${formData.phone}%0A` +
-      `*Método:* ${formData.paymentMethod === 'webpay' ? 'Webpay Plus / Cuotas' : (formData.paymentMethod === 'transfer' ? 'Transferencia Bancaria' : 'Pago Internacional USD')}`;
+      `*Método:* ${methodNames[formData.paymentMethod] || formData.paymentMethod}`;
 
     window.open(`https://wa.me/56976694606?text=${text}`, '_blank');
     onClose();
@@ -118,29 +154,87 @@ export default function EnrollmentModal({ course, onClose }) {
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
               {/* Pricing summary */}
               <div style={{
-                backgroundColor: '#eef5fb',
+                backgroundColor: isPromoApplied ? '#f0fdf4' : '#eef5fb',
+                border: isPromoApplied ? '1.5px solid #86efac' : '1px solid #cfdeeb',
                 padding: '16px 20px',
                 borderRadius: '4px',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '12px'
               }}>
                 <div>
-                  <div style={{ fontSize: '0.85rem', color: '#5f6b76', fontWeight: '600' }}>Inversión Oficial</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#08365f' }}>
-                    {course.precioClp} <span style={{ fontSize: '0.9rem', color: '#5f6b76', fontWeight: '600' }}>/ {course.precioUsd}</span>
+                  <div style={{ fontSize: '0.85rem', color: isPromoApplied ? '#166534' : '#5f6b76', fontWeight: '700' }}>
+                    {isPromoApplied ? '🎁 Inversión con 50% OFF Aplicado' : 'Inversión Oficial'}
                   </div>
+                  <div style={{ fontSize: '1.45rem', fontWeight: '800', color: isPromoApplied ? '#15803d' : '#08365f' }}>
+                    {activeClp} <span style={{ fontSize: '0.9rem', color: '#5f6b76', fontWeight: '600' }}>/ {activeUsd}</span>
+                  </div>
+                  {isPromoApplied && (
+                    <div style={{ fontSize: '0.78rem', color: '#64748b', textDecoration: 'line-through' }}>
+                      Valor regular: {course.precioClp} ({course.precioUsd})
+                    </div>
+                  )}
                 </div>
                 <div style={{
-                  backgroundColor: '#eef5fb',
-                  color: '#0b5ea8',
+                  backgroundColor: isPromoApplied ? '#dcfce7' : '#eef5fb',
+                  color: isPromoApplied ? '#166534' : '#0b5ea8',
                   padding: '6px 12px',
                   borderRadius: '3px',
                   fontSize: '0.8rem',
                   fontWeight: '700'
                 }}>
-                  {course.precioNota}
+                  {isPromoApplied ? '🎟️ Cupón MANUAL50 Activo (-50%)' : (course.precioNota || 'Cuotas mensuales y pagos protegidos')}
                 </div>
+              </div>
+
+              {/* Promo code field */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                backgroundColor: '#f8fafc',
+                padding: '10px 14px',
+                borderRadius: '4px',
+                border: '1px dashed #cbd5e1',
+                flexWrap: 'wrap'
+              }}>
+                <Tag size={16} color="#08365f" />
+                <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#08365f' }}>¿Tienes un cupón?</span>
+                <input
+                  type="text"
+                  placeholder="Ej. MANUAL50"
+                  value={promoInput}
+                  onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                  style={{
+                    padding: '5px 8px',
+                    borderRadius: '3px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '0.85rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    fontWeight: '700',
+                    width: '120px'
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={handleApplyPromo}
+                  style={{
+                    backgroundColor: isPromoApplied ? '#16a34a' : '#08365f',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '3px',
+                    padding: '6px 12px',
+                    fontSize: '0.78rem',
+                    fontWeight: '700',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {isPromoApplied ? 'Aplicado ✓' : 'Aplicar'}
+                </button>
+                {promoError && <span style={{ fontSize: '0.78rem', color: '#dc2626' }}>{promoError}</span>}
               </div>
 
               {/* Personal data */}
@@ -249,6 +343,34 @@ export default function EnrollmentModal({ course, onClose }) {
                     gap: '12px',
                     padding: '12px 16px',
                     borderRadius: '3px',
+                    border: formData.paymentMethod === 'mercadopago' ? '2px solid #009ee3' : '1px solid #cfdeeb',
+                    backgroundColor: formData.paymentMethod === 'mercadopago' ? '#f0f9ff' : '#ffffff',
+                    cursor: 'pointer'
+                  }}>
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="mercadopago"
+                      checked={formData.paymentMethod === 'mercadopago'}
+                      onChange={handleChange}
+                    />
+                    <ShoppingBag size={18} color="#009ee3" />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '0.9rem', fontWeight: '700', color: '#08365f' }}>
+                        Mercado Pago (Cuotas Mensuales con Tarjetas o Saldo Mercado Libre)
+                      </div>
+                      <div style={{ fontSize: '0.78rem', color: '#5f6b76' }}>
+                        Paga en cómodas cuotas con tus tarjetas de crédito, débito o dinero en cuenta.
+                      </div>
+                    </div>
+                  </label>
+
+                  <label style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '12px 16px',
+                    borderRadius: '3px',
                     border: formData.paymentMethod === 'webpay' ? '2px solid #0b5ea8' : '1px solid #cfdeeb',
                     backgroundColor: formData.paymentMethod === 'webpay' ? '#eef5fb' : '#ffffff',
                     cursor: 'pointer'
@@ -277,6 +399,34 @@ export default function EnrollmentModal({ course, onClose }) {
                     gap: '12px',
                     padding: '12px 16px',
                     borderRadius: '3px',
+                    border: formData.paymentMethod === 'paypal' ? '2px solid #003087' : '1px solid #cfdeeb',
+                    backgroundColor: formData.paymentMethod === 'paypal' ? '#f0f4fb' : '#ffffff',
+                    cursor: 'pointer'
+                  }}>
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="paypal"
+                      checked={formData.paymentMethod === 'paypal'}
+                      onChange={handleChange}
+                    />
+                    <Globe size={18} color="#003087" />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '0.9rem', fontWeight: '700', color: '#08365f' }}>
+                        PayPal (Pago Internacional en USD)
+                      </div>
+                      <div style={{ fontSize: '0.78rem', color: '#5f6b76' }}>
+                        Procesamiento seguro para médicos fuera de Chile con saldo PayPal o tarjetas internacionales.
+                      </div>
+                    </div>
+                  </label>
+
+                  <label style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '12px 16px',
+                    borderRadius: '3px',
                     border: formData.paymentMethod === 'transfer' ? '2px solid #0b5ea8' : '1px solid #cfdeeb',
                     backgroundColor: formData.paymentMethod === 'transfer' ? '#eef5fb' : '#ffffff',
                     cursor: 'pointer'
@@ -294,35 +444,7 @@ export default function EnrollmentModal({ course, onClose }) {
                         Transferencia Electrónica Directa (Pesos Chilenos - CLP)
                       </div>
                       <div style={{ fontSize: '0.78rem', color: '#5f6b76' }}>
-                        Cuenta Corriente Banco de Chile / Santander con activación inmediata.
-                      </div>
-                    </div>
-                  </label>
-
-                  <label style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '12px 16px',
-                    borderRadius: '3px',
-                    border: formData.paymentMethod === 'international' ? '2px solid #0b5ea8' : '1px solid #cfdeeb',
-                    backgroundColor: formData.paymentMethod === 'international' ? '#eef5fb' : '#ffffff',
-                    cursor: 'pointer'
-                  }}>
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="international"
-                      checked={formData.paymentMethod === 'international'}
-                      onChange={handleChange}
-                    />
-                    <Globe size={18} color="#0b5ea8" />
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '0.9rem', fontWeight: '700', color: '#08365f' }}>
-                        Pago Internacional (PayPal / Tarjeta Extranjera - USD)
-                      </div>
-                      <div style={{ fontSize: '0.78rem', color: '#5f6b76' }}>
-                        Procesamiento seguro para médicos desde fuera de Chile.
+                        Cuenta Corriente Banco Santander / Chile con activación inmediata.
                       </div>
                     </div>
                   </label>

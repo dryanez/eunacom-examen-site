@@ -11,7 +11,11 @@
     "design": "python3 scripts/convert-design.py ../unpacked-eunacom-sitio.html /tmp/design-out && python3 scripts/generate-pages.py /tmp/design-out/design.jsx.txt"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1158.0",
+    "@aws-sdk/s3-request-presigner": "^3.1158.0",
+    "@supabase/supabase-js": "^2.118.0",
     "lucide-react": "^1.39.0",
+    "pdfjs-dist": "^6.4.299",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },

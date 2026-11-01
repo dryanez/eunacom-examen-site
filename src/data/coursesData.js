@@ -25,12 +25,12 @@ export const COURSES = [
       "Se dicta por medio de una plataforma E-Learning, y cuenta con tres recursos principales:"
     ],
     recursosPrincipales: [
-      "300 vídeos de todos los temas.",
+      "468 clases en video de todos los temas (96 horas).",
       "Exámenes tipo Eunacom con puntaje inmediato, y feedback con respuestas correctas.",
       "Seguimiento de estudio."
     ],
     incluye: [
-      "300 vídeos de todos los temas del temario EUNACOM",
+      "468 clases en video de todos los temas del temario EUNACOM",
       "Exámenes tipo Eunacom con puntaje inmediato y feedback con respuestas correctas",
       "Seguimiento de estudio continuo",
       "Manuales clínicos en PDF descargables",
@@ -39,7 +39,7 @@ export const COURSES = [
     ],
     comoFunciona: [
       "Diagnóstico inicial para identificar fortalezas y debilidades.",
-      "Visualización de los más de 300 videos modulares con guías GES y MINSAL.",
+      "Visualización de los 468 clases en video con guías GES y MINSAL.",
       "Resolución de exámenes con retroalimentación inmediata y distractores justificados.",
       "Seguimiento de tu curva de rendimiento y simulacros tipo examen oficial."
     ],
@@ -80,12 +80,12 @@ export const COURSES = [
       "Se dicta por medio de una plataforma E-Learning, y cuenta con tres recursos principales:"
     ],
     recursosPrincipales: [
-      "300 vídeos de todos los temas.",
+      "468 clases en video de todos los temas (96 horas).",
       "Exámenes tipo Eunacom con puntaje inmediato, y feedback con respuestas correctas.",
       "Seguimiento de estudio."
     ],
     incluye: [
-      "300 vídeos de todos los temas del temario EUNACOM",
+      "468 clases en video de todos los temas del temario EUNACOM",
       "Exámenes tipo Eunacom con puntaje inmediato y feedback con respuestas correctas",
       "Seguimiento de estudio continuo",
       "Manuales clínicos en PDF descargables",
@@ -94,7 +94,7 @@ export const COURSES = [
     ],
     comoFunciona: [
       "Planificación mensual equilibrada para compatibilizar con trabajo o turnos.",
-      "Acceso continuo a los más de 300 videos y manuales descargables.",
+      "Acceso continuo a las 468 clases en video y los manuales descargables.",
       "Evaluaciones periódicas por especialidad con puntaje inmediato.",
       "Simulacros acumulativos y seguimiento personalizado hasta el examen."
     ],

@@ -5,7 +5,7 @@
 export const BRAND = {
   nombre: 'Academia Examen EUNACOM',
   sigla: 'AEE',
-  bajada: 'Prueba para el ejercicio\nde la Medicina en Chile',
+  bajada: 'Cursos, Ensayos & Revalidación Médica en Chile',
   // Attribution for blog posts and course material. Never a personal name or
   // a professional registry number unless it can be substantiated.
   autor: 'Equipo académico AEE',

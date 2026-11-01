@@ -1,380 +1,170 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, RotateCcw, Volume2, VolumeX, Maximize, Sparkles, BookOpen, Clock, CheckCircle2, ArrowRight } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Play, Sparkles, BookOpen, Clock, CheckCircle2, ArrowRight } from 'lucide-react';
 
-const CHAPTERS = [
-  { id: 1, time: 0, title: "00:00 - Introducción al Perfil ASOFAMECH & EUNACOM", duration: "04:30" },
-  { id: 2, time: 270, title: "04:30 - Síndromes Coronarios Agudos (SDST vs SSDST) & GES", duration: "07:45" },
-  { id: 3, time: 735, title: "12:15 - Insuficiencia Cardíaca: Los 4 Pilares de Tratamiento", duration: "09:25" },
-  { id: 4, time: 1300, title: "21:40 - Fibrilación Auricular: Escala CHA2DS2-VASc & DOACs", duration: "10:30" },
-  { id: 5, time: 1930, title: "32:10 - Urgencias y Emergencias Hipertensivas en APS", duration: "09:50" },
-  { id: 6, time: 2520, title: "42:00 - Resolución en Vivo de 5 Casos Clínicos EUNACOM", duration: "15:00" }
-];
+// Free sample classes shown on the landing, in order (all are within the Aula's free lessons per specialty).
+const SAMPLE_IDS = ['cardio-01', 'gastro-01', 'resp-01', 'ped-01', 'ob-01', 'cirugia-01'];
 
-const CLINICAL_PEARLS = [
-  "En IAM con SDST, el tiempo puerta-balón debe ser < 90 min (o fibrinólisis < 30 min si el traslado supera 120 min) bajo protocolo GES.",
-  "La terapia cuádruple de IC con FEVIr comprende: iSGLT2 (Dapa/Empa), ARNI (Sacubitril/Valsartán) o IECA/ARAII, Beta-bloqueador y ARM (Espironolactona).",
-  "En Fibrilación Auricular, la indicación de anticoagulación oral en hombres es CHA2DS2-VASc ≥ 2 y en mujeres ≥ 3.",
-  "Una PA > 180/120 mmHg sin daño de órgano blanco es Urgencia Hipertensiva: manejo oral ambulatorio (Captopril/Amlodipino), NUNCA nifedipino sublingual de liberación rápida."
-];
+const fmt = (min) => (min ? `${min} min` : '');
 
-export default function VideoMasterclassPlayer({ onSelectCourse, onOpenMentorship }) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(3420); // 57 mins sample duration
-  const [playbackSpeed, setPlaybackSpeed] = useState(1);
-  const [activeChapter, setActiveChapter] = useState(CHAPTERS[0]);
+export default function VideoMasterclassPlayer() {
+  const [samples, setSamples] = useState([]);
+  const [totals, setTotals] = useState(null);
+  const [active, setActive] = useState(null);
 
-  const handleSelectChapter = (chapter) => {
-    setActiveChapter(chapter);
-    setCurrentTime(chapter.time);
-    setIsPlaying(true);
+  useEffect(() => {
+    fetch('/aula/catalog.json').then(r => r.json()).then(catalog => {
+      const all = catalog.modules.flatMap(m => m.specialties.flatMap(s => s.lessons.map(l => ({ ...l, specialty: s.name, accent: s.accent }))));
+      const picked = SAMPLE_IDS.map(id => all.find(l => l.id === id && l.video)).filter(Boolean);
+      setSamples(picked);
+      setActive(picked[0] || null);
+      setTotals({
+        classes: all.filter(l => l.video).length,
+        hours: Math.round(all.reduce((n, l) => n + (l.minutes || 0), 0) / 60),
+        specialties: catalog.modules.reduce((n, m) => n + m.specialties.length, 0),
+      });
+    }).catch(() => {});
+  }, []);
+
+  const goToAula = (id) => {
+    window.location.hash = id ? `#aula/${id}` : '#aula';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const togglePlay = () => {
-    setIsPlaying(!isPlaying);
-  };
-
-  const handleSpeedChange = (speed) => {
-    setPlaybackSpeed(speed);
-  };
-
-  // Structured Data VideoObject
-  const videoSchema = {
+  const videoSchema = active && {
     "@context": "https://schema.org",
     "@type": "VideoObject",
-    "name": "Masterclass EUNACOM Cardiología de Alto Rendimiento 2026-2027",
-    "description": "Clase clínica completa dictada por el equipo académico de Academia Examen EUNACOM sobre el temario oficial ASOFAMECH: SCA, Insuficiencia Cardíaca, Fibrilación Auricular y Crisis Hipertensivas.",
+    "name": `${active.specialty}: ${active.title}`,
+    "description": `Clase gratuita del Curso Teórico EUNACOM (Perfil V3): ${active.title}.`,
     "thumbnailUrl": "https://eunacom-examen.cl/og-image.jpg",
-    "uploadDate": "2026-08-15T08:00:00-04:00",
-    "duration": "PT57M",
-    "contentUrl": "https://eunacom-examen.cl/#masterclass",
-    "embedUrl": "https://eunacom-examen.cl/#masterclass",
-    "author": {
-      "@type": "Physician",
-      "name": "Academia Examen EUNACOM",
-      "medicalSpecialty": "General Surgery & Medical Education",
-      "areaServed": "Chile"
-    }
+    "uploadDate": "2026-10-19T08:00:00-03:00",
+    "duration": `PT${active.minutes || 10}M`,
+    "contentUrl": active.video,
+    "embedUrl": `https://eunacom-examen.cl/#aula/${active.id}`,
   };
 
   return (
     <section id="clase-magistral" style={{ padding: '80px 0', backgroundColor: '#08365f', color: '#ffffff' }}>
       <div id="masterclass" style={{ position: 'relative', top: '-80px' }} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(videoSchema) }}
-      />
+      {videoSchema && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(videoSchema) }} />
+      )}
 
       <div className="container">
 
         {/* Section Header */}
         <div style={{ textAlign: 'center', maxWidth: '820px', margin: '0 auto 48px' }}>
           <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            backgroundColor: 'rgba(255, 255, 255, 0.12)',
-            color: '#a9d3f5',
-            padding: '6px 16px',
-            borderRadius: '3px',
-            fontSize: '0.85rem',
-            fontWeight: '700',
-            marginBottom: '14px',
-            border: '1px solid rgba(169, 211, 245, 0.3)'
+            display: 'inline-flex', alignItems: 'center', gap: '8px',
+            backgroundColor: 'rgba(255, 255, 255, 0.12)', color: '#a9d3f5',
+            padding: '6px 16px', borderRadius: '3px', fontSize: '0.85rem', fontWeight: '700',
+            marginBottom: '14px', border: '1px solid rgba(169, 211, 245, 0.3)'
           }}>
             <Sparkles size={16} />
-            <span>CLASE DE MUESTRA COMPLETA (57 MINUTOS)</span>
+            <span>CLASES DE MUESTRA GRATIS · SIN REGISTRO</span>
           </div>
 
           <h2 style={{
-            fontFamily: 'var(--font-heading)',
-            fontSize: 'clamp(1.9rem, 3.2vw, 2.7rem)',
-            fontWeight: '800',
-            color: '#ffffff',
-            lineHeight: '1.2',
-            marginBottom: '16px'
+            fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.9rem, 3.2vw, 2.7rem)', fontWeight: '800',
+            color: '#ffffff', lineHeight: '1.2', marginBottom: '16px'
           }}>
-            Masterclass: <span style={{ color: '#a9d3f5' }}>Cardiología EUNACOM</span> de Alto Rendimiento
+            Clase magistral: <span style={{ color: '#a9d3f5' }}>mira una clase real</span> del curso
           </h2>
 
-          <p style={{
-            fontSize: '1.05rem',
-            color: '#eef5fb',
-            lineHeight: '1.6'
-          }}>
-            Experimenta la metodología de nuestras 86 clases oficiales: análisis fisiopatológico, correlación con guías clínicas GES/MINSAL y resolución de distractores en tiempo real.
+          <p style={{ fontSize: '1.05rem', color: '#eef5fb', lineHeight: '1.6' }}>
+            {totals
+              ? `Estas son clases completas del Aula virtual: ${totals.classes} clases en video, ${totals.hours} horas y ${totals.specialties} especialidades del Perfil EUNACOM V3, con casos clínicos tipo examen.`
+              : 'Clases completas del Aula virtual, alineadas al Perfil EUNACOM V3, con casos clínicos tipo examen.'}
           </p>
         </div>
 
-        {/* Video Player Grid */}
+        {/* Player + playlist */}
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr',
-          gap: '32px',
-          backgroundColor: 'rgba(255, 255, 255, 0.05)',
-          border: '1.5px solid rgba(169, 211, 245, 0.25)',
-          borderRadius: '5px',
-          padding: '28px',
-          backdropFilter: 'blur(10px)'
+          display: 'grid', gridTemplateColumns: '1fr', gap: '32px',
+          backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1.5px solid rgba(169, 211, 245, 0.25)',
+          borderRadius: '5px', padding: '28px'
         }} className="player-grid">
 
-          {/* Video Mockup Screen */}
           <div>
             <div style={{
-              position: 'relative',
-              borderRadius: '4px',
-              overflow: 'hidden',
-              backgroundColor: '#08365f',
-              aspectRatio: '16/9',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              boxShadow: '0 18px 44px rgba(8,54,95,.22)',
-              border: '1px solid rgba(255, 255, 255, 0.1)'
+              position: 'relative', borderRadius: '4px', overflow: 'hidden', backgroundColor: '#000',
+              aspectRatio: '16/9', boxShadow: '0 18px 44px rgba(8,54,95,.22)', border: '1px solid rgba(255, 255, 255, 0.1)'
             }}>
+              {active ? (
+                <video
+                  key={active.id}
+                  src={active.video}
+                  controls
+                  preload="metadata"
+                  playsInline
+                  controlsList="nodownload"
+                  style={{ width: '100%', height: '100%', display: 'block' }}
+                />
+              ) : (
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a9d3f5' }}>
+                  Cargando clase…
+                </div>
+              )}
+            </div>
 
-              {/* Watermark / Teacher Badge */}
+            {active && (
               <div style={{
-                padding: '16px 20px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                background: '#08365f 0%, rgba(0,0,0,0) 100%)',
-                zIndex: 2
+                marginTop: '24px', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '4px',
+                padding: '20px', border: '1px solid rgba(169, 211, 245, 0.2)'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{
-                    width: '34px',
-                    height: '34px',
-                    borderRadius: '50%',
-                    backgroundColor: '#0b5ea8',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontWeight: '800',
-                    fontSize: '0.9rem',
-                    border: '1.5px solid #a9d3f5'
-                  }}>
-                    FY
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#ffffff' }}>Academia Examen EUNACOM</div>
-                    <div style={{ fontSize: '0.7rem', color: '#a9d3f5' }}>Cardiología & Urgencias Médicas</div>
-                  </div>
+                <div style={{ fontSize: '0.78rem', fontWeight: '800', letterSpacing: '.05em', textTransform: 'uppercase', color: '#a9d3f5' }}>
+                  {active.specialty} {active.num && `· Clase ${active.num}`}
                 </div>
-
-                <div style={{
-                  backgroundColor: 'rgba(239, 68, 68, 0.85)',
-                  color: '#ffffff',
-                  fontSize: '0.7rem',
-                  fontWeight: '800',
-                  padding: '3px 10px',
-                  borderRadius: '3px',
-                  letterSpacing: '0.04em'
-                }}>
-                  CLASE 100% OFICIAL
-                </div>
-              </div>
-
-              {/* Video Center Presentation Content */}
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                textAlign: 'center',
-                padding: '20px',
-                zIndex: 1
-              }}>
-                {!isPlaying ? (
-                  <button
-                    onClick={togglePlay}
-                    style={{
-                      width: '80px',
-                      height: '80px',
-                      borderRadius: '50%',
-                      backgroundColor: '#0b5ea8',
-                      border: '3px solid #ffffff',
-                      color: '#ffffff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      boxShadow: '0 6px 20px rgba(8,54,95,.10)',
-                      transition: 'transform 0.2s',
-                      marginBottom: '16px'
-                    }}
-                  >
-                    <Play size={36} fill="#ffffff" style={{ marginLeft: '4px' }} />
-                  </button>
-                ) : (
-                  <div style={{
-                    backgroundColor: 'rgba(8, 54, 95, 0.9)',
-                    border: '1.5px solid #a9d3f5',
-                    borderRadius: '4px',
-                    padding: '24px',
-                    maxWidth: '480px',
-                    textAlign: 'left'
-                  }}>
-                    <div style={{ color: '#a9d3f5', fontSize: '0.8rem', fontWeight: '700', marginBottom: '6px' }}>
-                      REPRODUCIENDO CAPÍTULO ACTIVO:
+                <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#ffffff', margin: '6px 0 12px' }}>{active.title}</div>
+                <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#a9d3f5', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <BookOpen size={16} /> <span>En esta clase</span>
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {active.chapters.map(c => (
+                    <div key={c} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.85rem', color: '#eef5fb', lineHeight: '1.45' }}>
+                      <CheckCircle2 size={16} color="#a9d3f5" style={{ flexShrink: 0, marginTop: '2px' }} />
+                      <span>{c}</span>
                     </div>
-                    <div style={{ color: '#ffffff', fontSize: '1.1rem', fontWeight: '800', marginBottom: '8px' }}>
-                      {activeChapter.title}
-                    </div>
-                    <div style={{ color: '#eef5fb', fontSize: '0.85rem', lineHeight: '1.5' }}>
-                      Resolviendo algoritmo de decisiones para el examen de 180 preguntas.
-                    </div>
-                  </div>
-                )}
-                <div style={{ fontSize: '0.9rem', color: '#eef5fb', fontWeight: '600' }}>
-                  {!isPlaying ? 'Haz clic para reproducir la Masterclass en video HD' : 'Audio & Diapositivas Sincronizadas'}
-                </div>
-              </div>
-
-              {/* Video Bottom Player Controls */}
-              <div style={{
-                padding: '12px 20px',
-                background: '#08365f 0%, rgba(0,0,0,0) 100%)',
-                zIndex: 2,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '16px'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                  <button
-                    onClick={togglePlay}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: '#ffffff',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}
-                  >
-                    {isPlaying ? <Pause size={22} /> : <Play size={22} />}
-                  </button>
-
-                  <span style={{ fontSize: '0.8rem', color: '#eef5fb', fontWeight: '600' }}>
-                    {activeChapter.duration} / 57:00
-                  </span>
-                </div>
-
-                {/* Playback Speeds */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  {[1, 1.25, 1.5, 2].map((spd) => (
-                    <button
-                      key={spd}
-                      onClick={() => handleSpeedChange(spd)}
-                      style={{
-                        background: playbackSpeed === spd ? '#0b5ea8' : 'rgba(255, 255, 255, 0.15)',
-                        border: 'none',
-                        color: '#ffffff',
-                        padding: '3px 8px',
-                        borderRadius: '3px',
-                        fontSize: '0.75rem',
-                        fontWeight: '700',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      {spd}x
-                    </button>
                   ))}
                 </div>
               </div>
-
-            </div>
-
-            {/* Clinical Takeaways Box */}
-            <div style={{
-              marginTop: '24px',
-              backgroundColor: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '4px',
-              padding: '20px',
-              border: '1px solid rgba(169, 211, 245, 0.2)'
-            }}>
-              <h4 style={{
-                fontSize: '1rem',
-                fontWeight: '800',
-                color: '#a9d3f5',
-                marginBottom: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}>
-                <BookOpen size={18} />
-                <span>Perlas Clínicas EUNACOM de esta Masterclass:</span>
-              </h4>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {CLINICAL_PEARLS.map((pearl, pIdx) => (
-                  <div key={pIdx} style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '10px',
-                    fontSize: '0.85rem',
-                    color: '#eef5fb',
-                    lineHeight: '1.45'
-                  }}>
-                    <CheckCircle2 size={16} color="#a9d3f5" style={{ flexShrink: 0, marginTop: '2px' }} />
-                    <span>{pearl}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            )}
           </div>
 
-          {/* Chapter Markers Sidebar */}
+          {/* Playlist */}
           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
               <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '16px',
-                borderBottom: '1px solid rgba(169, 211, 245, 0.2)',
-                paddingBottom: '12px'
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px',
+                borderBottom: '1px solid rgba(169, 211, 245, 0.2)', paddingBottom: '12px'
               }}>
-                <h4 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#ffffff', margin: 0 }}>
-                  Índice de Capítulos (6 Módulos)
-                </h4>
-                <span style={{ fontSize: '0.75rem', color: '#a9d3f5', fontWeight: '700' }}>
-                  Video HD 1080p
-                </span>
+                <h4 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#ffffff', margin: 0 }}>Clases de muestra</h4>
+                <span style={{ fontSize: '0.75rem', color: '#a9d3f5', fontWeight: '700' }}>{samples.length} clases gratis</span>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
-                {CHAPTERS.map((chapter) => {
-                  const isSelected = activeChapter.id === chapter.id;
+                {samples.map((l) => {
+                  const isSelected = active?.id === l.id;
                   return (
                     <button
-                      key={chapter.id}
-                      onClick={() => handleSelectChapter(chapter)}
+                      key={l.id}
+                      onClick={() => setActive(l)}
                       style={{
-                        padding: '12px 16px',
-                        borderRadius: '4px',
+                        padding: '12px 16px', borderRadius: '4px',
                         backgroundColor: isSelected ? '#0b5ea8' : 'rgba(255, 255, 255, 0.08)',
                         border: isSelected ? '1.5px solid #a9d3f5' : '1px solid rgba(255, 255, 255, 0.1)',
-                        color: '#ffffff',
-                        textAlign: 'left',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        gap: '10px',
-                        transition: 'all 0.2s'
+                        color: '#ffffff', textAlign: 'left', cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px'
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <Play size={14} fill={isSelected ? '#ffffff' : 'none'} color="#a9d3f5" />
-                        <span style={{ fontSize: '0.85rem', fontWeight: isSelected ? '700' : '500' }}>
-                          {chapter.title}
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                        <Play size={14} fill={isSelected ? '#ffffff' : 'none'} color="#a9d3f5" style={{ flexShrink: 0, marginTop: '3px' }} />
+                        <span style={{ fontSize: '0.85rem', lineHeight: 1.4 }}>
+                          <span style={{ display: 'block', fontSize: '0.72rem', fontWeight: '800', color: '#a9d3f5', textTransform: 'uppercase', letterSpacing: '.04em' }}>{l.specialty}</span>
+                          <span style={{ fontWeight: isSelected ? '700' : '500' }}>{l.title}</span>
                         </span>
                       </div>
-                      <span style={{ fontSize: '0.75rem', color: '#a9d3f5', fontWeight: '600' }}>
-                        {chapter.duration}
+                      <span style={{ fontSize: '0.75rem', color: '#a9d3f5', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+                        <Clock size={12} /> {fmt(l.minutes)}
                       </span>
                     </button>
                   );
@@ -384,38 +174,30 @@ export default function VideoMasterclassPlayer({ onSelectCourse, onOpenMentorshi
 
             {/* CTA Box */}
             <div style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.12)',
-              borderRadius: '4px',
-              padding: '20px',
+              backgroundColor: 'rgba(255, 255, 255, 0.12)', borderRadius: '4px', padding: '20px',
               border: '1px solid rgba(169, 211, 245, 0.3)'
             }}>
               <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#ffffff', marginBottom: '6px' }}>
-                ¿Quieres acceder a las 86 clases completas del temario?
+                {totals ? `¿Quieres ver las ${totals.classes} clases del temario?` : '¿Quieres ver todas las clases del temario?'}
               </div>
               <p style={{ fontSize: '0.82rem', color: '#eef5fb', margin: '0 0 14px 0', lineHeight: '1.4' }}>
-                Inscríbete en el Curso Anual o 6 Meses y obtén acceso inmediato a todas las especialidades médicas.
+                Entra al Aula virtual: el curso completo ordenado por módulo y especialidad, con tu avance guardado.
               </p>
-              <a
-                href="#cursos"
+              <button
+                onClick={() => goToAula(active?.id)}
                 className="btn"
                 style={{
-                  backgroundColor: '#ffffff',
-                  color: '#08365f',
-                  fontWeight: '700',
-                  fontSize: '0.88rem',
-                  padding: '10px 16px',
-                  width: '100%',
-                  justifyContent: 'center'
+                  backgroundColor: '#ffffff', color: '#08365f', fontWeight: '700', fontSize: '0.88rem',
+                  padding: '10px 16px', width: '100%', justifyContent: 'center', border: 'none', cursor: 'pointer'
                 }}
               >
-                <span>Ver Cursos Disponibles</span>
+                <span>Ir al Aula virtual</span>
                 <ArrowRight size={16} />
-              </a>
+              </button>
             </div>
           </div>
 
         </div>
-
       </div>
 
       <style>{`
