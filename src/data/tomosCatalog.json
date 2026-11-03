@@ -314,7 +314,7 @@
   },
   "urologia": {
    "cover": "/covers/tomo_urologia.jpg",
-   "pages": 174,
+   "pages": 89,
    "clases": 16,
    "preguntas": 90,
    "repaso": true,
@@ -322,12 +322,12 @@
    "atlas": true,
    "anki": true,
    "files": {
-    "tomo": "01_Tomos/Modulo_1_Medicina_Interna/Manual_EUNACOM_Neurologia_Completo_2026.pdf",
+    "tomo": "01_Tomos/Modulo_2_Cirugia/Tomo_13_Urologia_Completo_2026.pdf",
     "gordo": "02_Libros_Gordos_90Q/Libro_Gordo_Urologia_90Q.pdf",
     "repaso": "05_Repaso_Final/Repaso_Final_Urologia_2026.pdf",
     "atlas": "06_Atlas/Atlas_Imagenes_Urologia_2026.pdf",
     "perfil": "04_Perfil_V3_Codigo_por_Codigo/Perfil_V3_Codigo_por_Codigo_Urología.pdf",
-    "anki": "07_Anki/AEE_EUNACOM_V3_Neurologia.apkg"
+    "anki": "07_Anki/AEE_EUNACOM_V3_Urologia.apkg"
    },
    "covers": {
     "tomo": "/covers/tomo_urologia.jpg",

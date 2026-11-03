@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import EmbeddedCheckout from './EmbeddedCheckout';
 import { ShoppingCart, ShieldCheck, CreditCard, Sparkles, Check, ChevronDown, Lightbulb } from 'lucide-react';
-import { PACKS, COLLECTIONS, SPECIALTIES, RECONS, TYPES, PRODUCTS, BANK, fmtClp, looseValue } from '../data/tienda';
+import { PACKS, COLLECTIONS, SPECIALTIES, RECONS, TYPES, PRODUCTS, BANK, MANUALES_POR_MODULO, MANUALES_PAGINAS, fmtClp, looseValue } from '../data/tienda';
 import { useCart } from './Cart';
 import '../styles/store.css';
 
@@ -327,7 +327,20 @@ export default function TiendaPage() {
                       <div className="st-panel" id={`var-${x.sku}`}>
                         <div className="st-panel__in">
                           <b className="st-panel__h">Qué trae</b>
-                          <ul>{variantInfo(x, product).map(t => <li key={t}><Check size={15} /> {t}</li>)}</ul>
+                          {x.sku === 'pack-tomos' ? (
+                            <div className="st-mods">
+                              <div className="st-mods__total"><b>4</b> módulos · <b>21</b> manuales · <b>{MANUALES_PAGINAS.toLocaleString('es-CL')}</b> páginas</div>
+                              {MANUALES_POR_MODULO.map(m => (
+                                <div key={m.id} className="st-mod">
+                                  <div className="st-mod__h"><span>Módulo {m.id} · {m.name}</span><small>{m.specs.length} {m.specs.length === 1 ? 'manual' : 'manuales'} · {m.pages.toLocaleString('es-CL')} págs.</small></div>
+                                  <div className="st-mod__specs">{m.specs.map(sp => <span key={sp.title}>{sp.title} <em>{sp.pages}</em></span>)}</div>
+                                </div>
+                              ))}
+                              <ul><li><Check size={15} /> Algoritmos, tablas y perlas EUNACOM</li><li><Check size={15} /> Alineados al Perfil V3 · actualizados 2026</li></ul>
+                            </div>
+                          ) : (
+                            <ul>{variantInfo(x, product).map(t => <li key={t}><Check size={15} /> {t}</li>)}</ul>
+                          )}
                           {xs ? (
                             <button className="st-add added" onClick={() => cart.setOpen(true)}><ShoppingCart size={18} /> {xs === 'in' ? 'Ya está en tu carrito · Ver carrito' : 'Ya viene en tu pack · Ver carrito'}</button>
                           ) : (

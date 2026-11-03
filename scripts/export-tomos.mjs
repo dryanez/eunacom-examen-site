@@ -30,7 +30,13 @@ const TOMOS = {
 const walk = d => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]);
 const files = walk(DIST).filter(f => f.endsWith('.pdf'));
 const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z]/g, '');
-const find = (folder, stem) => files.find(f => f.includes(`/${folder}/`) && norm(path.basename(f)).includes(norm(stem)));
+// Whole-word match on the file name's parts ("Urologia" must not match "Neurologia"; "SaludPublica" matches "Salud_Publica")
+const hasStem = (file, stem) => {
+  const parts = path.basename(file).replace(/\.[^.]+$/, '').split(/[_\-. ]+/).map(norm);
+  const want = norm(stem);
+  return parts.some((_, i) => parts.slice(i).some((__, j) => parts.slice(i, i + j + 1).join('') === want));
+};
+const find = (folder, stem) => files.find(f => f.includes(`/${folder}/`) && hasStem(f, stem));
 const pages = f => Number(execFileSync('pdfinfo', [f]).toString().match(/Pages:\s+(\d+)/)[1]);
 const cover = (f, name) => {
   const out = path.join(COVERS, name);
@@ -73,12 +79,12 @@ for (const [key, [specialty, stem]] of Object.entries(TOMOS)) {
     repaso: !!repaso,
     guiaV3: true,
     atlas: !!atlas,
-    anki: walk(path.join(DIST, '07_Anki')).some(f => f.endsWith('.apkg') && [stem, key].some(k => norm(path.basename(f)).includes(norm(k).slice(0, 7)))),
+    anki: walk(path.join(DIST, '07_Anki')).some(f => f.endsWith('.apkg') && [stem, key].some(k => hasStem(f, k))),
     // Book files inside books/dist (served to owners from the private bucket, key libros/<path>).
     files: {
       tomo: rel(tomo), gordo: rel(gordo), repaso: rel(repaso), atlas: rel(atlas),
       perfil: rel(find('04_Perfil_V3_Codigo_por_Codigo', `Perfil_V3_Codigo_por_Codigo_${PERFIL[key]}`)),
-      anki: rel(walk(path.join(DIST, '07_Anki')).find(f => f.endsWith('.apkg') && [stem, key].some(k => norm(path.basename(f)).includes(norm(k).slice(0, 7))))),
+      anki: rel(walk(path.join(DIST, '07_Anki')).find(f => f.endsWith('.apkg') && [stem, key].some(k => hasStem(f, k)))),
     },
     // Each book has its own cover, so buyers see they are different books on the same topic.
     covers: {

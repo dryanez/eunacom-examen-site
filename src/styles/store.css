@@ -312,3 +312,15 @@
 @keyframes st-panel-open { from { max-height: 0; opacity: 0; } to { max-height: 1400px; opacity: 1; } }
 @keyframes st-panel-fade { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 @keyframes st-panel-item { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
+/* «Los 21 Manuales AEE»: the 4 modules with their manuals and pages */
+.st-mods { display: flex; flex-direction: column; gap: 10px; }
+.st-mods__total { font: 700 14px var(--font-heading); color: var(--ink); }
+.st-mods__total b { font-weight: 900; }
+.st-mod { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: #fff; animation: st-panel-item .4s ease both; }
+.st-mod:nth-child(3) { animation-delay: .08s } .st-mod:nth-child(4) { animation-delay: .16s } .st-mod:nth-child(5) { animation-delay: .24s }
+.st-mod__h { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; margin-bottom: 7px; }
+.st-mod__h span { font: 800 13.5px var(--font-heading); color: var(--ink); }
+.st-mod__h small { font: 700 12px var(--font-heading); color: var(--mute); }
+.st-mod__specs { display: flex; flex-wrap: wrap; gap: 5px; }
+.st-mod__specs span { padding: 3px 8px; border-radius: 999px; background: #eef4fa; font-size: 12px; color: var(--ink-2); }
+.st-mod__specs em { font-style: normal; font-weight: 700; color: var(--mute); margin-left: 2px; }

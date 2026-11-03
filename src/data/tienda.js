@@ -58,10 +58,19 @@ export const SPECIALTIES = BOOKS_COLLECTION.map(b => {
   return {
     key: b.key, n: b.ch, title: b.title, sub: b.sub, color: b.color, cover: t.cover,
     module: MODULES.find(m => b.module.includes(m.match)).id,
+    pages: t.pages, // real page count of the manual PDF (scripts/export-tomos.mjs)
     items,
     pack: { sku: `esp-${b.key}`, price: PACK_PRICE_BY_KEY[b.key] || PRICES.especialidad, includes: [...items.map(i => i.sku), `banco-${b.key}`] },
   };
 });
+
+// The 21 manuals by module, with real page counts (shown when someone opens «Los 21 Manuales AEE»).
+export const MANUALES_POR_MODULO = MODULES.map(m => {
+  const specs = SPECIALTIES.filter(s => s.module === m.id);
+  return { ...m, specs: specs.map(s => ({ title: s.title, pages: s.pages })), pages: specs.reduce((n, s) => n + s.pages, 0) };
+});
+export const MANUALES_PAGINAS = MANUALES_POR_MODULO.reduce((n, m) => n + m.pages, 0);
+const fmtN = n => n.toLocaleString('es-CL');
 
 const REC_LIST = [
   ['JUL', 2013], ['JUL', 2015], ['JUL', 2016], ['JUL', 2017], ['DIC', 2017], ['JUL', 2018], ['DIC', 2018], ['JUL', 2019],
@@ -81,21 +90,21 @@ export const PACKS = [
     sku: 'pack-total', name: 'Pack Total EUNACOM', price: 299990, star: true,
     desc: 'Todo junto: los 21 manuales, las 468 clases y todos los libros de preguntas y repaso.',
     covers: [cov(1), '/covers/q_repaso.jpg', '/covers/q_atlas.jpg', '/covers/q_gordo.jpg', '/covers/q_recons.jpg'],
-    features: ['468 clases en video (96 horas)', 'Banco completo: más de 10.800 preguntas', 'Los 21 manuales AEE', '21 Repaso Final + 19 Atlas de imágenes + 21 mazos Anki', '1.890 preguntas tipo examen (Libros Gordos)', 'Perfil V3 código por código', '16 reconstrucciones 2013–2025'],
+    features: ['468 clases en video (96 horas)', 'Banco completo: más de 10.800 preguntas', `Los 21 manuales AEE (${fmtN(MANUALES_PAGINAS)} páginas)`, '21 Repaso Final + 19 Atlas de imágenes + 21 mazos Anki', '1.890 preguntas tipo examen (Libros Gordos)', 'Perfil V3 código por código', '16 reconstrucciones 2013–2025'],
     includes: [...all('tomo'), ...all('clases'), ...all('gordo'), ...all('repaso'), ...all('perfil'), ...all('atlas'), ...all('anki'), ...RECONS.map(r => r.sku), 'gran-gordo', 'gran-recons', 'perfil-completo', ...SPECIALTIES.map(s => `banco-${s.key}`)],
   },
   {
     sku: 'biblioteca', name: 'Biblioteca completa', price: 199990, best: true,
     desc: 'Todos los libros: teoría, repaso, imágenes, Anki y todas las preguntas.',
     covers: [cov(1), '/covers/q_repaso.jpg', '/covers/q_atlas.jpg', '/covers/q_gordo.jpg', '/covers/q_perfil.jpg'],
-    features: ['Los 21 manuales AEE', '21 libros Repaso Final', '19 Atlas de imágenes', '21 mazos Anki', 'Gran Libro Gordo + 21 Libros Gordos (1.890 preguntas)', 'Perfil V3 código por código', 'Gran Libro de Reconstrucciones 2013–2025'],
+    features: [`Los 21 manuales AEE (${fmtN(MANUALES_PAGINAS)} páginas)`, '21 libros Repaso Final', '19 Atlas de imágenes', '21 mazos Anki', 'Gran Libro Gordo + 21 Libros Gordos (1.890 preguntas)', 'Perfil V3 código por código', 'Gran Libro de Reconstrucciones 2013–2025'],
     includes: [...all('tomo'), ...all('gordo'), ...all('repaso'), ...all('perfil'), ...all('atlas'), ...all('anki'), ...RECONS.map(r => r.sku), 'gran-gordo', 'gran-recons', 'perfil-completo'],
   },
   {
     sku: 'pack-tomos', name: 'Los 21 Manuales AEE', price: 149990,
     desc: 'Toda la teoría del Perfil V3, especialidad por especialidad.',
     covers: [1, 5, 8, 11, 18].map(cov),
-    features: ['Los 21 manuales (4 módulos)', 'Algoritmos, tablas y perlas EUNACOM', 'Actualizados 2026'],
+    features: [`Los 21 manuales: 4 módulos, ${fmtN(MANUALES_PAGINAS)} páginas`, 'Algoritmos, tablas y perlas EUNACOM', 'Actualizados 2026'],
     includes: all('tomo'),
   },
 ];
