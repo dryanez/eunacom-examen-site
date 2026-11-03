@@ -134,7 +134,8 @@ export default function Footer({ onOpenMentorship, onOpenSEOStudio, onNavigateHo
             <div style={headingStyle}>Contacto</div>
             <div style={{ fontSize: '14px', lineHeight: '1.9', marginBottom: '18px' }}>
               Correo · {CONTACTO.correo}<br />
-              Teléfonos · {CONTACTO.telefono}
+              Teléfonos · {CONTACTO.telefono}<br />
+              Instagram · <a href={CONTACTO.instagram} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>@academiaeunacom</a>
             </div>
             <button onClick={onOpenMentorship} className="btn" style={{ background: '#ffffff', color: '#08365f' }}>
               Asegura tu matrícula

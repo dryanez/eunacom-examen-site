@@ -65,8 +65,8 @@ export default function Navbar({ onOpenMentorship, currentView, onNavigateHome, 
 
   return (
     <>
-      {/* Utility bar */}
-      <div style={{ background: '#08365f', color: '#b9d3ea' }}>
+      {/* Utility bar (hidden on phones: the same contact details are in the footer) */}
+      <div className="site-utility" style={{ background: '#08365f', color: '#b9d3ea' }}>
         <div className="container" style={{
           padding: '8px 36px',
           display: 'flex',
@@ -80,7 +80,7 @@ export default function Navbar({ onOpenMentorship, currentView, onNavigateHome, 
             <span>{CONTACTO.correo}</span>
           </span>
           <span style={{ display: 'flex', gap: '14px' }}>
-            <span>Instagram</span>
+            <a href={CONTACTO.instagram} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>Instagram</a>
             <span>Facebook</span>
           </span>
         </div>
@@ -94,7 +94,7 @@ export default function Navbar({ onOpenMentorship, currentView, onNavigateHome, 
         borderBottom: '1px solid #e3ebf3',
         boxShadow: '0 2px 10px rgba(8,54,95,.06)',
       }}>
-        <div className="container" style={{
+        <div className="container site-header-row" style={{
           padding: '14px 36px',
           display: 'flex',
           alignItems: 'center',
@@ -103,6 +103,7 @@ export default function Navbar({ onOpenMentorship, currentView, onNavigateHome, 
           <a
             href="#"
             onClick={handleLogoClick}
+            className="site-brand"
             style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 'none', textDecoration: 'none' }}
           >
             <span style={{
@@ -127,8 +128,8 @@ export default function Navbar({ onOpenMentorship, currentView, onNavigateHome, 
               <span style={{ color: '#0bd9e7' }}>E</span>
               <span style={{ color: '#ffffff' }}>E</span>
             </span>
-            <span style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.2' }}>
-              <span style={{
+            <span style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.2', minWidth: 0 }}>
+              <span className="site-brand-name" style={{
                 fontFamily: 'var(--font-heading)',
                 fontWeight: '800',
                 fontSize: '17px',
@@ -137,7 +138,7 @@ export default function Navbar({ onOpenMentorship, currentView, onNavigateHome, 
               }}>
                 {BRAND.nombre}
               </span>
-              <span style={{
+              <span className="site-brand-tag" style={{
                 fontFamily: 'var(--font-heading)',
                 fontSize: '9.5px',
                 fontWeight: '700',

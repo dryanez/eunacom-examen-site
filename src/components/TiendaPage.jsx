@@ -117,7 +117,12 @@ function VariantThumb({ v }) {
 
 export default function TiendaPage() {
   const cart = useCart();
-  const [productKey, setProductKey] = useState('todo');
+  // #tienda/<especialidad> (p. ej. desde el libro gratis de Instagram) abre esa especialidad
+  const hashKey = () => {
+    const k = window.location.hash.split('?')[0].split('/')[1];
+    return SPECIALTIES.some(s => s.key === k) ? k : null;
+  };
+  const [productKey, setProductKey] = useState(() => hashKey() || 'todo');
   const product = useMemo(() => buildProduct(productKey), [productKey]);
   const [variant, setVariant] = useState(product.variants[0].sku);
   const [slide, setSlide] = useState(0);
@@ -132,6 +137,12 @@ export default function TiendaPage() {
   };
 
   useEffect(() => { setVariant(product.variants[0].sku); setSlide(0); }, [product]);
+  useEffect(() => {
+    if (hashKey()) setTimeout(() => productRef.current?.scrollIntoView({ block: 'start' }), 300);
+    const onHash = () => { const k = hashKey(); if (k) pick(k); };
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Gallery autoplay, paused for 10 s after any manual choice.
   useEffect(() => {

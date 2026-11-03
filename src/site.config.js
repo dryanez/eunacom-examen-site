@@ -24,4 +24,5 @@ export const CONTACTO = {
   // the design bundle's defaults, not from a verified source.
   telefono: '+56 2 3263 2291 / +56 9 6663 5218',
   correo: 'contacto@eunacomapp.cl',
+  instagram: 'https://www.instagram.com/academiaeunacom/',
 };

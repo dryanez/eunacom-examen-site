@@ -40,7 +40,7 @@ export default function App() {
       if (hash === '#curso-teorico') return 'curso-teorico';
       if (hash === '#curso-practico') return 'curso-practico';
       if (hash.startsWith('#aula')) return 'aula';
-      if (hash === '#tienda') return 'tienda';
+      if (hash === '#tienda' || hash.startsWith('#tienda/')) return 'tienda'; // #tienda/<especialidad>
       if (ACCOUNT_VIEWS[hash]) return ACCOUNT_VIEWS[hash];
     }
     return 'home';
@@ -69,7 +69,7 @@ export default function App() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else if (hash.startsWith('#aula')) {
         setCurrentView('aula');
-      } else if (hash === '#tienda') {
+      } else if (hash === '#tienda' || hash.startsWith('#tienda/')) {
         setCurrentView('tienda');
       } else if (ACCOUNT_VIEWS[hash.split('&')[0]]) {
         setCurrentView(ACCOUNT_VIEWS[hash.split('&')[0]]);
