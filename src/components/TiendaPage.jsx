@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import EmbeddedCheckout from './EmbeddedCheckout';
 import { ShoppingCart, ShieldCheck, CreditCard, Sparkles, Check, ChevronDown, Lightbulb } from 'lucide-react';
 import { PACKS, COLLECTIONS, SPECIALTIES, RECONS, TYPES, PRODUCTS, BANK, fmtClp, looseValue } from '../data/tienda';
 import { useCart } from './Cart';
@@ -90,6 +91,20 @@ function buildProduct(key) {
   };
 }
 
+// What a format brings, shown in the panel that opens under it.
+function variantInfo(x, product) {
+  const pack = PACKS.find(p => p.sku === x.sku);
+  if (pack) return pack.features;
+  const coll = COLLECTIONS.find(c => c.sku === x.sku);
+  if (coll) {
+    const type = PRODUCTS[coll.sku]?.includes?.[0]?.split('-')[0];
+    return [coll.desc, ...(TYPES[type]?.bullets || [])];
+  }
+  if (x.sku.startsWith('esp-')) return product.contents;
+  const type = x.sku.split('-')[0];
+  return [x.desc, ...(TYPES[type]?.bullets || [])].filter(Boolean);
+}
+
 function Slide({ s, on }) {
   return (
     <div className={`st-slide ${on ? 'on' : ''}`}>
@@ -127,6 +142,7 @@ export default function TiendaPage() {
   const [variant, setVariant] = useState(product.variants[0].sku);
   // Long format lists (Todo EUNACOM has 11) show the first 3 on screen; the rest open with «Ver más».
   const [showAll, setShowAll] = useState(false);
+  const [openSku, setOpenSku] = useState(null); // format whose «qué trae + pagar» panel is open
   const [slide, setSlide] = useState(0);
   const [bump, setBump] = useState(false);
   const userTouched = useRef(0);
@@ -138,7 +154,7 @@ export default function TiendaPage() {
     setTimeout(() => productRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
   };
 
-  useEffect(() => { setVariant(product.variants[0].sku); setSlide(0); setShowAll(false); }, [product]);
+  useEffect(() => { setVariant(product.variants[0].sku); setSlide(0); setShowAll(false); setOpenSku(null); }, [product]);
   useEffect(() => {
     if (hashKey()) setTimeout(() => productRef.current?.scrollIntoView({ block: 'start' }), 300);
     const onHash = () => { const k = hashKey(); if (k) pick(k); };
@@ -160,7 +176,12 @@ export default function TiendaPage() {
   const off = was > price ? Math.round((1 - price / was) * 100) : 0;
   const st = cart.state(v.sku);
 
-  const choose = (x) => { userTouched.current = Date.now(); setVariant(x.sku); setSlide(x.slide); };
+  const choose = (x) => {
+    userTouched.current = Date.now(); setVariant(x.sku); setSlide(x.slide);
+    const opening = openSku !== x.sku;
+    setOpenSku(opening ? x.sku : null);
+    if (opening) setTimeout(() => document.getElementById(`var-${x.sku}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 380);
+  };
   const add = () => {
     if (st) return cart.setOpen(true);
     cart.toggle(v.sku); setBump(true); setTimeout(() => setBump(false), 450);
@@ -288,19 +309,38 @@ export default function TiendaPage() {
                 const p = PRODUCTS[x.sku].price; const w = looseValue(x.sku);
                 const xs = cart.state(x.sku);
                 return (
-                  <button key={x.sku} className={`st-var ${x.sku === variant ? 'on' : ''}`} onClick={() => choose(x)}>
-                    {x.tag && <span className={`tag ${x.tag === 'Solo libros' ? 'green' : ''}`}>{x.tag}{w > p ? ` · -${Math.round((1 - p / w) * 100)}%` : ''}</span>}
-                    <span className="th"><VariantThumb v={x} /></span>
-                    <span>
-                      <div className="nm">{x.name}</div>
-                      <div className="ds">{x.desc}</div>
-                      {xs && <div className="owned">{xs === 'in' ? '✓ En tu carrito' : '✓ Incluido en tu pack'}</div>}
-                    </span>
-                    <span className="pr">
-                      <b>{fmtClp(p)}</b>
-                      {w > p && <s>{fmtClp(w)}</s>}
-                    </span>
-                  </button>
+                  <React.Fragment key={x.sku}>
+                    <button className={`st-var ${x.sku === variant ? 'on' : ''} ${openSku === x.sku ? 'open' : ''}`} onClick={() => choose(x)} aria-expanded={openSku === x.sku}>
+                      {x.tag && <span className={`tag ${x.tag === 'Solo libros' ? 'green' : ''}`}>{x.tag}{w > p ? ` · -${Math.round((1 - p / w) * 100)}%` : ''}</span>}
+                      <span className="th"><VariantThumb v={x} /></span>
+                      <span>
+                        <div className="nm">{x.name}</div>
+                        <div className="ds">{x.desc}</div>
+                        {xs && <div className="owned">{xs === 'in' ? '✓ En tu carrito' : '✓ Incluido en tu pack'}</div>}
+                      </span>
+                      <span className="pr">
+                        <b>{fmtClp(p)}</b>
+                        {w > p && <s>{fmtClp(w)}</s>}
+                      </span>
+                    </button>
+                    {openSku === x.sku && (
+                      <div className="st-panel" id={`var-${x.sku}`}>
+                        <div className="st-panel__in">
+                          <b className="st-panel__h">Qué trae</b>
+                          <ul>{variantInfo(x, product).map(t => <li key={t}><Check size={15} /> {t}</li>)}</ul>
+                          {xs ? (
+                            <button className="st-add added" onClick={() => cart.setOpen(true)}><ShoppingCart size={18} /> {xs === 'in' ? 'Ya está en tu carrito · Ver carrito' : 'Ya viene en tu pack · Ver carrito'}</button>
+                          ) : (
+                            <>
+                              <b className="st-panel__h">Cómpralo ahora</b>
+                              <EmbeddedCheckout compact item={{ sku: x.sku, name: x.name, price: p }} />
+                              <button className="st-panel__cart" onClick={() => cart.toggle(x.sku)}>o agrégalo al carrito</button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </React.Fragment>
                 );
               })}
               {product.variants.length > 4 && (
@@ -472,7 +512,7 @@ export default function TiendaPage() {
         </div>
       </section>
 
-      {scrolled && !addVisible && (
+      {scrolled && !addVisible && !openSku && (
         <div className="st-sticky">
           <img src={product.thumb} alt="" />
           <div className="t">{product.title} · {v.name}<small>{fmtClp(price)}{off > 0 ? ` · -${off}%` : ''}</small></div>

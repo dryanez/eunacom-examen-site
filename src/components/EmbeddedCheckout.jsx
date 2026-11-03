@@ -32,7 +32,8 @@ const METHODS = [
 const post = body => fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
   .then(async r => { const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || 'Error'); return j; });
 
-export default function EmbeddedCheckout({ item, items: list }) {
+// compact: inside a store card (no summary row, payment methods as chips). Only name + email are asked.
+export default function EmbeddedCheckout({ item, items: list, compact = false }) {
   // One product ({ sku, name, price }) or several (the cart).
   const items = list || [item];
   const listPrice = items.reduce((n, i) => n + i.price, 0);
@@ -42,10 +43,10 @@ export default function EmbeddedCheckout({ item, items: list }) {
   item = { sku: items.map(i => i.sku).join('+'), name: items.map(i => i.name).join(' + '), price: applyCoupon(listPrice, coupon?.code) };
   const formRef = useRef(null);
   const [method, setMethod] = useState(PAYPAL_CLIENT_ID ? 'paypal' : 'mercadopago');
-  const [form, setForm] = useState({ name: '', email: '', phone: '', doc: '' });
+  const [form, setForm] = useState({ name: '', email: '' });
   const [ppError, setPpError] = useState('');
   const ppRef = useRef(null);
-  const ready = form.name.trim() && /\S+@\S+\.\S+/.test(form.email) && form.phone.trim();
+  const ready = form.name.trim() && /\S+@\S+\.\S+/.test(form.email);
   formRef.current = form;
 
   // Render PayPal buttons + card fields for the selected item.
@@ -56,7 +57,7 @@ export default function EmbeddedCheckout({ item, items: list }) {
     loadPaypal().then(paypal => {
       if (cancelled || !ppRef.current) return;
       const f = () => formRef.current;
-      const order = () => post({ action: 'paypal-create', skus: items.map(i => i.sku), code: coupon?.code, email: f().email, name: f().name, phone: f().phone }).then(r => r.paypalOrderId);
+      const order = () => post({ action: 'paypal-create', skus: items.map(i => i.sku), code: coupon?.code, email: f().email, name: f().name }).then(r => r.paypalOrderId);
       const approve = data => post({ action: 'paypal-capture', paypalOrderId: data.orderID }).then(r => {
         sessionStorage.setItem('aee-last-purchase', JSON.stringify({ email: r.email, name: f().name, skus: r.skus, names: r.names }));
         window.location.hash = '#gracias';
@@ -72,13 +73,13 @@ export default function EmbeddedCheckout({ item, items: list }) {
     const m = METHODS.find(x => x.id === method);
     const tab = window.open('', '_blank');  // open now (user gesture) so the browser doesn't block it
     // Save a pending order so the team can mark it paid (then it appears in the buyer's account).
-    const ref = await post({ action: 'manual', method, skus: items.map(i => i.sku), code: coupon?.code, email: form.email, name: form.name, phone: form.phone }).then(r => r.orderId).catch(() => null);
+    const ref = await post({ action: 'manual', method, skus: items.map(i => i.sku), code: coupon?.code, email: form.email, name: form.name }).then(r => r.orderId).catch(() => null);
     const text = [
       `Hola, quiero inscribirme: *${item.name}*`,
       ref && `Orden: ${ref.slice(0, 8)}`,
       `Valor: ${fmtClp(item.price)} (${fmtUsd(item.price)})${coupon ? ` con el código ${coupon.code} (-${coupon.percent}%)` : ''}`,
       `Medio de pago: ${m.label}`,
-      `Nombre: ${form.name}`, `Email: ${form.email}`, `Teléfono: ${form.phone}`, form.doc && `RUT/Doc: ${form.doc}`,
+      `Nombre: ${form.name}`, `Email: ${form.email}`,
     ].filter(Boolean).join('\n');
     const url = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
     if (tab) tab.location.href = url; else window.location.href = url;
@@ -87,41 +88,39 @@ export default function EmbeddedCheckout({ item, items: list }) {
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
 
   return (
-    <div className="ck">
-      <div className="ck-sum">
+    <div className={`ck ${compact ? 'ck--compact' : ''}`}>
+      {!compact && <div className="ck-sum">
         <span>{item.name}</span>
         <b>{coupon && <s style={{ fontWeight: 600, fontSize: '0.8em', opacity: 0.55, marginRight: 6 }}>{fmtClp(listPrice)}</s>}{fmtClp(item.price)}</b>
-      </div>
+      </div>}
       <div className="ck-code">
         <input placeholder="Código de descuento" value={codeInput} onChange={e => { setCodeInput(e.target.value); sessionStorage.setItem('aee-code', e.target.value.trim()); }} autoCapitalize="characters" aria-label="Código de descuento" />
         {coupon ? <span className="ok">✓ -{coupon.percent}% aplicado</span> : codeInput.trim() && <span className="no">Código no válido</span>}
       </div>
-      <div className="ck-usd">{fmtUsd(item.price)} · pago único</div>
+      {!compact && <div className="ck-usd">{fmtUsd(item.price)} · pago único</div>}
 
       <div className="ck-fields">
         <input placeholder="Nombre completo" value={form.name} onChange={set('name')} autoComplete="name" />
         <input placeholder="Correo electrónico" type="email" value={form.email} onChange={set('email')} autoComplete="email" />
-        <input placeholder="WhatsApp (+56 9 …)" value={form.phone} onChange={set('phone')} autoComplete="tel" />
-        <input placeholder="RUT o pasaporte (opcional)" value={form.doc} onChange={set('doc')} />
       </div>
 
       <div className="ck-methods" role="radiogroup" aria-label="Medio de pago">
         {METHODS.filter(m => m.id !== 'paypal' || PAYPAL_CLIENT_ID).map(m => (
           <button key={m.id} role="radio" aria-checked={method === m.id} className={method === m.id ? 'on' : ''} onClick={() => setMethod(m.id)}>
-            <m.icon size={16} /><span><b>{m.label}</b><small>{m.note}</small></span>
+            <m.icon size={16} /><span><b>{m.label}</b>{!compact && <small>{m.note}</small>}</span>
           </button>
         ))}
       </div>
 
       {method === 'paypal' ? (
         <div>
-          {!ready && <p className="ck-hint">Completa nombre, correo y WhatsApp para pagar.</p>}
+          {!ready && <p className="ck-hint">Completa tu nombre y correo para pagar.</p>}
           <div ref={ppRef} style={{ opacity: ready ? 1 : 0.35, pointerEvents: ready ? 'auto' : 'none', minHeight: 50 }} />
           {ppError && <p className="ck-err">{ppError}</p>}
         </div>
       ) : (
         <button className="st-add" disabled={!ready} onClick={whatsapp} style={{ opacity: ready ? 1 : 0.5 }}>
-          <MessageCircle size={18} /> {list ? 'Comprar por WhatsApp' : 'Confirmar inscripción'} · {fmtClp(item.price)}
+          <MessageCircle size={18} /> {list || compact ? 'Comprar por WhatsApp' : 'Confirmar inscripción'} · {fmtClp(item.price)}
         </button>
       )}
       <div className="ck-safe"><Lock size={13} /> {method === 'paypal' ? 'Pago procesado por PayPal. No guardamos datos de tu tarjeta.' : 'Te respondemos por WhatsApp con el link de pago y el acceso.'}</div>

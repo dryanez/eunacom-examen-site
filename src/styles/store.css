@@ -290,3 +290,25 @@
 .mod-specs img { height: 30px; aspect-ratio: 210/297; object-fit: cover; border-radius: 2px; }
 .ck-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
 @media (max-width: 900px) { .mods, .ck-wrap { grid-template-columns: 1fr; } }
+
+/* Panel «Qué trae + Cómpralo ahora» under the chosen format */
+.st-var.open { border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; }
+.st-panel { margin-top: -6px; border: 1.5px solid var(--ink); border-top: 0; border-radius: 0 0 14px 14px; background: linear-gradient(180deg, #f5f9fd, #fff 120px); overflow: hidden; animation: st-panel-open .42s cubic-bezier(.2,.8,.2,1) both; transform-origin: top; }
+.st-panel__in { padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 10px; animation: st-panel-fade .5s .12s ease both; }
+.st-panel__h { font: 800 12px var(--font-heading); text-transform: uppercase; letter-spacing: .06em; color: var(--mute); }
+.st-panel ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.st-panel li { display: flex; gap: 8px; align-items: flex-start; font-size: 13.5px; color: var(--ink-2); line-height: 1.4; }
+.st-panel li svg { flex-shrink: 0; margin-top: 2px; color: var(--ok); }
+.st-panel li:nth-child(n) { animation: st-panel-item .4s ease both; }
+.st-panel li:nth-child(1) { animation-delay: .1s } .st-panel li:nth-child(2) { animation-delay: .15s } .st-panel li:nth-child(3) { animation-delay: .2s }
+.st-panel li:nth-child(4) { animation-delay: .25s } .st-panel li:nth-child(5) { animation-delay: .3s } .st-panel li:nth-child(n+6) { animation-delay: .35s }
+.st-panel__cart { align-self: center; background: none; border: 0; color: var(--mute); font: 700 13px var(--font-heading); text-decoration: underline; cursor: pointer; padding: 4px; }
+.ck--compact { border: 0; box-shadow: none; padding: 0; background: transparent; gap: 10px; }
+.ck--compact .ck-code { margin: 0; }
+.ck--compact .ck-fields { grid-template-columns: 1fr; }
+.ck--compact .ck-methods { display: flex; flex-wrap: wrap; gap: 6px; }
+.ck--compact .ck-methods button { padding: 7px 11px; border-radius: 999px; align-items: center; }
+.ck--compact .ck-methods b { font-size: 12.5px; }
+@keyframes st-panel-open { from { max-height: 0; opacity: 0; } to { max-height: 1400px; opacity: 1; } }
+@keyframes st-panel-fade { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@keyframes st-panel-item { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
