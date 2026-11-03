@@ -112,7 +112,7 @@ export default function EmbeddedCheckout({ item, items: list }) {
         </div>
       ) : (
         <button className="st-add" disabled={!ready} onClick={whatsapp} style={{ opacity: ready ? 1 : 0.5 }}>
-          <MessageCircle size={18} /> Confirmar inscripción · {fmtClp(item.price)}
+          <MessageCircle size={18} /> {list ? 'Comprar por WhatsApp' : 'Confirmar inscripción'} · {fmtClp(item.price)}
         </button>
       )}
       <div className="ck-safe"><Lock size={13} /> {method === 'paypal' ? 'Pago procesado por PayPal. No guardamos datos de tu tarjeta.' : 'Te respondemos por WhatsApp con el link de pago y el acceso.'}</div>

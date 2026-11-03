@@ -125,6 +125,8 @@ export default function TiendaPage() {
   const [productKey, setProductKey] = useState(() => hashKey() || 'todo');
   const product = useMemo(() => buildProduct(productKey), [productKey]);
   const [variant, setVariant] = useState(product.variants[0].sku);
+  // Long format lists (Todo EUNACOM has 11) show the first 3 on screen; the rest open with «Ver más».
+  const [showAll, setShowAll] = useState(false);
   const [slide, setSlide] = useState(0);
   const [bump, setBump] = useState(false);
   const userTouched = useRef(0);
@@ -136,7 +138,7 @@ export default function TiendaPage() {
     setTimeout(() => productRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
   };
 
-  useEffect(() => { setVariant(product.variants[0].sku); setSlide(0); }, [product]);
+  useEffect(() => { setVariant(product.variants[0].sku); setSlide(0); setShowAll(false); }, [product]);
   useEffect(() => {
     if (hashKey()) setTimeout(() => productRef.current?.scrollIntoView({ block: 'start' }), 300);
     const onHash = () => { const k = hashKey(); if (k) pick(k); };
@@ -282,7 +284,7 @@ export default function TiendaPage() {
 
             <div className="st-step-head small"><span className="n">2</span><div><b>Elige tu formato</b><small>Todo junto sale más barato</small></div></div>
             <div className="st-variants">
-              {product.variants.map(x => {
+              {(showAll || product.variants.length <= 4 ? product.variants : product.variants.filter((x, i) => i < 3 || x.sku === variant)).map(x => {
                 const p = PRODUCTS[x.sku].price; const w = looseValue(x.sku);
                 const xs = cart.state(x.sku);
                 return (
@@ -301,6 +303,11 @@ export default function TiendaPage() {
                   </button>
                 );
               })}
+              {product.variants.length > 4 && (
+                <button className="st-more" onClick={() => setShowAll(v => !v)} aria-expanded={showAll}>
+                  {showAll ? 'Ver menos' : `Ver ${product.variants.length - 3} formatos más`} <ChevronDown size={16} style={{ transform: showAll ? 'rotate(180deg)' : 'none' }} />
+                </button>
+              )}
             </div>
 
             <ul className="st-perks">

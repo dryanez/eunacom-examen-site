@@ -21,7 +21,7 @@ export default function CheckoutPage() {
               {items.map(i => (
                 <div key={i.sku} className="bank-row">
                   {i.cover && <img src={i.cover} alt="" />}
-                  <span><b>{i.name}</b><small>{PRODUCTS[i.sku].includes.length > 1 ? `${PRODUCTS[i.sku].includes.length} productos incluidos` : 'Producto individual'}</small></span>
+                  <span><b>{i.name}</b><small>{PRODUCTS[i.sku].includes.length > 1 ? 'Pack, todo incluido' : 'Producto individual'}</small></span>
                   <b style={{ font: '800 15px var(--font-heading)', color: 'var(--ink)' }}>{fmtClp(i.price)}</b>
                   <button className="ac-link" onClick={() => cart.remove(i.sku)} aria-label="Quitar"><Trash2 size={16} /></button>
                 </div>

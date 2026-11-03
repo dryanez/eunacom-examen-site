@@ -111,7 +111,7 @@ export function CartDrawer({ onCheckout, hideBar = false }) {
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--slate-dark)' }}>{p.name}</div>
                       <div style={{ fontSize: 13, color: 'var(--slate-muted)' }}>
-                        {fmtClp(p.price)}{p.includes.length > 1 && ` · ${p.includes.length} productos`}
+                        {fmtClp(p.price)}{p.includes.length > 1 && ` · pack, todo incluido`}
                       </div>
                     </div>
                     <button onClick={() => cart.remove(s)} aria-label="Quitar" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--slate-subtle)' }}><Trash2 size={16} /></button>
