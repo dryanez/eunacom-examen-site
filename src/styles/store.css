@@ -245,6 +245,10 @@
 .ck { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 22px; box-shadow: 0 24px 60px -30px rgba(8,54,95,.45); display: flex; flex-direction: column; gap: 14px; }
 .ck-sum { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; font: 700 15px var(--font-heading); color: var(--ink); }
 .ck-sum b { font: 800 26px var(--font-heading); white-space: nowrap; }
+.ck-code { display: flex; align-items: center; gap: 10px; margin: 10px 0 4px; }
+.ck-code input { flex: 1; min-width: 0; padding: 10px 12px; border: 1.5px dashed var(--line); border-radius: 10px; font: 700 14px var(--font-heading); text-transform: uppercase; letter-spacing: .04em; }
+.ck-code .ok { font: 800 12px var(--font-heading); color: var(--ok); white-space: nowrap; }
+.ck-code .no { font: 700 12px var(--font-heading); color: #b91c1c; white-space: nowrap; }
 .ck-usd { margin-top: -10px; color: var(--mute); font-size: 13px; text-align: right; }
 .ck-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .ck-fields input { border: 1.5px solid var(--line); border-radius: 10px; padding: 11px 12px; font: 14px var(--font-body); color: var(--ink-2); outline: none; }

@@ -4,13 +4,17 @@
 //   { action: 'manual', skus, email, name, phone, method }   → { orderId }  (Mercado Pago / Webpay / transfer over
 //                                                              WhatsApp; becomes a purchase when the team marks it paid)
 import { CATALOG, db, paypal, usdFor, bad, readBody } from './_lib.js';
+import { applyCoupon, resolveCoupon } from './_coupons.js';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-function priceOf(skus) {
+function priceOf(skus, code) {
   const clean = [...new Set((skus || []).filter(s => CATALOG.products[s]))];
   if (!clean.length || clean.length !== new Set(skus).size) return null;
-  return { skus: clean, clp: clean.reduce((n, s) => n + CATALOG.products[s].price, 0), title: clean.map(s => CATALOG.products[s].name).join(' + ') };
+  const list = clean.reduce((n, s) => n + CATALOG.products[s].price, 0);
+  const coupon = resolveCoupon(code);
+  const title = clean.map(s => CATALOG.products[s].name).join(' + ') + (coupon ? ` (${coupon.code} -${coupon.percent}%)` : '');
+  return { skus: clean, clp: applyCoupon(list, code), title };
 }
 
 export default async function handler(req, res) {
@@ -21,7 +25,7 @@ export default async function handler(req, res) {
   if (b.action === 'paypal-create' || b.action === 'manual') {
     const email = String(b.email || '').trim().toLowerCase();
     if (!EMAIL.test(email)) return bad(res, 400, 'Correo inválido');
-    const p = priceOf(b.skus);
+    const p = priceOf(b.skus, b.code);
     if (!p) return bad(res, 400, 'Producto no disponible');
     const usd = usdFor(p.clp);
     const { data: order, error } = await db().from('orders').insert({

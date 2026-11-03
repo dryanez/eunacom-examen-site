@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CreditCard, Landmark, MessageCircle, Lock } from 'lucide-react';
 import { fmtClp, fmtUsd, CLP_PER_USD } from '../data/tienda';
+import { resolveCoupon, applyCoupon } from '../../api/_coupons.js';
 
 // Inline checkout (no pop-up). PayPal / card: PayPal JS SDK buttons rendered on the page; the order is created
 // and captured by /api/checkout with the price from the server catalog (VITE_PAYPAL_CLIENT_ID = public client id).
@@ -34,7 +35,11 @@ const post = body => fetch('/api/checkout', { method: 'POST', headers: { 'Conten
 export default function EmbeddedCheckout({ item, items: list }) {
   // One product ({ sku, name, price }) or several (the cart).
   const items = list || [item];
-  item = { sku: items.map(i => i.sku).join('+'), name: items.map(i => i.name).join(' + '), price: items.reduce((n, i) => n + i.price, 0) };
+  const listPrice = items.reduce((n, i) => n + i.price, 0);
+  // Código de descuento: viene en el link (?code=SHORTS20, guardado en main.jsx) o se escribe aquí
+  const [codeInput, setCodeInput] = useState(() => sessionStorage.getItem('aee-code') || '');
+  const coupon = resolveCoupon(codeInput);
+  item = { sku: items.map(i => i.sku).join('+'), name: items.map(i => i.name).join(' + '), price: applyCoupon(listPrice, coupon?.code) };
   const formRef = useRef(null);
   const [method, setMethod] = useState(PAYPAL_CLIENT_ID ? 'paypal' : 'mercadopago');
   const [form, setForm] = useState({ name: '', email: '', phone: '', doc: '' });
@@ -51,7 +56,7 @@ export default function EmbeddedCheckout({ item, items: list }) {
     loadPaypal().then(paypal => {
       if (cancelled || !ppRef.current) return;
       const f = () => formRef.current;
-      const order = () => post({ action: 'paypal-create', skus: items.map(i => i.sku), email: f().email, name: f().name, phone: f().phone }).then(r => r.paypalOrderId);
+      const order = () => post({ action: 'paypal-create', skus: items.map(i => i.sku), code: coupon?.code, email: f().email, name: f().name, phone: f().phone }).then(r => r.paypalOrderId);
       const approve = data => post({ action: 'paypal-capture', paypalOrderId: data.orderID }).then(r => {
         sessionStorage.setItem('aee-last-purchase', JSON.stringify({ email: r.email, name: f().name, skus: r.skus, names: r.names }));
         window.location.hash = '#gracias';
@@ -67,11 +72,11 @@ export default function EmbeddedCheckout({ item, items: list }) {
     const m = METHODS.find(x => x.id === method);
     const tab = window.open('', '_blank');  // open now (user gesture) so the browser doesn't block it
     // Save a pending order so the team can mark it paid (then it appears in the buyer's account).
-    const ref = await post({ action: 'manual', method, skus: items.map(i => i.sku), email: form.email, name: form.name, phone: form.phone }).then(r => r.orderId).catch(() => null);
+    const ref = await post({ action: 'manual', method, skus: items.map(i => i.sku), code: coupon?.code, email: form.email, name: form.name, phone: form.phone }).then(r => r.orderId).catch(() => null);
     const text = [
       `Hola, quiero inscribirme: *${item.name}*`,
       ref && `Orden: ${ref.slice(0, 8)}`,
-      `Valor: ${fmtClp(item.price)} (${fmtUsd(item.price)})`,
+      `Valor: ${fmtClp(item.price)} (${fmtUsd(item.price)})${coupon ? ` con el código ${coupon.code} (-${coupon.percent}%)` : ''}`,
       `Medio de pago: ${m.label}`,
       `Nombre: ${form.name}`, `Email: ${form.email}`, `Teléfono: ${form.phone}`, form.doc && `RUT/Doc: ${form.doc}`,
     ].filter(Boolean).join('\n');
@@ -85,7 +90,11 @@ export default function EmbeddedCheckout({ item, items: list }) {
     <div className="ck">
       <div className="ck-sum">
         <span>{item.name}</span>
-        <b>{fmtClp(item.price)}</b>
+        <b>{coupon && <s style={{ fontWeight: 600, fontSize: '0.8em', opacity: 0.55, marginRight: 6 }}>{fmtClp(listPrice)}</s>}{fmtClp(item.price)}</b>
+      </div>
+      <div className="ck-code">
+        <input placeholder="Código de descuento" value={codeInput} onChange={e => { setCodeInput(e.target.value); sessionStorage.setItem('aee-code', e.target.value.trim()); }} autoCapitalize="characters" aria-label="Código de descuento" />
+        {coupon ? <span className="ok">✓ -{coupon.percent}% aplicado</span> : codeInput.trim() && <span className="no">Código no válido</span>}
       </div>
       <div className="ck-usd">{fmtUsd(item.price)} · pago único</div>
 
