@@ -17,7 +17,7 @@ function loadPaypal() {
   if (window.paypal) return Promise.resolve(window.paypal);
   return new Promise((resolve, reject) => {
     const s = document.createElement('script');
-    s.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD&intent=capture&components=buttons,card-fields&enable-funding=card`;
+    s.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD&intent=capture&components=buttons,card-fields&enable-funding=card&locale=es_CL&disable-funding=p24,sofort,giropay,bancontact,blik,eps,ideal,mybank,sepa,paylater`;
     s.onload = () => resolve(window.paypal);
     s.onerror = reject;
     document.head.appendChild(s);

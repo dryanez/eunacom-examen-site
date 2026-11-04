@@ -6,6 +6,7 @@ function devApi() {
   return {
     name: 'dev-api',
     configureServer(server) {
+      process.env.AEE_DEV_DB = '1' // without Supabase keys, the checkout uses api/_devdb.js (a local JSON file)
       server.middlewares.use(async (req, res, next) => {
         const m = req.url.match(/^\/api\/([a-z-]+)(?:\?|$)/)
         if (!m) return next()
@@ -22,9 +23,10 @@ function devApi() {
 }
 
 export default defineConfig(({ mode }) => {
-  Object.assign(process.env, loadEnv(mode, process.cwd(), ''))  // server-side vars for the dev api
+  Object.assign(process.env, loadEnv(mode, new URL('.', import.meta.url).pathname, ''))  // this folder, whatever the cwd  // server-side vars for the dev api
   return {
     plugins: [react(), devApi()],
+    envDir: new URL('.', import.meta.url).pathname,
     server: { port: 5174, host: true },
     preview: { port: 4174, host: true },
   }

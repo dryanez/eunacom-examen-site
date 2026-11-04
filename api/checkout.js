@@ -87,7 +87,7 @@ export default async function handler(req, res) {
           payer: { email, name: String(b.name || '').slice(0, 120) },
           external_reference: order.id,
           back_urls: { success: `${SITE}/?pago=ok#gracias`, pending: `${SITE}/?pago=pendiente#gracias`, failure: `${SITE}/?pago=error#checkout` },
-          auto_return: 'approved',
+          ...(SITE.startsWith('https://') ? { auto_return: 'approved' } : {}), // MP rejects auto_return on http (local dev)
           notification_url: `${SITE}/api/checkout?mp=webhook`,
           statement_descriptor: 'AEE EUNACOM',
         });

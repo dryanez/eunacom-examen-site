@@ -4,6 +4,7 @@
 //   R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BOOKS_BUCKET — PRIVATE bucket with libros/<path>
 import { createRequire } from 'node:module';
 import { createClient } from '@supabase/supabase-js';
+import { devDb } from './_devdb.js';
 
 const require = createRequire(import.meta.url);
 export const CATALOG = require('./_catalog.json');
@@ -13,7 +14,7 @@ export const usdFor = clp => (Math.max(0.99, Math.ceil(clp / CLP_PER_USD) - 0.01
 
 let admin;
 export function db() {
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) return null;
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) return process.env.AEE_DEV_DB === '1' ? devDb : null;
   admin ||= createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
   return admin;
 }
