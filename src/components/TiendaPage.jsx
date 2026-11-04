@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import EmbeddedCheckout from './EmbeddedCheckout';
+import { useCoupon } from '../data/useCoupon';
 import { ShoppingCart, ShieldCheck, CreditCard, Sparkles, Check, ChevronDown, Lightbulb } from 'lucide-react';
-import { PACKS, COLLECTIONS, SPECIALTIES, RECONS, TYPES, PRODUCTS, BANK, MANUALES_POR_MODULO, MANUALES_PAGINAS, fmtClp, looseValue } from '../data/tienda';
+import { PACKS, COLLECTIONS, SPECIALTIES, RECONS, TYPES, PRODUCTS, BANK, booksByModule, GRAN_LIBRO_GORDO_PAGINAS, fmtClp, looseValue } from '../data/tienda';
 import { useCart } from './Cart';
 import '../styles/store.css';
 
@@ -91,6 +92,33 @@ function buildProduct(key) {
   };
 }
 
+// Collections whose panel lists every book by module, with real pages.
+const BREAKDOWN = {
+  'pack-tomos': { type: 'tomo', noun: ['manual', 'manuales'], extra: ['Algoritmos, tablas y perlas EUNACOM', 'Alineados al Perfil V3 · actualizados 2026'] },
+  'pack-repasos': { type: 'repaso', noun: ['libro Repaso Final', 'libros Repaso Final'], extra: ['Un tema por página, lo que más se pregunta', 'Plan de repaso de 7 días'] },
+  'pack-atlas': { type: 'atlas', noun: ['atlas', 'atlas'], extra: ['1.144 imágenes comentadas: ECG, radiografías, fondo de ojo, piel', 'Hallazgos marcados y qué hacer después'] },
+  'pack-gordos': { type: 'gordo', noun: ['Libro Gordo', 'Libros Gordos'], top: `Gran Libro Gordo: las 1.890 preguntas juntas (${GRAN_LIBRO_GORDO_PAGINAS} págs.)`, extra: ['90 preguntas por especialidad, con clave y explicación', 'Código del Perfil V3 en cada pregunta'] },
+};
+const nfmt = n => n.toLocaleString('es-CL');
+function ModuleBreakdown({ type, noun, top, extra }) {
+  const mods = booksByModule(type);
+  const count = mods.reduce((n, m) => n + m.specs.length, 0);
+  const pages = mods.reduce((n, m) => n + m.pages, 0);
+  return (
+    <div className="st-mods">
+      <div className="st-mods__total"><b>{mods.length}</b> módulos · <b>{count}</b> {noun[1]} · <b>{nfmt(pages)}</b> páginas</div>
+      {top && <ul><li><Check size={15} /> {top}</li></ul>}
+      {mods.map(m => (
+        <div key={m.id} className="st-mod">
+          <div className="st-mod__h"><span>Módulo {m.id} · {m.name}</span><small>{m.specs.length} {m.specs.length === 1 ? noun[0] : noun[1]} · {nfmt(m.pages)} págs.</small></div>
+          <div className="st-mod__specs">{m.specs.map(sp => <span key={sp.title}>{sp.title} <em>{sp.pages}</em></span>)}</div>
+        </div>
+      ))}
+      <ul>{extra.map(t => <li key={t}><Check size={15} /> {t}</li>)}</ul>
+    </div>
+  );
+}
+
 // What a format brings, shown in the panel that opens under it.
 function variantInfo(x, product) {
   const pack = PACKS.find(p => p.sku === x.sku);
@@ -171,6 +199,7 @@ export default function TiendaPage() {
   }, [product]);
 
   const v = product.variants.find(x => x.sku === variant) || product.variants[0];
+  const { coupon, price: withCode } = useCoupon(); // SHORTS20 etc.: every price on the page shows the discount
   const price = PRODUCTS[v.sku].price;
   const was = looseValue(v.sku);
   const off = was > price ? Math.round((1 - price / was) * 100) : 0;
@@ -298,10 +327,11 @@ export default function TiendaPage() {
             <h1>{product.title}</h1>
             <p className="st-lead">{product.lead}</p>
             <div className="st-price">
-              <b>{fmtClp(price)}</b>
-              {off > 0 && <s>{fmtClp(was)}</s>}
-              {off > 0 && <span className="st-pill">-{off}%</span>}
+              <b>{fmtClp(withCode(price))}</b>
+              {coupon ? <s>{fmtClp(price)}</s> : off > 0 && <s>{fmtClp(was)}</s>}
+              {coupon ? <span className="st-pill st-pill--code">-{coupon.percent}% {coupon.code}</span> : off > 0 && <span className="st-pill">-{off}%</span>}
             </div>
+            {coupon && <div className="st-codebar">🎟️ Código <b>{coupon.code}</b>: {coupon.percent} % de descuento en todo, ya aplicado</div>}
 
             <div className="st-step-head small"><span className="n">2</span><div><b>Elige tu formato</b><small>Todo junto sale más barato</small></div></div>
             <div className="st-variants">
@@ -319,26 +349,16 @@ export default function TiendaPage() {
                         {xs && <div className="owned">{xs === 'in' ? '✓ En tu carrito' : '✓ Incluido en tu pack'}</div>}
                       </span>
                       <span className="pr">
-                        <b>{fmtClp(p)}</b>
-                        {w > p && <s>{fmtClp(w)}</s>}
+                        <b>{fmtClp(withCode(p))}</b>
+                        {coupon ? <s>{fmtClp(p)}</s> : w > p && <s>{fmtClp(w)}</s>}
                       </span>
                     </button>
                     {openSku === x.sku && (
                       <div className="st-panel" id={`var-${x.sku}`}>
                         <div className="st-panel__in">
                           <b className="st-panel__h">Qué trae</b>
-                          {x.sku === 'pack-tomos' ? (
-                            <div className="st-mods">
-                              <div className="st-mods__total"><b>4</b> módulos · <b>21</b> manuales · <b>{MANUALES_PAGINAS.toLocaleString('es-CL')}</b> páginas</div>
-                              {MANUALES_POR_MODULO.map(m => (
-                                <div key={m.id} className="st-mod">
-                                  <div className="st-mod__h"><span>Módulo {m.id} · {m.name}</span><small>{m.specs.length} {m.specs.length === 1 ? 'manual' : 'manuales'} · {m.pages.toLocaleString('es-CL')} págs.</small></div>
-                                  <div className="st-mod__specs">{m.specs.map(sp => <span key={sp.title}>{sp.title} <em>{sp.pages}</em></span>)}</div>
-                                </div>
-                              ))}
-                              <ul><li><Check size={15} /> Algoritmos, tablas y perlas EUNACOM</li><li><Check size={15} /> Alineados al Perfil V3 · actualizados 2026</li></ul>
-                            </div>
-                          ) : (
+                          {BREAKDOWN[x.sku] ? (
+                            <ModuleBreakdown {...BREAKDOWN[x.sku]} />                          ) : (
                             <ul>{variantInfo(x, product).map(t => <li key={t}><Check size={15} /> {t}</li>)}</ul>
                           )}
                           {xs ? (
@@ -371,7 +391,7 @@ export default function TiendaPage() {
 
             <div ref={addRef}>
               <button className={`st-add ${st ? 'added' : ''} ${bump ? 'bump' : ''}`} onClick={add}>
-                <ShoppingCart size={18} /> {st === 'in' ? 'En tu carrito · Ver carrito' : st === 'pack' ? 'Ya está en tu pack' : `Agregar al carrito · ${fmtClp(price)}`}
+                <ShoppingCart size={18} /> {st === 'in' ? 'En tu carrito · Ver carrito' : st === 'pack' ? 'Ya está en tu pack' : `Agregar al carrito · ${fmtClp(withCode(price))}`}
               </button>
             </div>
             <div className="st-pay"><span>Mercado Pago</span><span>Webpay</span><span>PayPal</span><span>Transferencia</span></div>
@@ -421,7 +441,7 @@ export default function TiendaPage() {
                   <p>{t.blurb}</p>
                   <ul>{t.bullets.map(b => <li key={b}>{b}</li>)}</ul>
                   <div className="row">
-                    <b>{fmtClp(i.price)}</b>
+                    <b>{fmtClp(withCode(i.price))}</b>
                     <button className={`st-mini ${is ? 'added' : ''}`} onClick={() => is ? cart.setOpen(true) : cart.toggle(i.sku)}>{is ? '✓ Agregado' : '+ Agregar'}</button>
                   </div>
                 </div>
@@ -515,7 +535,7 @@ export default function TiendaPage() {
                   <b>{r.year}</b>
                   <span style={{ fontSize: 12, color: 'var(--mute)' }}>{r.questions} preguntas</span>
                   <div className="row">
-                    <span>{fmtClp(r.price)}</span>
+                    <span>{fmtClp(withCode(r.price))}</span>
                     <button className={`st-mini ${rs ? 'added' : ''}`} onClick={() => rs ? cart.setOpen(true) : cart.toggle(r.sku)}>{rs ? '✓' : '+'}</button>
                   </div>
                 </div>
@@ -528,7 +548,7 @@ export default function TiendaPage() {
       {scrolled && !addVisible && !openSku && (
         <div className="st-sticky">
           <img src={product.thumb} alt="" />
-          <div className="t">{product.title} · {v.name}<small>{fmtClp(price)}{off > 0 ? ` · -${off}%` : ''}</small></div>
+          <div className="t">{product.title} · {v.name}<small>{fmtClp(withCode(price))}{coupon ? ` · ${coupon.code} -${coupon.percent}%` : off > 0 ? ` · -${off}%` : ''}</small></div>
           {cart.skus.length > 0 && <button className="cart" onClick={() => cart.setOpen(true)}><ShoppingCart size={15} style={{ verticalAlign: '-3px' }} /> {cart.skus.length}</button>}
           <button className="go" onClick={add}>{st ? 'Ver carrito' : 'Agregar al carrito'}</button>
         </div>

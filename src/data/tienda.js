@@ -59,17 +59,23 @@ export const SPECIALTIES = BOOKS_COLLECTION.map(b => {
     key: b.key, n: b.ch, title: b.title, sub: b.sub, color: b.color, cover: t.cover,
     module: MODULES.find(m => b.module.includes(m.match)).id,
     pages: t.pages, // real page count of the manual PDF (scripts/export-tomos.mjs)
+    pagesBy: { tomo: t.pages, ...t.pagesBy },
     items,
     pack: { sku: `esp-${b.key}`, price: PACK_PRICE_BY_KEY[b.key] || PRICES.especialidad, includes: [...items.map(i => i.sku), `banco-${b.key}`] },
   };
 });
 
-// The 21 manuals by module, with real page counts (shown when someone opens «Los 21 Manuales AEE»).
-export const MANUALES_POR_MODULO = MODULES.map(m => {
-  const specs = SPECIALTIES.filter(s => s.module === m.id);
-  return { ...m, specs: specs.map(s => ({ title: s.title, pages: s.pages })), pages: specs.reduce((n, s) => n + s.pages, 0) };
-});
+// Books of one kind by module, with real page counts (shown when someone opens a collection in the store).
+// type: 'tomo' | 'repaso' | 'atlas' | 'gordo'. Specialties without that book are left out.
+export function booksByModule(type) {
+  return MODULES.map(m => {
+    const specs = SPECIALTIES.filter(s => s.module === m.id && s.pagesBy[type]).map(s => ({ title: s.title, pages: s.pagesBy[type] }));
+    return { ...m, specs, pages: specs.reduce((n, s) => n + s.pages, 0) };
+  }).filter(m => m.specs.length);
+}
+export const MANUALES_POR_MODULO = booksByModule('tomo');
 export const MANUALES_PAGINAS = MANUALES_POR_MODULO.reduce((n, m) => n + m.pages, 0);
+export const GRAN_LIBRO_GORDO_PAGINAS = TOMOS_DATA.extras['gran-libro-gordo'].pages;
 const fmtN = n => n.toLocaleString('es-CL');
 
 const REC_LIST = [

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ArrowRight, PartyPopper } from 'lucide-react';
 import { PRODUCTS } from '../../data/tienda';
 import { useAccount } from '../../lib/account';
@@ -34,20 +34,47 @@ function Confetti() {
 
 export default function GraciasPage() {
   const { user } = useAccount();
-  const last = JSON.parse(sessionStorage.getItem('aee-last-purchase') || 'null');
+  const [last, setLast] = useState(() => JSON.parse(sessionStorage.getItem('aee-last-purchase') || 'null'));
+  // Coming back from Mercado Pago / PayPal: confirm the payment with the server before celebrating.
+  const q = new URLSearchParams(window.location.search);
+  const mpOrder = q.get('external_reference'), mpPayment = q.get('payment_id') || q.get('collection_id');
+  const ppToken = q.get('paypal') === 'return' && q.get('token');
+  const [state, setState] = useState(mpOrder || ppToken ? 'checking' : 'paid'); // checking | paid | pending | failed
+  useEffect(() => {
+    if (state !== 'checking') return;
+    const body = ppToken ? { action: 'paypal-capture', paypalOrderId: ppToken } : { action: 'mp-confirm', orderId: mpOrder, paymentId: mpPayment };
+    fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(r => r.json().then(j => (r.ok ? j : Promise.reject(j))))
+      .then(r => {
+        const info = { ...(last || {}), email: r.email || last?.email, skus: r.skus || last?.skus, names: r.names || last?.names };
+        sessionStorage.setItem('aee-last-purchase', JSON.stringify(info));
+        setLast(info);
+        setState(ppToken || r.status === 'paid' ? 'paid' : 'pending');
+      })
+      .catch(() => setState('failed'));
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const skus = last?.skus || [];
   const covers = skus.map(s => PRODUCTS[s]?.cover).filter(Boolean).slice(0, 5);
-  // Back from Mercado Pago with a payment still in process (e.g. cash or bank review): no confetti yet
-  const pending = new URLSearchParams(window.location.search).get('pago') === 'pendiente';
+  const pending = state === 'pending' || state === 'checking';
+
+  if (state === 'failed') {
+    return (
+      <div className="st ac-page"><div className="st-wrap" style={{ textAlign: 'center', padding: '60px 0' }}>
+        <h1>El pago no se completó</h1>
+        <p className="st-lead">No se te cobró nada. Puedes intentarlo de nuevo o elegir otro medio de pago.</p>
+        <a className="st-add" href="#tienda" style={{ textDecoration: 'none', display: 'inline-flex' }}>Volver a la tienda</a>
+      </div></div>
+    );
+  }
 
   return (
     <div className="st ac-page">
       {!pending && <Confetti />}
       <div className="st-wrap ac-grid">
         <div className="ac-hero">
-          <div className="ac-badge"><PartyPopper size={18} /> {pending ? 'Pago en proceso' : 'Pago confirmado'}</div>
+          <div className="ac-badge"><PartyPopper size={18} /> {state === 'checking' ? 'Confirmando tu pago…' : pending ? 'Pago en proceso' : 'Pago confirmado'}</div>
           <h1>¡Felicidades{last?.name ? `, ${last.name.split(' ')[0]}` : ''}!</h1>
-          <p className="st-lead">{pending ? 'Mercado Pago está procesando tu pago. Apenas se apruebe, se activa en tu cuenta:' : `Compraste ${skus.length > 1 ? 'estos productos' : 'esto'}:`}</p>
+          <p className="st-lead">{state === 'checking' ? 'Un momento, estamos confirmando tu pago:' : pending ? 'Mercado Pago está procesando tu pago. Apenas se apruebe, se activa en tu cuenta:' : `Compraste ${skus.length > 1 ? 'estos productos' : 'esto'}:`}</p>
           <ul className="ac-bought">
             {(last?.names || ['Tu compra']).map(n => <li key={n}>{n}</li>)}
           </ul>
@@ -67,7 +94,7 @@ export default function GraciasPage() {
             <AuthCard
               email={last?.email || ''}
               title="Crea tu cuenta para ver tu compra"
-              subtitle="Tus libros, clases y preguntas quedan en tu cuenta. Se leen en línea, desde cualquier dispositivo."
+              subtitle={`Tus libros, clases y preguntas quedan en tu cuenta${last?.email ? ` (${last.email}, el correo con que pagaste)` : ''}. Se leen en línea, desde cualquier dispositivo.`}
             />
           )}
         </div>

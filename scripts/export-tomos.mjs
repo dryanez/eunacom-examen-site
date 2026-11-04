@@ -74,6 +74,8 @@ for (const [key, [specialty, stem]] of Object.entries(TOMOS)) {
   tomos[key] = {
     cover: cover(tomo, `tomo_${key}`),
     pages: pages(tomo),
+    // Pages of the other books of the specialty (shown when someone opens a collection in the store)
+    pagesBy: { gordo: gordo && pages(gordo), repaso: repaso && pages(repaso), atlas: atlas && pages(atlas) },
     clases: classCount[specialty] || 0,
     preguntas: gordo ? 90 : 0,
     repaso: !!repaso,

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 import { ShoppingCart, X, Trash2 } from 'lucide-react';
 import { PRODUCTS, PACKS, fmtClp, fmtUsd } from '../data/tienda';
 import '../styles/tienda.css';
+import { useCoupon } from '../data/useCoupon';
 
 const CartContext = createContext(null);
 const STORAGE_KEY = 'aee-cart-v2';
@@ -48,6 +49,7 @@ export function CartButton({ sku, label = 'Agregar al carrito', className = 't-b
 
 // Bottom bar + side drawer. Checkout hands the order to the enrollment modal (WhatsApp confirmation).
 export function CartDrawer({ onCheckout, hideBar = false }) {
+  const { coupon, price: withCode } = useCoupon();
   const cart = useCart();
   const count = cart.skus.length;
 
@@ -82,7 +84,7 @@ export function CartDrawer({ onCheckout, hideBar = false }) {
               <ShoppingCart size={14} style={{ verticalAlign: '-2px', marginRight: 6 }} />
               {count} {count === 1 ? 'producto' : 'productos'}: {cart.skus.map(s => PRODUCTS[s].name).join(', ')}
             </button>
-            <span className="tot">{fmtClp(cart.total)}</span>
+            <span className="tot">{fmtClp(withCode(cart.total))}</span>
             <button className="pay" onClick={checkout}>Comprar</button>
           </div>
         </div>
@@ -111,7 +113,7 @@ export function CartDrawer({ onCheckout, hideBar = false }) {
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--slate-dark)' }}>{p.name}</div>
                       <div style={{ fontSize: 13, color: 'var(--slate-muted)' }}>
-                        {fmtClp(p.price)}{p.includes.length > 1 && ` · pack, todo incluido`}
+                        {fmtClp(withCode(p.price))}{p.includes.length > 1 && ` · pack, todo incluido`}
                       </div>
                     </div>
                     <button onClick={() => cart.remove(s)} aria-label="Quitar" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--slate-subtle)' }}><Trash2 size={16} /></button>
@@ -123,9 +125,9 @@ export function CartDrawer({ onCheckout, hideBar = false }) {
             {count > 0 && (
               <div style={{ padding: 20, borderTop: '1px solid var(--border-light)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-heading)', fontWeight: 800, color: 'var(--navy-deep)', fontSize: 18, marginBottom: 4 }}>
-                  <span>Total</span><span>{fmtClp(cart.total)}</span>
+                  <span>Total</span><span>{coupon && <s style={{ fontWeight: 600, opacity: .5, marginRight: 6, fontSize: 14 }}>{fmtClp(cart.total)}</s>}{fmtClp(withCode(cart.total))}</span>
                 </div>
-                <div style={{ fontSize: 12, color: 'var(--slate-muted)', marginBottom: 14 }}>{fmtUsd(cart.total)} · Mercado Pago en cuotas, PayPal o transferencia</div>
+                <div style={{ fontSize: 12, color: 'var(--slate-muted)', marginBottom: 14 }}>{coupon ? `Código ${coupon.code} aplicado · ` : ''}Mercado Pago, PayPal o transferencia</div>
                 <button className="btn btn-primary" onClick={checkout} style={{ width: '100%' }}>Finalizar compra</button>
               </div>
             )}

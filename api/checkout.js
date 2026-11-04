@@ -33,31 +33,42 @@ async function mp(pathname, body) {
   return json;
 }
 
-// Mercado Pago tells us about a payment: look it up (never trust the notification itself) and record it once.
+// Look a Mercado Pago payment up (never trust what the browser or the notification says) and record it once.
+// The buyer's email is the one in the order (signed-in buyer) or, if empty, the one they paid with.
+async function recordMpPayment(id) {
+  const pay = await mp(`${MP}/${encodeURIComponent(id)}`);
+  const { data: order } = await db().from('orders').select('*').eq('id', pay.external_reference).single();
+  if (!order) return { status: 'unknown' };
+  if (order.status === 'paid') return { order, status: 'paid' };
+  if (pay.status !== 'approved') return { order, status: pay.status };
+  if (Number(pay.transaction_amount) + 0.5 < Number(order.amount_clp) || pay.currency_id !== 'CLP') {
+    console.error('[MP] monto distinto', id, pay.transaction_amount, order.amount_clp);
+    return { order, status: 'amount_mismatch' };
+  }
+  const payerEmail = pay.payer?.email?.toLowerCase() || null;
+  const email = order.email || payerEmail;
+  await db().from('orders').update({ status: 'paid', paid_at: new Date().toISOString(), provider_ref: String(pay.id), payer_email: payerEmail, email }).eq('id', order.id);
+  if (email) await db().from('purchases').upsert(order.skus.map(sku => ({
+    email, sku, amount_clp: CATALOG.products[sku]?.price, provider: 'mercadopago', provider_ref: String(pay.id), buyer_name: order.buyer_name,
+  })), { onConflict: 'provider,provider_ref,sku', ignoreDuplicates: true });
+  return { order: { ...order, email, status: 'paid' }, status: 'paid' };
+}
+
 async function mpWebhook(req, res) {
   const b = await readBody(req);
   const topic = req.query.topic || req.query.type || b.type || b.topic;
   const id = b.data?.id || req.query['data.id'] || (topic === 'payment' ? req.query.id : null);
   if (!id || (topic && topic !== 'payment') || !process.env.MP_ACCESS_TOKEN || !db()) return res.status(200).json({ ok: true });
   try {
-    const pay = await mp(`${MP}/${encodeURIComponent(id)}`);
-    if (pay.status !== 'approved') return res.status(200).json({ ok: true, status: pay.status });
-    const { data: order } = await db().from('orders').select('*').eq('id', pay.external_reference).single();
-    if (!order || order.status === 'paid') return res.status(200).json({ ok: true });
-    if (Number(pay.transaction_amount) + 0.5 < Number(order.amount_clp) || pay.currency_id !== 'CLP') {
-      console.error('[MP] monto distinto', id, pay.transaction_amount, order.amount_clp);
-      return res.status(200).json({ ok: false });
-    }
-    await db().from('orders').update({ status: 'paid', paid_at: new Date().toISOString(), provider_ref: String(pay.id), payer_email: pay.payer?.email?.toLowerCase() || null }).eq('id', order.id);
-    await db().from('purchases').upsert(order.skus.map(sku => ({
-      email: order.email, sku, amount_clp: CATALOG.products[sku]?.price, provider: 'mercadopago', provider_ref: String(pay.id), buyer_name: order.buyer_name,
-    })), { onConflict: 'provider,provider_ref,sku', ignoreDuplicates: true });
-    return res.status(200).json({ ok: true, paid: true });
+    const r = await recordMpPayment(id);
+    return res.status(200).json({ ok: r.status !== 'amount_mismatch', paid: r.status === 'paid' });
   } catch (e) {
     console.error('[MP webhook]', e.message, e.details);
     return res.status(500).json({ ok: false }); // Mercado Pago retries
   }
 }
+
+const done = (res, order) => res.json({ status: order.status, email: order.email || order.payer_email || null, skus: order.skus, names: order.skus.map(s => CATALOG.products[s]?.name) });
 
 export default async function handler(req, res) {
   if (req.query?.mp === 'webhook') return mpWebhook(req, res);
@@ -66,8 +77,9 @@ export default async function handler(req, res) {
   const b = await readBody(req);
 
   if (b.action === 'paypal-create' || b.action === 'manual' || b.action === 'mp-create') {
+    // Email is optional: a signed-in buyer sends theirs; otherwise the payer's email from Mercado Pago / PayPal is used.
     const email = String(b.email || '').trim().toLowerCase();
-    if (!EMAIL.test(email)) return bad(res, 400, 'Correo inválido');
+    if (email && !EMAIL.test(email)) return bad(res, 400, 'Correo inválido');
     const p = priceOf(b.skus, b.code);
     if (!p) return bad(res, 400, 'Producto no disponible');
     const usd = usdFor(p.clp);
@@ -84,9 +96,9 @@ export default async function handler(req, res) {
       try {
         const pref = await mp('/checkout/preferences', {
           items: [{ id: p.skus.join('+').slice(0, 250), title: p.title.slice(0, 250), quantity: 1, unit_price: p.clp, currency_id: 'CLP' }],
-          payer: { email, name: String(b.name || '').slice(0, 120) },
+          ...(email ? { payer: { email } } : {}),
           external_reference: order.id,
-          back_urls: { success: `${SITE}/?pago=ok#gracias`, pending: `${SITE}/?pago=pendiente#gracias`, failure: `${SITE}/?pago=error#checkout` },
+          back_urls: { success: `${SITE}/?pago=ok`, pending: `${SITE}/?pago=pendiente`, failure: `${SITE}/?pago=error` }, // main.jsx → #gracias
           ...(SITE.startsWith('https://') ? { auto_return: 'approved' } : {}), // MP rejects auto_return on http (local dev)
           notification_url: `${SITE}/api/checkout?mp=webhook`,
           statement_descriptor: 'AEE EUNACOM',
@@ -104,10 +116,14 @@ export default async function handler(req, res) {
       const pp = await paypal('/v2/checkout/orders', {
         intent: 'CAPTURE',
         purchase_units: [{ custom_id: order.id, description: p.title.slice(0, 120), amount: { currency_code: 'USD', value: usd } }],
-        application_context: { brand_name: 'Academia Examen EUNACOM', shipping_preference: 'NO_SHIPPING', user_action: 'PAY_NOW' },
+        application_context: {
+          brand_name: 'Academia Examen EUNACOM', shipping_preference: 'NO_SHIPPING', user_action: 'PAY_NOW', locale: 'es-CL',
+          return_url: `${SITE}/?paypal=return`, cancel_url: `${SITE}/?paypal=cancel`,
+        },
       });
       await db().from('orders').update({ provider_ref: pp.id }).eq('id', order.id);
-      return res.json({ paypalOrderId: pp.id });
+      const approve = pp.links?.find(l => l.rel === 'approve' || l.rel === 'payer-action')?.href;
+      return res.json({ paypalOrderId: pp.id, approve_url: approve });
     } catch (e) {
       console.error(e.message, e.details);
       return bad(res, 502, 'No se pudo iniciar el pago con PayPal');
@@ -117,6 +133,9 @@ export default async function handler(req, res) {
   if (b.action === 'paypal-capture') {
     const id = String(b.paypalOrderId || '');
     if (!id) return bad(res, 400, 'Falta la orden');
+    // Already captured (the buyer reloaded the thank-you page): answer from the order
+    const { data: prev } = await db().from('orders').select('*').eq('provider_ref', id).single();
+    if (prev?.status === 'paid') return done(res, prev);
     let cap;
     try { cap = await paypal(`/v2/checkout/orders/${encodeURIComponent(id)}/capture`); }
     catch (e) { console.error(e.message, e.details); return bad(res, 402, 'El pago no se completó'); }
@@ -130,13 +149,26 @@ export default async function handler(req, res) {
     if (Number(capture.amount?.value) + 0.001 < Number(order.amount_usd)) return bad(res, 402, 'Monto pagado incorrecto');
 
     const payerEmail = cap.payer?.email_address?.toLowerCase() || null;
+    const email = order.email || payerEmail;
     if (order.status !== 'paid') {
-      await db().from('orders').update({ status: 'paid', paid_at: new Date().toISOString(), payer_email: payerEmail }).eq('id', order.id);
+      await db().from('orders').update({ status: 'paid', paid_at: new Date().toISOString(), payer_email: payerEmail, email }).eq('id', order.id);
       await db().from('purchases').upsert(order.skus.map(sku => ({
-        email: order.email, sku, amount_clp: CATALOG.products[sku]?.price, provider: 'paypal', provider_ref: capture.id, buyer_name: order.buyer_name,
+        email, sku, amount_clp: CATALOG.products[sku]?.price, provider: 'paypal', provider_ref: capture.id, buyer_name: order.buyer_name,
       })), { onConflict: 'provider,provider_ref,sku', ignoreDuplicates: true });
     }
-    return res.json({ email: order.email, payerEmail, skus: order.skus, names: order.skus.map(s => CATALOG.products[s]?.name) });
+    return res.json({ email, payerEmail, skus: order.skus, names: order.skus.map(s => CATALOG.products[s]?.name) });
+  }
+
+  // Back from Mercado Pago (?payment_id=…&external_reference=…): confirm right away instead of waiting for the webhook.
+  if (b.action === 'mp-confirm') {
+    if (!b.orderId) return bad(res, 400, 'Falta la orden');
+    const { data: order } = await db().from('orders').select('*').eq('id', String(b.orderId)).single();
+    if (!order) return bad(res, 404, 'Orden no encontrada');
+    if (order.status !== 'paid' && b.paymentId && process.env.MP_ACCESS_TOKEN) {
+      try { const r = await recordMpPayment(String(b.paymentId)); if (r.order?.id === order.id) return done(res, r.order); }
+      catch (e) { console.error('[MP confirm]', e.message, e.details); }
+    }
+    return done(res, order);
   }
 
   return bad(res, 400, 'Acción desconocida');

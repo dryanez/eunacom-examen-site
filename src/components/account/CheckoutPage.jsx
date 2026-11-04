@@ -3,9 +3,11 @@ import { Trash2 } from 'lucide-react';
 import { useCart } from '../Cart';
 import { PRODUCTS, fmtClp } from '../../data/tienda';
 import EmbeddedCheckout from '../EmbeddedCheckout';
+import { useCoupon } from '../../data/useCoupon';
 
 // Cart checkout on its own page: summary on the left, the same inline checkout as the course page on the right.
 export default function CheckoutPage() {
+  const { price: withCode } = useCoupon();
   const cart = useCart();
   const items = cart.skus.map(sku => ({ sku, name: PRODUCTS[sku].name, price: PRODUCTS[sku].price, cover: PRODUCTS[sku].cover }));
 
@@ -22,7 +24,7 @@ export default function CheckoutPage() {
                 <div key={i.sku} className="bank-row">
                   {i.cover && <img src={i.cover} alt="" />}
                   <span><b>{i.name}</b><small>{PRODUCTS[i.sku].includes.length > 1 ? 'Pack, todo incluido' : 'Producto individual'}</small></span>
-                  <b style={{ font: '800 15px var(--font-heading)', color: 'var(--ink)' }}>{fmtClp(i.price)}</b>
+                  <b style={{ font: '800 15px var(--font-heading)', color: 'var(--ink)' }}>{fmtClp(withCode(i.price))}</b>
                   <button className="ac-link" onClick={() => cart.remove(i.sku)} aria-label="Quitar"><Trash2 size={16} /></button>
                 </div>
               ))}

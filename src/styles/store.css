@@ -337,3 +337,6 @@
 .ck-transfer dt { color: var(--mute); }
 .ck-transfer dd { margin: 0; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: 6px; text-align: right; }
 .ck-transfer dd button { border: 0; background: #eef4fa; border-radius: 6px; padding: 4px; cursor: pointer; color: var(--ink); display: inline-flex; }
+.ck-pay--pp { background: #ffc439; color: #111827; }
+.st-pill--code { background: #ec4899; }
+.st-codebar { margin: 4px 0 6px; padding: 8px 12px; border-radius: 10px; background: #fdf2f8; border: 1px dashed #ec4899; color: #9d174d; font-size: 13.5px; }

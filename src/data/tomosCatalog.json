@@ -3,6 +3,11 @@
   "cardiologia": {
    "cover": "/covers/tomo_cardiologia.jpg",
    "pages": 224,
+   "pagesBy": {
+    "gordo": 32,
+    "repaso": 52,
+    "atlas": 62
+   },
    "clases": 38,
    "preguntas": 90,
    "repaso": true,
@@ -29,6 +34,11 @@
   "infectologia": {
    "cover": "/covers/tomo_infectologia.jpg",
    "pages": 118,
+   "pagesBy": {
+    "gordo": 34,
+    "repaso": 36,
+    "atlas": 49
+   },
    "clases": 25,
    "preguntas": 90,
    "repaso": true,
@@ -55,6 +65,11 @@
   "gastroenterologia": {
    "cover": "/covers/tomo_gastroenterologia.jpg",
    "pages": 123,
+   "pagesBy": {
+    "gordo": 31,
+    "repaso": 36,
+    "atlas": 68
+   },
    "clases": 26,
    "preguntas": 90,
    "repaso": true,
@@ -81,6 +96,11 @@
   "neumologia": {
    "cover": "/covers/tomo_neumologia.jpg",
    "pages": 124,
+   "pagesBy": {
+    "gordo": 37,
+    "repaso": 35,
+    "atlas": 42
+   },
    "clases": 25,
    "preguntas": 90,
    "repaso": true,
@@ -107,6 +127,11 @@
   "nefrologia": {
    "cover": "/covers/tomo_nefrologia.jpg",
    "pages": 100,
+   "pagesBy": {
+    "gordo": 38,
+    "repaso": 35,
+    "atlas": 26
+   },
    "clases": 22,
    "preguntas": 90,
    "repaso": true,
@@ -133,6 +158,11 @@
   "diabetes": {
    "cover": "/covers/tomo_diabetes.jpg",
    "pages": 118,
+   "pagesBy": {
+    "gordo": 34,
+    "repaso": 37,
+    "atlas": 22
+   },
    "clases": 25,
    "preguntas": 90,
    "repaso": true,
@@ -159,6 +189,11 @@
   "endocrinologia": {
    "cover": "/covers/tomo_endocrinologia.jpg",
    "pages": 124,
+   "pagesBy": {
+    "gordo": 46,
+    "repaso": 39,
+    "atlas": 37
+   },
    "clases": 25,
    "preguntas": 90,
    "repaso": true,
@@ -185,6 +220,11 @@
   "hematologia": {
    "cover": "/covers/tomo_hematologia.jpg",
    "pages": 141,
+   "pagesBy": {
+    "gordo": 45,
+    "repaso": 39,
+    "atlas": 38
+   },
    "clases": 24,
    "preguntas": 90,
    "repaso": true,
@@ -211,6 +251,11 @@
   "reumatologia": {
    "cover": "/covers/tomo_reumatologia.jpg",
    "pages": 145,
+   "pagesBy": {
+    "gordo": 42,
+    "repaso": 38,
+    "atlas": 47
+   },
    "clases": 24,
    "preguntas": 90,
    "repaso": true,
@@ -237,6 +282,11 @@
   "neurologia": {
    "cover": "/covers/tomo_neurologia.jpg",
    "pages": 174,
+   "pagesBy": {
+    "gordo": 42,
+    "repaso": 51,
+    "atlas": 45
+   },
    "clases": 26,
    "preguntas": 90,
    "repaso": true,
@@ -263,6 +313,11 @@
   "cirugia": {
    "cover": "/covers/tomo_cirugia.jpg",
    "pages": 129,
+   "pagesBy": {
+    "gordo": 41,
+    "repaso": 35,
+    "atlas": 44
+   },
    "clases": 21,
    "preguntas": 90,
    "repaso": true,
@@ -289,6 +344,11 @@
   "traumatologia": {
    "cover": "/covers/tomo_traumatologia.jpg",
    "pages": 97,
+   "pagesBy": {
+    "gordo": 35,
+    "repaso": 26,
+    "atlas": 45
+   },
    "clases": 15,
    "preguntas": 90,
    "repaso": true,
@@ -315,6 +375,11 @@
   "urologia": {
    "cover": "/covers/tomo_urologia.jpg",
    "pages": 89,
+   "pagesBy": {
+    "gordo": 35,
+    "repaso": 27,
+    "atlas": 28
+   },
    "clases": 16,
    "preguntas": 90,
    "repaso": true,
@@ -341,6 +406,11 @@
   "otorrino": {
    "cover": "/covers/tomo_otorrino.jpg",
    "pages": 115,
+   "pagesBy": {
+    "gordo": 38,
+    "repaso": 28,
+    "atlas": 36
+   },
    "clases": 20,
    "preguntas": 90,
    "repaso": true,
@@ -367,6 +437,11 @@
   "oftalmologia": {
    "cover": "/covers/tomo_oftalmologia.jpg",
    "pages": 107,
+   "pagesBy": {
+    "gordo": 29,
+    "repaso": 26,
+    "atlas": 39
+   },
    "clases": 18,
    "preguntas": 90,
    "repaso": true,
@@ -393,6 +468,11 @@
   "dermatologia": {
    "cover": "/covers/tomo_dermatologia.jpg",
    "pages": 102,
+   "pagesBy": {
+    "gordo": 36,
+    "repaso": 28,
+    "atlas": 68
+   },
    "clases": 18,
    "preguntas": 90,
    "repaso": true,
@@ -419,6 +499,10 @@
   "psiquiatria": {
    "cover": "/covers/tomo_psiquiatria.jpg",
    "pages": 98,
+   "pagesBy": {
+    "gordo": 36,
+    "repaso": 29
+   },
    "clases": 20,
    "preguntas": 90,
    "repaso": true,
@@ -443,6 +527,11 @@
   "pediatria": {
    "cover": "/covers/tomo_pediatria.jpg",
    "pages": 158,
+   "pagesBy": {
+    "gordo": 37,
+    "repaso": 39,
+    "atlas": 44
+   },
    "clases": 28,
    "preguntas": 90,
    "repaso": true,
@@ -469,6 +558,11 @@
   "obstetricia": {
    "cover": "/covers/tomo_obstetricia.jpg",
    "pages": 116,
+   "pagesBy": {
+    "gordo": 40,
+    "repaso": 30,
+    "atlas": 29
+   },
    "clases": 21,
    "preguntas": 90,
    "repaso": true,
@@ -495,6 +589,11 @@
   "ginecologia": {
    "cover": "/covers/tomo_ginecologia.jpg",
    "pages": 99,
+   "pagesBy": {
+    "gordo": 37,
+    "repaso": 30,
+    "atlas": 35
+   },
    "clases": 16,
    "preguntas": 90,
    "repaso": true,
@@ -521,6 +620,10 @@
   "saludpublica": {
    "cover": "/covers/tomo_saludpublica.jpg",
    "pages": 74,
+   "pagesBy": {
+    "gordo": 40,
+    "repaso": 22
+   },
    "clases": 15,
    "preguntas": 90,
    "repaso": true,
