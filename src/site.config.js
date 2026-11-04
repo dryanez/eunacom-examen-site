@@ -15,8 +15,11 @@ export const BRAND = {
 // dummy numbers (Cuenta corriente 000-00000-00); leaving these blank shows an
 // instruction instead, so the site never displays an account that isn't real.
 export const TRANSFERENCIA = {
-  banco: '',
-  titular: '',
+  banco: 'BancoEstado',
+  tipo: 'Cuenta RUT',
+  numero: '18842443',
+  titular: 'Felipe Yáñez',
+  rut: '18.842.443-0',
 };
 
 export const CONTACTO = {

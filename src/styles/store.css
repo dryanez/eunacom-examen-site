@@ -324,3 +324,16 @@
 .st-mod__specs { display: flex; flex-wrap: wrap; gap: 5px; }
 .st-mod__specs span { padding: 3px 8px; border-radius: 999px; background: #eef4fa; font-size: 12px; color: var(--ink-2); }
 .st-mod__specs em { font-style: normal; font-weight: 700; color: var(--mute); margin-left: 2px; }
+/* Pago: Mercado Pago, PayPal y transferencia */
+.ck-pay { width: 100%; justify-content: center; }
+.ck-pay[disabled] { opacity: .5; cursor: default; }
+.ck-pay--mp { background: #009ee3; }
+.ck-pay--wa { background: #25d366; color: #fff; }
+.ck-transfer { display: flex; flex-direction: column; gap: 10px; border: 1.5px solid var(--line); border-radius: 14px; padding: 12px; background: #fbfdff; animation: st-panel-fade .3s ease both; }
+.ck-transfer__amount { font: 700 14px var(--font-heading); color: var(--ink); }
+.ck-transfer dl { margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.ck-transfer dl > div { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--line); font-size: 14px; }
+.ck-transfer dl > div:last-child { border-bottom: 0; }
+.ck-transfer dt { color: var(--mute); }
+.ck-transfer dd { margin: 0; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: 6px; text-align: right; }
+.ck-transfer dd button { border: 0; background: #eef4fa; border-radius: 6px; padding: 4px; cursor: pointer; color: var(--ink); display: inline-flex; }

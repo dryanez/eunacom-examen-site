@@ -37,15 +37,17 @@ export default function GraciasPage() {
   const last = JSON.parse(sessionStorage.getItem('aee-last-purchase') || 'null');
   const skus = last?.skus || [];
   const covers = skus.map(s => PRODUCTS[s]?.cover).filter(Boolean).slice(0, 5);
+  // Back from Mercado Pago with a payment still in process (e.g. cash or bank review): no confetti yet
+  const pending = new URLSearchParams(window.location.search).get('pago') === 'pendiente';
 
   return (
     <div className="st ac-page">
-      <Confetti />
+      {!pending && <Confetti />}
       <div className="st-wrap ac-grid">
         <div className="ac-hero">
-          <div className="ac-badge"><PartyPopper size={18} /> Pago confirmado</div>
+          <div className="ac-badge"><PartyPopper size={18} /> {pending ? 'Pago en proceso' : 'Pago confirmado'}</div>
           <h1>¡Felicidades{last?.name ? `, ${last.name.split(' ')[0]}` : ''}!</h1>
-          <p className="st-lead">Compraste {skus.length > 1 ? 'estos productos' : 'esto'}:</p>
+          <p className="st-lead">{pending ? 'Mercado Pago está procesando tu pago. Apenas se apruebe, se activa en tu cuenta:' : `Compraste ${skus.length > 1 ? 'estos productos' : 'esto'}:`}</p>
           <ul className="ac-bought">
             {(last?.names || ['Tu compra']).map(n => <li key={n}>{n}</li>)}
           </ul>
