@@ -31,6 +31,8 @@ R2_ACCOUNT_ID=
 R2_ACCESS_KEY_ID=             # token del paso 2
 R2_SECRET_ACCESS_KEY=
 R2_BOOKS_BUCKET=aee-libros
+MP_ACCESS_TOKEN=              # Mercado Pago → Tus integraciones → Credenciales de producción (el mismo de EUNACOM)
+SITE_URL=https://eunacom-examen.cl   # para las URLs de vuelta y el webhook de Mercado Pago
 ```
 Después de cambiar precios o productos: `node scripts/export-server-catalog.mjs` (los cobros salen de `api/_catalog.json`).
 
