@@ -2,7 +2,7 @@
  "tomos": {
   "cardiologia": {
    "cover": "/covers/tomo_cardiologia.jpg",
-   "pages": 216,
+   "pages": 224,
    "clases": 38,
    "preguntas": 90,
    "repaso": true,
