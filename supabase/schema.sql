@@ -1,19 +1,63 @@
 -- Academia Examen EUNACOM — accounts, purchases and study progress.
--- Run once in the new Supabase project: Dashboard → SQL Editor → paste → Run.
+-- Stored in the EUNACOM app's Supabase project (Examenes-Eunacom, zmqwpkettikjutgzquri) only because the free plan
+-- has no room for another project. The site has its OWN accounts (aee_users), separate from the EUNACOM app's users
+-- (auth.users): no Supabase Auth, no link to auth.users, and nothing of the EUNACOM app is touched (its
+-- public.profiles, its handle_new_user trigger and its other tables stay as they are). Everything is prefixed aee_.
 --
--- Purchases are keyed by the buyer's EMAIL (from the checkout form / PayPal payer), not by user id, so someone
--- can pay first and create the account afterwards: whatever was bought with that email shows up as soon as they
--- sign up with it. Only the server (service role) writes purchases; users can only read their own.
+-- Only the site's server (api/*.js, service role) reads or writes these tables: RLS is on with no policies, and
+-- anon / authenticated (the EUNACOM app's roles) get no grants at all.
+-- Run (idempotent): npx supabase db query --remote=zmqwpkettikjutgzquri --yes -f supabase/schema.sql
+--
+-- Purchases are keyed by the buyer's EMAIL, not by account, so someone can pay first and create the account
+-- afterwards: whatever was bought with that email shows up once they sign up and confirm that email.
 
-create table if not exists public.profiles (
-  id uuid primary key references auth.users(id) on delete cascade,
+-- 2026-11-04: first version hung profiles off auth.users (shared EUNACOM accounts); Felipe wants them separate.
+-- Those tables were empty; drop them once so they are recreated against aee_users.
+drop policy if exists "aee own purchases read" on public.aee_purchases;
+drop function if exists public.aee_ensure_profile();
+drop function if exists public.aee_award_xp(text, text, integer);
+do $$ begin
+  if exists (select 1 from pg_constraint where conname = 'aee_profiles_id_fkey' and confrelid = 'auth.users'::regclass) then
+    drop table if exists public.aee_xp_events, public.aee_question_progress, public.aee_class_progress, public.aee_profiles;
+  end if;
+end $$;
+
+create table if not exists public.aee_users (
+  id uuid primary key default gen_random_uuid(),
+  email text not null,
+  password_hash text,                   -- scrypt (api/_auth.js); null for Google / Apple-only accounts
+  email_verified_at timestamptz,        -- purchases only show once the inbox is confirmed
+  created_at timestamptz not null default now(),
+  last_sign_in_at timestamptz
+);
+create unique index if not exists aee_users_email_idx on public.aee_users (lower(email));
+
+-- Sessions and one-time links (confirm email, reset password). Only the SHA-256 of each token is stored.
+create table if not exists public.aee_tokens (
+  token_hash text primary key,
+  user_id uuid not null references public.aee_users(id) on delete cascade,
+  kind text not null,                   -- 'session' | 'verify' | 'reset' | 'activate' | 'login'
+  expires_at timestamptz not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists aee_tokens_user_idx on public.aee_tokens (user_id, kind);
+-- 'activate' links go out in the purchase email before any account exists: they carry the buyer's email instead.
+-- 'login' is the 5-minute hand-off after Google / Apple sign-in.
+alter table public.aee_tokens alter column user_id drop not null;
+alter table public.aee_tokens add column if not exists email text;
+alter table public.aee_users add column if not exists google_sub text;
+alter table public.aee_users add column if not exists apple_sub text;
+alter table public.aee_users alter column password_hash drop not null;  -- Google / Apple-only accounts
+
+create table if not exists public.aee_profiles (
+  id uuid primary key references public.aee_users(id) on delete cascade,
   email text not null,
   full_name text,
   phone text,
   country text,            -- 'CL' or ISO code of where they graduated / live
   city text,
   university text,         -- key from src/data/universities.js
-  exam_date text,          -- e.g. '2026-12' (convocatoria they're aiming for)
+  exam_date text,          -- e.g. 'Diciembre 2026' (convocatoria they're aiming for)
   heard_from text,         -- how they found us
   xp integer not null default 0,
   streak_days integer not null default 0,
@@ -22,10 +66,10 @@ create table if not exists public.profiles (
   created_at timestamptz not null default now()
 );
 
-create table if not exists public.purchases (
+create table if not exists public.aee_purchases (
   id bigint generated always as identity primary key,
   email text not null,                  -- lower-cased buyer email
-  sku text not null,                    -- product SKU from src/data/tienda.js (packs are expanded client-side)
+  sku text not null,                    -- product SKU from api/_catalog.json (packs are expanded by the server)
   amount_clp integer,
   provider text not null,               -- 'paypal' | 'mercadopago' | 'webpay' | 'transfer' | 'manual'
   provider_ref text,                    -- PayPal capture id, MP payment id…
@@ -33,13 +77,13 @@ create table if not exists public.purchases (
   buyer_name text,
   created_at timestamptz not null default now()
 );
-create index if not exists purchases_email_idx on public.purchases (lower(email));
-create unique index if not exists purchases_ref_sku_idx on public.purchases (provider, provider_ref, sku);
+create index if not exists aee_purchases_email_idx on public.aee_purchases (lower(email));
+create unique index if not exists aee_purchases_ref_sku_idx on public.aee_purchases (provider, provider_ref, sku);
 
--- Checkout orders (server-only). One row per checkout; on payment it becomes one purchases row per SKU.
-create table if not exists public.orders (
+-- Checkout orders. One row per checkout; on payment it becomes one aee_purchases row per SKU.
+create table if not exists public.aee_orders (
   id uuid primary key default gen_random_uuid(),
-  email text not null,
+  email text not null default '',
   buyer_name text,
   phone text,
   skus text[] not null,
@@ -52,21 +96,20 @@ create table if not exists public.orders (
   created_at timestamptz not null default now(),
   paid_at timestamptz
 );
-alter table public.orders enable row level security;  -- no policies: only the service role touches it
+create index if not exists aee_orders_provider_ref_idx on public.aee_orders (provider_ref);
 
--- XP ledger (one row per action; profiles.xp is the running total)
-create table if not exists public.xp_events (
+-- XP ledger (one row per action; aee_profiles.xp is the running total)
+create table if not exists public.aee_xp_events (
   id bigint generated always as identity primary key,
-  user_id uuid not null references auth.users(id) on delete cascade,
-  kind text not null,          -- 'question_correct' | 'question_answered' | 'class_watched' | 'exam_finished' | 'streak'
-  ref text,                    -- question id, class id…
+  user_id uuid not null references public.aee_users(id) on delete cascade,
+  kind text not null,          -- 'onboarding' | 'question_correct' | 'class_watched' | 'exam_finished' | 'streak'
+  ref text,
   points integer not null,
   created_at timestamptz not null default now()
 );
 
--- Question bank progress (spaced review): one row per user × question
-create table if not exists public.question_progress (
-  user_id uuid not null references auth.users(id) on delete cascade,
+create table if not exists public.aee_question_progress (
+  user_id uuid not null references public.aee_users(id) on delete cascade,
   question_id text not null,
   attempts integer not null default 0,
   correct integer not null default 0,
@@ -77,9 +120,8 @@ create table if not exists public.question_progress (
   primary key (user_id, question_id)
 );
 
--- Class progress (Aula)
-create table if not exists public.class_progress (
-  user_id uuid not null references auth.users(id) on delete cascade,
+create table if not exists public.aee_class_progress (
+  user_id uuid not null references public.aee_users(id) on delete cascade,
   class_id text not null,
   position_s integer not null default 0,
   done boolean not null default false,
@@ -87,64 +129,26 @@ create table if not exists public.class_progress (
   primary key (user_id, class_id)
 );
 
--- ── Row level security ───────────────────────────────────────────────────────
-alter table public.profiles enable row level security;
-alter table public.purchases enable row level security;
-alter table public.xp_events enable row level security;
-alter table public.question_progress enable row level security;
-alter table public.class_progress enable row level security;
-
-drop policy if exists "own profile read" on public.profiles;
-create policy "own profile read" on public.profiles for select using (auth.uid() = id);
-drop policy if exists "own profile update" on public.profiles;
-create policy "own profile update" on public.profiles for update using (auth.uid() = id)
-  with check (auth.uid() = id);
-
--- A user sees the purchases made with their (verified) account email.
-drop policy if exists "own purchases read" on public.purchases;
-create policy "own purchases read" on public.purchases for select
-  using (lower(email) = lower(auth.jwt() ->> 'email'));
-
-drop policy if exists "own xp read" on public.xp_events;
-create policy "own xp read" on public.xp_events for select using (auth.uid() = user_id);
-
-drop policy if exists "own question progress" on public.question_progress;
-create policy "own question progress" on public.question_progress for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
-
-drop policy if exists "own class progress" on public.class_progress;
-create policy "own class progress" on public.class_progress for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
-
--- ── New user → profile row ───────────────────────────────────────────────────
-create or replace function public.handle_new_user() returns trigger
-language plpgsql security definer set search_path = public as $$
-begin
-  insert into public.profiles (id, email, full_name)
-  values (new.id, lower(new.email), coalesce(new.raw_user_meta_data ->> 'full_name', ''))
-  on conflict (id) do nothing;
-  return new;
-end $$;
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created after insert on auth.users for each row execute function public.handle_new_user();
-
--- ── XP: award points server-side so users can't edit their own total ─────────
-create or replace function public.award_xp(p_kind text, p_ref text, p_points integer) returns integer
-language plpgsql security definer set search_path = public as $$
+-- XP in one statement so concurrent awards can't lose points.
+create or replace function public.aee_award_xp(p_user uuid, p_kind text, p_ref text, p_points integer) returns integer
+language plpgsql set search_path = public as $$
 declare total integer;
 begin
-  if auth.uid() is null or p_points < 0 or p_points > 200 then raise exception 'not allowed'; end if;
-  insert into xp_events (user_id, kind, ref, points) values (auth.uid(), p_kind, p_ref, p_points);
-  update profiles set xp = xp + p_points,
+  insert into aee_xp_events (user_id, kind, ref, points) values (p_user, p_kind, p_ref, p_points);
+  update aee_profiles set xp = xp + p_points,
     streak_days = case when last_active = current_date then streak_days
                        when last_active = current_date - 1 then streak_days + 1 else 1 end,
     last_active = current_date
-  where id = auth.uid() returning xp into total;
+  where id = p_user returning xp into total;
   return total;
 end $$;
-grant execute on function public.award_xp(text, text, integer) to authenticated;
 
--- Users may edit their own profile fields, but never xp / streak (those only change through award_xp).
-revoke update on public.profiles from authenticated, anon;
-grant update (full_name, phone, country, city, university, exam_date, heard_from, onboarded) on public.profiles to authenticated;
-
--- IMPORTANT (Dashboard → Authentication → Providers → Email): keep "Confirm email" ON.
--- Purchases are matched by email, so only a verified owner of that inbox may see them.
+-- ── Lock everything to the server ────────────────────────────────────────────
+do $$ declare t text; begin
+  foreach t in array array['aee_users','aee_tokens','aee_profiles','aee_purchases','aee_orders','aee_xp_events','aee_question_progress','aee_class_progress'] loop
+    execute format('alter table public.%I enable row level security', t);
+    execute format('revoke all on public.%I from anon, authenticated', t);
+  end loop;
+end $$;
+revoke execute on function public.aee_award_xp(uuid, text, text, integer) from public, anon, authenticated;
+grant execute on function public.aee_award_xp(uuid, text, text, integer) to service_role;

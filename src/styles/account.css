@@ -93,3 +93,15 @@
 @media (max-width: 900px) { .ac-grid { grid-template-columns: 1fr; gap: 28px; padding-top: 28px; } .xp-in { gap: 14px; } }
 .nav-account { background: #08365f; color: #fff !important; border-radius: 999px; padding: 8px 16px; font: 700 13px var(--font-heading); text-decoration: none; white-space: nowrap; transition: background .2s; }
 .nav-account:hover { background: #0b5ea8; }
+
+/* Quick sign-in (Google / Apple) */
+.ac-social { display: grid; gap: 10px; margin: 4px 0 2px; }
+.ac-sso { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 14px; border: 1.5px solid var(--line, #cbd5e1); border-radius: 12px; background: #fff; color: #0f2742; font: 700 15px var(--font-heading, inherit); text-decoration: none; }
+.ac-sso:hover { border-color: #08365f; background: #f8fbff; }
+.ac-sso.apple { background: #000; border-color: #000; color: #fff; }
+.ac-sso.apple:hover { background: #1f1f1f; }
+.ac-or { display: flex; align-items: center; gap: 10px; color: #94a3b8; font-size: 12px; margin: 4px 0; }
+.ac-or::before, .ac-or::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
+
+.ac-legal { margin: 10px 0 0; font-size: 12.5px; color: var(--mute, #64748b); text-align: center; }
+.ac-legal a { color: inherit; text-decoration: underline; }

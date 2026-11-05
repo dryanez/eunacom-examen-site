@@ -33,7 +33,7 @@ function Confetti() {
 }
 
 export default function GraciasPage() {
-  const { user } = useAccount();
+  const { user, providers } = useAccount();
   const [last, setLast] = useState(() => JSON.parse(sessionStorage.getItem('aee-last-purchase') || 'null'));
   // Coming back from Mercado Pago / PayPal: confirm the payment with the server before celebrating.
   const q = new URLSearchParams(window.location.search);
@@ -42,11 +42,13 @@ export default function GraciasPage() {
   const [state, setState] = useState(mpOrder || ppToken ? 'checking' : 'paid'); // checking | paid | pending | failed
   useEffect(() => {
     if (state !== 'checking') return;
-    const body = ppToken ? { action: 'paypal-capture', paypalOrderId: ppToken } : { action: 'mp-confirm', orderId: mpOrder, paymentId: mpPayment };
+    const claim = localStorage.getItem('aee-claim') || undefined;
+    const body = ppToken ? { action: 'paypal-capture', paypalOrderId: ppToken, claim } : { action: 'mp-confirm', orderId: mpOrder, paymentId: mpPayment, claim };
     fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       .then(r => r.json().then(j => (r.ok ? j : Promise.reject(j))))
       .then(r => {
-        const info = { ...(last || {}), email: r.email || last?.email, skus: r.skus || last?.skus, names: r.names || last?.names };
+        const info = { ...(last || {}), email: r.email || last?.email, skus: r.skus || last?.skus, names: r.names || last?.names, activar: r.activar || last?.activar };
+        if (r.activar) localStorage.removeItem('aee-claim');
         sessionStorage.setItem('aee-last-purchase', JSON.stringify(info));
         setLast(info);
         setState(ppToken || r.status === 'paid' ? 'paid' : 'pending');
@@ -92,9 +94,11 @@ export default function GraciasPage() {
             </div>
           ) : (
             <AuthCard
+              key={last?.activar || 'signup'}
+              activar={last?.activar}
               email={last?.email || ''}
-              title="Crea tu cuenta para ver tu compra"
-              subtitle={`Tus libros, clases y preguntas quedan en tu cuenta${last?.email ? ` (${last.email}, el correo con que pagaste)` : ''}. Se leen en línea, desde cualquier dispositivo.`}
+              title="Último paso: crea tu cuenta"
+              subtitle={`Tu compra queda en tu cuenta${last?.email ? ` con ${last.email}` : ''}. ${providers.google ? 'Entra con Google en un clic o elige una contraseña.' : 'Solo elige una contraseña.'}${last?.email && !pending ? ' También te enviamos un correo con un botón para activarla.' : ''}`}
             />
           )}
         </div>

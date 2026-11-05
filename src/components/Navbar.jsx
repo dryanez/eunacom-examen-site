@@ -37,7 +37,7 @@ export default function Navbar({ onOpenMentorship, currentView, onNavigateHome, 
     if (href === '#blog') {
       if (onNavigateBlog) onNavigateBlog();
       else window.location.hash = '#blog';
-    } else if (href === '#aula' || href === '#tienda') {
+    } else if (href === '#aula' || href === '#tienda' || href === '#faq') {
       window.location.hash = href;
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (href === '#revalidacion') {
@@ -184,9 +184,6 @@ export default function Navbar({ onOpenMentorship, currentView, onNavigateHome, 
                 </button>
               );
             })}
-            <button onClick={onOpenMentorship} style={linkStyle} className="nav-link">
-              Contacto
-            </button>
             <a href={account?.user ? '#mi-cuenta' : '#entrar'} className="nav-account">{accountLabel}</a>
           </nav>
 
@@ -228,13 +225,6 @@ export default function Navbar({ onOpenMentorship, currentView, onNavigateHome, 
               </button>
             ))}
             <a href={account?.user ? '#mi-cuenta' : '#entrar'} className="nav-account" onClick={() => setMobileMenuOpen(false)} style={{ textAlign: 'center' }}>{accountLabel}</a>
-            <button
-              onClick={() => { setMobileMenuOpen(false); onOpenMentorship(); }}
-              className="btn btn-secondary"
-              style={{ width: '100%' }}
-            >
-              Contacto
-            </button>
           </div>
         )}
       </header>

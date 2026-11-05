@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Play, Sparkles, BookOpen, Clock, CheckCircle2, ArrowRight } from 'lucide-react';
 
-// Free sample classes shown on the landing, in order (all are within the Aula's free lessons per specialty).
-const SAMPLE_IDS = ['cardio-01', 'gastro-01', 'resp-01', 'ped-01', 'ob-01', 'cirugia-01'];
+// Free sample classes on the landing: only ones with an animation, and play starts right at it.
+// `start` = second where the «En movimiento» slide begins (beats t0 in jsvideo/out/<id>/data.js).
+const SAMPLES = [
+  { id: 'resp-14', start: 438.9, anim: 'Neumotórax a tensión en 3D' },
+  { id: 'neuro-04', start: 791.5, anim: 'Rotura de un aneurisma del polígono de Willis' },
+  { id: 'cirugia-01', start: 340, anim: 'Por qué el dolor migra en la apendicitis' },
+  { id: 'trauma-08', start: 512.5, anim: 'Rotura del ligamento cruzado anterior' },
+  { id: 'gastro-01', start: 381.7, anim: 'Reflujo: falla la barrera' },
+];
+const mmss = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
 
 const fmt = (min) => (min ? `${min} min` : '');
 
@@ -14,7 +22,7 @@ export default function VideoMasterclassPlayer() {
   useEffect(() => {
     fetch('/aula/catalog.json').then(r => r.json()).then(catalog => {
       const all = catalog.modules.flatMap(m => m.specialties.flatMap(s => s.lessons.map(l => ({ ...l, specialty: s.name, accent: s.accent }))));
-      const picked = SAMPLE_IDS.map(id => all.find(l => l.id === id && l.video)).filter(Boolean);
+      const picked = SAMPLES.map(x => { const l = all.find(l => l.id === x.id && l.video); return l && { ...l, ...x }; }).filter(Boolean);
       setSamples(picked);
       setActive(picked[0] || null);
       setTotals({
@@ -42,7 +50,7 @@ export default function VideoMasterclassPlayer() {
     "embedUrl": `https://eunacom-examen.cl/#aula/${active.id}`,
   };
 
-  const poster = l => `/aula/posters/${l.id}.jpg`;
+  const poster = l => `/aula/posters/anim-${l.id}.jpg`;
 
   return (
     <section id="clase-magistral" className="mc">
@@ -70,10 +78,11 @@ export default function VideoMasterclassPlayer() {
               {active ? (
                 <video
                   key={active.id}
-                  src={active.video}
+                  src={`${active.video}#t=${active.start}`}
                   poster={poster(active)}
                   controls
-                  preload="none"
+                  preload="metadata"
+                  onLoadedMetadata={e => { if (e.currentTarget.currentTime < active.start - 1) e.currentTarget.currentTime = active.start; }}
                   playsInline
                   controlsList="nodownload"
                 />
@@ -84,7 +93,7 @@ export default function VideoMasterclassPlayer() {
 
             {active && (
               <div className="mc-now">
-                <div className="mc-now__meta">{active.specialty} · <Clock size={12} /> {fmt(active.minutes)}</div>
+                <div className="mc-now__meta">{active.specialty} · <Clock size={12} /> {fmt(active.minutes)} · <Sparkles size={12} /> Empieza en la animación ({mmss(active.start)})</div>
                 <div className="mc-now__title">{active.title}</div>
                 {active.chapters?.length > 0 && (
                   <details className="mc-now__chapters">
@@ -101,7 +110,7 @@ export default function VideoMasterclassPlayer() {
           <div className="mc-side">
             <div className="mc-list__head">
               <b>Más clases de muestra</b>
-              <span>{samples.length} gratis · desliza →</span>
+              <span>{samples.length} animaciones · desliza →</span>
             </div>
             <div className="mc-list" role="list">
               {samples.map(l => (
@@ -109,11 +118,11 @@ export default function VideoMasterclassPlayer() {
                   <span className="mc-card__thumb">
                     <img src={poster(l)} alt="" loading="lazy" width="480" height="270" />
                     <Play size={18} fill="#fff" color="#fff" />
-                    <em>{fmt(l.minutes)}</em>
+                    <em>▶ {mmss(l.start)}</em>
                   </span>
                   <span className="mc-card__text">
-                    <small>{l.specialty}</small>
-                    <span>{l.title}</span>
+                    <small>{l.specialty} · En movimiento</small>
+                    <span>{l.anim}</span>
                   </span>
                 </button>
               ))}

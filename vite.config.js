@@ -7,6 +7,16 @@ function devApi() {
     name: 'dev-api',
     configureServer(server) {
       process.env.AEE_DEV_DB = '1' // without Supabase keys, the checkout uses api/_devdb.js (a local JSON file)
+      // libros desde el disco (solo si BOOKS_DIST_DIR está definido, p. ej. en .env.development.local)
+      server.middlewares.use(async (req, res, next) => {
+        if (!req.url.startsWith('/__libros_dev/') || !process.env.BOOKS_DIST_DIR) return next()
+        const { default: fs } = await import('node:fs'); const { default: path } = await import('node:path')
+        const root = path.resolve(process.env.BOOKS_DIST_DIR)
+        const file = path.resolve(root, decodeURIComponent(req.url.slice('/__libros_dev/'.length).split('?')[0]))
+        if (!file.startsWith(root + path.sep) || !fs.existsSync(file)) { res.statusCode = 404; return res.end('not found') }
+        res.setHeader('Content-Type', file.endsWith('.json') ? 'application/json' : 'application/pdf')
+        fs.createReadStream(file).pipe(res)
+      })
       server.middlewares.use(async (req, res, next) => {
         const m = req.url.match(/^\/api\/([a-z-]+)(?:\?|$)/)
         if (!m) return next()

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import CoursesSection from './components/CoursesSection';
 import CursoTeoricoPage from './components/CursoTeoricoPage';
 import CursoPracticoPage from './components/CursoPracticoPage';
 import AulaPage from './components/AulaPage';
 import TiendaPage from './components/TiendaPage';
+import BancoPage from './components/BancoPage';
 import { CartProvider, CartDrawer } from './components/Cart';
 import { AccountProvider } from './lib/account';
 import GraciasPage from './components/account/GraciasPage';
@@ -16,7 +16,7 @@ import './styles/store.css';
 import './styles/account.css';
 
 // Account pages, one hash each (#entrar is the sign-in screen of #mi-cuenta).
-const ACCOUNT_VIEWS = { '#gracias': 'gracias', '#bienvenida': 'bienvenida', '#mi-cuenta': 'mi-cuenta', '#entrar': 'mi-cuenta', '#checkout': 'checkout' };
+const ACCOUNT_VIEWS = { '#gracias': 'gracias', '#bienvenida': 'bienvenida', '#mi-cuenta': 'mi-cuenta', '#entrar': 'mi-cuenta', '#activar': 'mi-cuenta', '#checkout': 'checkout' };
 import CourseDetailModal from './components/CourseDetailModal';
 import EnrollmentModal from './components/EnrollmentModal';
 import FreeMockExamsSection from './components/FreeMockExamsSection';
@@ -26,7 +26,6 @@ import BlogSection from './components/BlogSection';
 import BlogArticleModalOrPage from './components/BlogArticleModalOrPage';
 import BlogTopicProposer from './components/BlogTopicProposer';
 import FaqSection from './components/FaqSection';
-import ManualesShowcaseSection from './components/ManualesShowcaseSection';
 import DoctorMentorshipModal from './components/DoctorMentorshipModal';
 import Footer from './components/Footer';
 import { ArrowLeft, BookOpen, Home, FileCheck2 } from 'lucide-react';
@@ -40,6 +39,8 @@ export default function App() {
       if (hash === '#curso-teorico') return 'curso-teorico';
       if (hash === '#curso-practico') return 'curso-practico';
       if (hash.startsWith('#aula')) return 'aula';
+      if (hash === '#faq' || hash === '#preguntas') return 'faq';
+      if (hash === '#banco') return 'banco';
       if (hash === '#tienda' || hash.startsWith('#tienda/')) return 'tienda'; // #tienda/<especialidad>
       if (ACCOUNT_VIEWS[hash]) return ACCOUNT_VIEWS[hash];
     }
@@ -69,6 +70,12 @@ export default function App() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else if (hash.startsWith('#aula')) {
         setCurrentView('aula');
+      } else if (hash === '#banco') {
+        setCurrentView('banco');
+        window.scrollTo({ top: 0 });
+      } else if (hash === '#faq' || hash === '#preguntas') {
+        setCurrentView('faq');
+        window.scrollTo({ top: 0 });
       } else if (hash === '#tienda' || hash.startsWith('#tienda/')) {
         setCurrentView('tienda');
       } else if (ACCOUNT_VIEWS[hash.split('&')[0]]) {
@@ -80,7 +87,7 @@ export default function App() {
           const el = document.querySelector('#manuales');
           if (el) el.scrollIntoView({ behavior: 'smooth' });
         }, 100);
-      } else if (hash === '#cursos' || hash === '#diagnostico' || hash === '#clase-magistral' || hash === '#faq' || hash === '') {
+      } else if (hash === '#cursos' || hash === '#diagnostico' || hash === '#clase-magistral' || hash === '') {
         setCurrentView('home');
       }
     };
@@ -213,27 +220,22 @@ export default function App() {
               onSelectCourse={(c) => setSelectedCourseForEnrollment(c)}
             />
 
-            {/* 3. Courses Section (Split Cards: Curso Teórico & Curso Práctico - Sin precios en la portada) */}
-            <CoursesSection
-              onNavigateCursoTeorico={handleNavigateCursoTeorico}
-              onNavigateCursoPractico={handleNavigateCursoPractico}
-              onOpenMentorship={() => setIsMentorshipOpen(true)}
-            />
-
-            {/* 4. Tienda teaser: big packs + link to #tienda */}
-            <ManualesShowcaseSection />
+            {/* 3. Tienda: elige especialidad y formato, igual que en #tienda */}
+            <TiendaPage compact />
 
             {/* 5. Free Diagnostic 5-Question Mock Exam */}
             <FreeMockExamsSection
               onOpenMentorship={() => setIsMentorshipOpen(true)}
               onSelectCourse={(c) => setSelectedCourseForEnrollment(c)}
             />
-
-            {/* 5. FAQs Accordion */}
-            <FaqSection
-              onOpenMentorship={() => setIsMentorshipOpen(true)}
-            />
           </>
+        )}
+
+        {/* Dedicated Full Page: Preguntas frecuentes */}
+        {currentView === 'banco' && <BancoPage />}
+
+        {currentView === 'faq' && (
+          <FaqSection onOpenMentorship={() => setIsMentorshipOpen(true)} />
         )}
 
         {/* Dedicated Full Page: Curso Teórico */}
@@ -260,10 +262,7 @@ export default function App() {
 
         {/* Aula Virtual: all V3 video classes as a course (module → specialty → lesson) */}
         {currentView === 'aula' && (
-          <AulaPage
-            onNavigateHome={handleNavigateHome}
-            onEnroll={(c) => setSelectedCourseForEnrollment(c)}
-          />
+          <AulaPage onNavigateHome={handleNavigateHome} />
         )}
 
         {/* Dedicated Revalidación View */}

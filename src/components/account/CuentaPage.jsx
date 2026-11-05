@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react';
+import PoweredBy from '../PoweredBy';
 import { BookOpen, ListChecks, PlayCircle, Flame, Star, LogOut, Lock } from 'lucide-react';
 import { useAccount, levelFor } from '../../lib/account';
-import { SPECIALTIES, TYPES, BANK } from '../../data/tienda';
+import { SPECIALTIES, TYPES, BANK, AULA_SPECIALTY } from '../../data/tienda';
 import TOMOS_DATA from '../../data/tomosCatalog.json';
 import { CHILEAN_UNIVERSITIES } from '../../data/universities';
 import AuthCard from './AuthCard';
@@ -86,6 +87,7 @@ export default function CuentaPage() {
 
         {tab === 'banco' && (banks.length ? (
           <div className="lib-banks">
+            <PoweredBy size="lg" style={{ marginBottom: 12 }} />
             {banks.map(b => (
               <div key={b.key} className="bank-row" style={{ '--c': b.color }}>
                 <img src={b.cover} alt="" /><span><b>{b.title}</b><small>Más de {b.total.toLocaleString('es-CL')} preguntas · {b.real} de EUNACOM reales</small></span>
@@ -98,7 +100,7 @@ export default function CuentaPage() {
         {tab === 'clases' && (classes.length ? (
           <div className="lib-banks">
             {classes.map(s => (
-              <a key={s.key} className="bank-row" href={`#aula`} style={{ '--c': s.color, textDecoration: 'none' }}>
+              <a key={s.key} className="bank-row" href={`#aula/${Object.keys(AULA_SPECIALTY).find(p => AULA_SPECIALTY[p] === s.key)}-01`} style={{ '--c': s.color, textDecoration: 'none' }}>
                 <img src={s.items.find(i => i.type === 'clases')?.cover} alt="" style={{ aspectRatio: '16/9', width: 72, height: 'auto' }} />
                 <span><b>{s.title}</b><small>{s.items.find(i => i.type === 'clases')?.label}</small></span>
                 <span className="soon">Ver →</span>

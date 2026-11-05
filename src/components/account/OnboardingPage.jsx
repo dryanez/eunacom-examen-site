@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { ArrowRight, ArrowLeft, Check } from 'lucide-react';
-import { supabase, useAccount } from '../../lib/account';
+import { useAccount } from '../../lib/account';
 import { CHILEAN_UNIVERSITIES, COUNTRIES } from '../../data/universities';
 
 const EXAMS = ['Diciembre 2026', 'Julio 2027', 'Diciembre 2027', 'Todavía no sé'];
@@ -8,7 +8,7 @@ const HEARD = ['Instagram', 'TikTok', 'YouTube', 'Google', 'Un amigo o colega', 
 
 // Four short steps after sign-up: where you studied, university, when you sit the exam, contact.
 export default function OnboardingPage() {
-  const { user, profile, refresh, awardXp } = useAccount();
+  const { user, profile, refresh, awardXp, updateProfile } = useAccount();
   const [step, setStep] = useState(0);
   const [f, setF] = useState({ country: '', university: '', exam_date: '', phone: '', heard_from: '' });
   const [q, setQ] = useState('');
@@ -25,7 +25,7 @@ export default function OnboardingPage() {
 
   const finish = async () => {
     setSaving(true);
-    await supabase.from('profiles').update({ ...f, onboarded: true }).eq('id', user.id);
+    await updateProfile({ ...f, onboarded: true });
     await awardXp('onboarding', 'profile', 50);
     await refresh();
     window.location.hash = '#mi-cuenta';

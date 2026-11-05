@@ -37,7 +37,7 @@ export const MODULES_COLLECTION = [
     badge: '🏆 Pase Completo Convocatoria',
     destacado: true,
     nombre: 'Pase Convocatoria EUNACOM 2026',
-    subtitulo: '21 Tomos + 468 videoclases + 6.000+ preguntas + 16 reconstrucciones',
+    subtitulo: '21 Tomos + 468 videoclases + 10.800+ preguntas + 16 reconstrucciones',
     descripcion: 'El acceso más completo y de más alto rendimiento clínico: la colección íntegra de los 21 Manuales Oficiales EUNACOM en PDF de alta fidelidad para descarga, 468 clases en video modulares y acceso ilimitado al simulador de preguntas con justificaciones razonadas hasta la fecha de tu examen.',
     precioClpNum: 359000,
     precioPromoClpNum: 179500,
@@ -52,7 +52,7 @@ export const MODULES_COLLECTION = [
     incluye: [
       'Colección completa de los 21 Manuales Oficiales EUNACOM 2026 (PDFs alta resolución estilo CTO / A4)',
       '468 clases en video (96 horas) organizadas por módulo y especialidad',
-      'Más de 6.000 preguntas comentadas y 16 exámenes reales reconstruidos (2013-2025, 2.901 preguntas)',
+      'Más de 10.800 preguntas comentadas, incluidos 16 exámenes reales reconstruidos (2013-2025, 2.901 preguntas)',
       '21 libros de 90 preguntas tipo examen (1.890), Repaso Final, Atlas de imágenes y mazos Anki',
       'Pautas farmacológicas y algoritmos diagnósticos actualizados GES / MINSAL 2026',
       'Acceso ilimitado a la plataforma hasta el día de tu examen'

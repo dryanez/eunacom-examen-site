@@ -4,6 +4,7 @@ import { useCoupon } from '../data/useCoupon';
 import { ShoppingCart, ShieldCheck, CreditCard, Sparkles, Check, ChevronDown, Lightbulb } from 'lucide-react';
 import { PACKS, COLLECTIONS, SPECIALTIES, RECONS, TYPES, PRODUCTS, BANK, booksByModule, GRAN_LIBRO_GORDO_PAGINAS, fmtClp, looseValue } from '../data/tienda';
 import { useCart } from './Cart';
+import PoweredBy from './PoweredBy';
 import '../styles/store.css';
 
 // Real question from the Libro Gordo de Cardiología (Q-CARDIOLOGIA-08), shown as the "explained answer" demo.
@@ -99,6 +100,8 @@ const BREAKDOWN = {
   'pack-atlas': { type: 'atlas', noun: ['atlas', 'atlas'], extra: ['1.144 imágenes comentadas: ECG, radiografías, fondo de ojo, piel', 'Hallazgos marcados y qué hacer después'] },
   'pack-gordos': { type: 'gordo', noun: ['Libro Gordo', 'Libros Gordos'], top: `Gran Libro Gordo: las 1.890 preguntas juntas (${GRAN_LIBRO_GORDO_PAGINAS} págs.)`, extra: ['90 preguntas por especialidad, con clave y explicación', 'Código del Perfil V3 en cada pregunta'] },
 };
+// The bank comes from EUNACOMapp.cl: these formats carry its partner badge.
+const hasBank = sku => sku === 'pack-total' || sku.startsWith('banco-') || sku.startsWith('esp-');
 const nfmt = n => n.toLocaleString('es-CL');
 function ModuleBreakdown({ type, noun, top, extra }) {
   const mods = booksByModule(type);
@@ -158,13 +161,15 @@ function VariantThumb({ v }) {
   return <img src={v.cover || PRODUCTS[v.sku].cover} alt="" />;
 }
 
-export default function TiendaPage() {
+export default function TiendaPage({ compact = false }) {
   const cart = useCart();
-  // #tienda/<especialidad> (p. ej. desde el libro gratis de Instagram) abre esa especialidad
+  // #tienda/<especialidad|todo>[/<sku>] (p. ej. desde el libro gratis de Instagram) abre esa especialidad
+  // y, con sku, deja ese formato elegido con su «qué trae + pagar» abierto, como si lo hubieran tocado
   const hashKey = () => {
     const k = window.location.hash.split('?')[0].split('/')[1];
-    return SPECIALTIES.some(s => s.key === k) ? k : null;
+    return k === 'todo' || SPECIALTIES.some(s => s.key === k) ? k : null;
   };
+  const hashSku = () => window.location.hash.split('?')[0].split('/')[2] || null;
   const [productKey, setProductKey] = useState(() => hashKey() || 'todo');
   const product = useMemo(() => buildProduct(productKey), [productKey]);
   const [variant, setVariant] = useState(product.variants[0].sku);
@@ -182,7 +187,11 @@ export default function TiendaPage() {
     setTimeout(() => productRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
   };
 
-  useEffect(() => { setVariant(product.variants[0].sku); setSlide(0); setShowAll(false); setOpenSku(null); }, [product]);
+  useEffect(() => {
+    const i = product.variants.findIndex(v => v.sku === hashSku());
+    const v = product.variants[Math.max(i, 0)];
+    setVariant(v.sku); setSlide(i >= 0 ? v.slide : 0); setShowAll(i >= 3); setOpenSku(i >= 0 ? v.sku : null);
+  }, [product]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (hashKey()) setTimeout(() => productRef.current?.scrollIntoView({ block: 'start' }), 300);
     const onHash = () => { const k = hashKey(); if (k) pick(k); };
@@ -278,12 +287,20 @@ export default function TiendaPage() {
   const coverOf = type => cardio.items.find(i => i.type === type)?.cover;
 
   return (
-    <div className="st">
-      <div className="st-marquee" aria-hidden="true">
+    <div className="st" id={compact ? 'manuales' : undefined} style={compact ? { scrollMarginTop: 70 } : undefined}>
+      {!compact && <div className="st-marquee" aria-hidden="true">
         <div className="st-marquee-track">
           {[...MARQUEE, ...MARQUEE].map((m, i) => <span key={i}><Sparkles size={13} /> {m}</span>)}
         </div>
-      </div>
+      </div>}
+      {compact && (
+        <div className="st-wrap" style={{ paddingTop: 56 }}>
+          <span id="cursos" style={{ display: 'block', position: 'relative', top: -80 }} />
+          <div className="st-kicker">Tienda AEE · 21 especialidades</div>
+          <h2 style={{ font: '800 clamp(26px,3vw,36px) var(--font-heading)', color: 'var(--ink)', margin: '4px 0 6px' }}>Clases, manuales, Anki, preguntas y reconstrucciones</h2>
+          <p className="st-lead" style={{ marginBottom: 8 }}>Elige tu especialidad y toca cada formato para ver todo lo que trae.</p>
+        </div>
+      )}
 
       <div className="st-wrap">
         {/* Step 1: pick a specialty (or everything) */}
@@ -346,6 +363,7 @@ export default function TiendaPage() {
                       <span>
                         <div className="nm">{x.name}</div>
                         <div className="ds">{x.desc}</div>
+                        {hasBank(x.sku) && <PoweredBy style={{ marginTop: 6 }} />}
                         {xs && <div className="owned">{xs === 'in' ? '✓ En tu carrito' : '✓ Incluido en tu pack'}</div>}
                       </span>
                       <span className="pr">
@@ -357,6 +375,8 @@ export default function TiendaPage() {
                       <div className="st-panel" id={`var-${x.sku}`}>
                         <div className="st-panel__in">
                           <b className="st-panel__h">Qué trae</b>
+                          {hasBank(x.sku) && <PoweredBy size="lg" style={{ marginBottom: 10 }} />}
+                          {hasBank(x.sku) && <a href="#banco" style={{ display: 'inline-block', marginBottom: 10, fontWeight: 700, color: '#2563eb' }}>Prueba preguntas gratis →</a>}
                           {BREAKDOWN[x.sku] ? (
                             <ModuleBreakdown {...BREAKDOWN[x.sku]} />                          ) : (
                             <ul>{variantInfo(x, product).map(t => <li key={t}><Check size={15} /> {t}</li>)}</ul>
@@ -404,6 +424,7 @@ export default function TiendaPage() {
         </div>
       </div>
 
+      {!compact && <>
       {/* Standards */}
       <section className="st-sec" style={{ background: 'var(--soft)' }}>
         <div className="st-wrap">
@@ -545,7 +566,9 @@ export default function TiendaPage() {
         </div>
       </section>
 
-      {scrolled && !addVisible && !openSku && (
+      </>}
+
+      {!compact && scrolled && !addVisible && !openSku && (
         <div className="st-sticky">
           <img src={product.thumb} alt="" />
           <div className="t">{product.title} · {v.name}<small>{fmtClp(withCode(price))}{coupon ? ` · ${coupon.code} -${coupon.percent}%` : off > 0 ? ` · -${off}%` : ''}</small></div>
