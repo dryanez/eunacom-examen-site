@@ -1,156 +1,163 @@
 {
- "endocrinologia": {
-  "title": "Libro Gordo de Endocrinología",
-  "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
-  "specialty": "Endocrinología",
-  "pages": 46,
-  "kind": "gordo"
- },
- "hematologia": {
-  "title": "Libro Gordo de Hematología",
-  "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
-  "specialty": "Hematología",
-  "pages": 45,
-  "kind": "gordo"
- },
- "pediatria": {
-  "title": "Libro Gordo de Pediatría",
-  "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
-  "specialty": "Pediatría",
-  "pages": 37,
-  "kind": "gordo"
- },
- "diabetes": {
-  "title": "Libro Gordo de Diabetes",
-  "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
-  "specialty": "Diabetes",
-  "pages": 34,
-  "kind": "gordo"
- },
- "obstetricia": {
-  "title": "Libro Gordo de Obstetricia",
-  "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
-  "specialty": "Obstetricia",
-  "pages": 40,
-  "kind": "gordo"
- },
- "nefrologia": {
-  "title": "Libro Gordo de Nefrología",
-  "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
-  "specialty": "Nefrología",
-  "pages": 38,
-  "kind": "gordo"
- },
- "cardiologia": {
-  "title": "Libro Gordo de Cardiología",
-  "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
-  "specialty": "Cardiología",
-  "pages": 32,
-  "kind": "gordo"
- },
- "infectologia": {
-  "title": "Libro Gordo de Infectología",
-  "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
-  "specialty": "Infectología",
-  "pages": 34,
-  "kind": "gordo"
- },
- "neurologia": {
-  "title": "Libro Gordo de Neurología",
-  "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
-  "specialty": "Neurología",
-  "pages": 42,
-  "kind": "gordo"
- },
- "oftalmologia": {
-  "title": "Libro Gordo de Oftalmología",
-  "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
-  "specialty": "Oftalmología",
-  "pages": 29,
-  "kind": "gordo"
- },
- "traumatologia": {
-  "title": "Libro Gordo de Traumatología",
-  "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
-  "specialty": "Traumatología",
-  "pages": 35,
-  "kind": "gordo"
- },
- "otorrinolaringologia": {
-  "title": "Libro Gordo de Otorrinolaringología",
-  "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
-  "specialty": "Otorrinolaringología",
-  "pages": 38,
-  "kind": "gordo"
- },
- "psiquiatria": {
-  "title": "Libro Gordo de Psiquiatría",
-  "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
-  "specialty": "Psiquiatría",
-  "pages": 36,
-  "kind": "gordo"
- },
- "respiratorio": {
-  "title": "Libro Gordo de Respiratorio",
-  "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
-  "specialty": "Respiratorio",
-  "pages": 37,
-  "kind": "gordo"
- },
- "cirugia": {
-  "title": "Libro Gordo de Cirugía",
-  "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
-  "specialty": "Cirugía",
-  "pages": 41,
-  "kind": "gordo"
- },
- "repaso-pediatria": {
-  "title": "Repaso Final de Pediatría",
-  "blurb": "Los temas clave de la especialidad, una página por tema, con plan de repaso de 7 días.",
-  "specialty": "Pediatría",
-  "pages": 39,
-  "kind": "repaso"
- },
- "repaso-respiratorio": {
-  "title": "Repaso Final de Respiratorio",
-  "blurb": "Los temas clave de la especialidad, una página por tema, con plan de repaso de 7 días.",
-  "specialty": "Respiratorio",
-  "pages": 35,
-  "kind": "repaso"
- },
- "repaso-oftalmologia": {
-  "title": "Repaso Final de Oftalmología",
-  "blurb": "Los temas clave de la especialidad, una página por tema, con plan de repaso de 7 días.",
-  "specialty": "Oftalmología",
-  "pages": 26,
-  "kind": "repaso"
- },
- "repaso-otorrinolaringologia": {
-  "title": "Repaso Final de Otorrinolaringología",
-  "blurb": "Los temas clave de la especialidad, una página por tema, con plan de repaso de 7 días.",
-  "specialty": "Otorrinolaringología",
-  "pages": 28,
-  "kind": "repaso"
- },
- "repaso-diabetes": {
-  "title": "Repaso Final de Diabetes",
-  "blurb": "Los temas clave de la especialidad, una página por tema, con plan de repaso de 7 días.",
-  "specialty": "Diabetes",
-  "pages": 37,
-  "kind": "repaso"
- },
- "atlas_imagenes_dermatologia": {
-  "title": "Atlas de Imágenes de Dermatología",
-  "blurb": "Las imágenes que caen en el EUNACOM, cada una comentada.",
-  "specialty": "Dermatología",
-  "pages": 68,
-  "kind": "atlas"
- },
- "ecg": {
-  "title": "Los 10 ECG que más caen en el EUNACOM",
-  "blurb": "Cada trazado con lo que tienes que ver marcado, qué hacer después y su pregunta real del EUNACOM. Al final, autoevaluación.",
-  "specialty": "Cardiología",
-  "pages": 16,
-  "kind": "guia"
- }
+  "endocrinologia": {
+    "title": "Libro Gordo de Endocrinología",
+    "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
+    "specialty": "Endocrinología",
+    "pages": 46,
+    "kind": "gordo"
+  },
+  "hematologia": {
+    "title": "Libro Gordo de Hematología",
+    "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
+    "specialty": "Hematología",
+    "pages": 45,
+    "kind": "gordo"
+  },
+  "pediatria": {
+    "title": "Libro Gordo de Pediatría",
+    "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
+    "specialty": "Pediatría",
+    "pages": 37,
+    "kind": "gordo"
+  },
+  "diabetes": {
+    "title": "Libro Gordo de Diabetes",
+    "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
+    "specialty": "Diabetes",
+    "pages": 34,
+    "kind": "gordo"
+  },
+  "obstetricia": {
+    "title": "Libro Gordo de Obstetricia",
+    "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
+    "specialty": "Obstetricia",
+    "pages": 40,
+    "kind": "gordo"
+  },
+  "nefrologia": {
+    "title": "Libro Gordo de Nefrología",
+    "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
+    "specialty": "Nefrología",
+    "pages": 38,
+    "kind": "gordo"
+  },
+  "urologia": {
+    "title": "Libro Gordo de Urología",
+    "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
+    "specialty": "Urología",
+    "pages": 35,
+    "kind": "gordo"
+  },
+  "cardiologia": {
+    "title": "Libro Gordo de Cardiología",
+    "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
+    "specialty": "Cardiología",
+    "pages": 32,
+    "kind": "gordo"
+  },
+  "infectologia": {
+    "title": "Libro Gordo de Infectología",
+    "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
+    "specialty": "Infectología",
+    "pages": 34,
+    "kind": "gordo"
+  },
+  "neurologia": {
+    "title": "Libro Gordo de Neurología",
+    "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
+    "specialty": "Neurología",
+    "pages": 42,
+    "kind": "gordo"
+  },
+  "oftalmologia": {
+    "title": "Libro Gordo de Oftalmología",
+    "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
+    "specialty": "Oftalmología",
+    "pages": 29,
+    "kind": "gordo"
+  },
+  "traumatologia": {
+    "title": "Libro Gordo de Traumatología",
+    "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
+    "specialty": "Traumatología",
+    "pages": 35,
+    "kind": "gordo"
+  },
+  "otorrinolaringologia": {
+    "title": "Libro Gordo de Otorrinolaringología",
+    "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
+    "specialty": "Otorrinolaringología",
+    "pages": 38,
+    "kind": "gordo"
+  },
+  "psiquiatria": {
+    "title": "Libro Gordo de Psiquiatría",
+    "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
+    "specialty": "Psiquiatría",
+    "pages": 36,
+    "kind": "gordo"
+  },
+  "respiratorio": {
+    "title": "Libro Gordo de Respiratorio",
+    "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
+    "specialty": "Respiratorio",
+    "pages": 37,
+    "kind": "gordo"
+  },
+  "cirugia": {
+    "title": "Libro Gordo de Cirugía",
+    "blurb": "90 preguntas de práctica tipo EUNACOM, cada una con su explicación.",
+    "specialty": "Cirugía",
+    "pages": 41,
+    "kind": "gordo"
+  },
+  "repaso-pediatria": {
+    "title": "Repaso Final de Pediatría",
+    "blurb": "Los temas clave de la especialidad, una página por tema, con plan de repaso de 7 días.",
+    "specialty": "Pediatría",
+    "pages": 39,
+    "kind": "repaso"
+  },
+  "repaso-respiratorio": {
+    "title": "Repaso Final de Respiratorio",
+    "blurb": "Los temas clave de la especialidad, una página por tema, con plan de repaso de 7 días.",
+    "specialty": "Respiratorio",
+    "pages": 35,
+    "kind": "repaso"
+  },
+  "repaso-oftalmologia": {
+    "title": "Repaso Final de Oftalmología",
+    "blurb": "Los temas clave de la especialidad, una página por tema, con plan de repaso de 7 días.",
+    "specialty": "Oftalmología",
+    "pages": 26,
+    "kind": "repaso"
+  },
+  "repaso-otorrinolaringologia": {
+    "title": "Repaso Final de Otorrinolaringología",
+    "blurb": "Los temas clave de la especialidad, una página por tema, con plan de repaso de 7 días.",
+    "specialty": "Otorrinolaringología",
+    "pages": 28,
+    "kind": "repaso"
+  },
+  "repaso-diabetes": {
+    "title": "Repaso Final de Diabetes",
+    "blurb": "Los temas clave de la especialidad, una página por tema, con plan de repaso de 7 días.",
+    "specialty": "Diabetes",
+    "pages": 37,
+    "kind": "repaso"
+  },
+  "atlas_imagenes_dermatologia": {
+    "title": "Atlas de Imágenes de Dermatología",
+    "blurb": "Las imágenes que caen en el EUNACOM, cada una comentada.",
+    "specialty": "Dermatología",
+    "pages": 68,
+    "kind": "atlas"
+  },
+  "ecg": {
+    "title": "Los 10 ECG que más caen en el EUNACOM",
+    "blurb": "Cada trazado con lo que tienes que ver marcado, qué hacer después y su pregunta real del EUNACOM. Al final, autoevaluación.",
+    "specialty": "Cardiología",
+    "pages": 16,
+    "kind": "guia"
+  }
 }
