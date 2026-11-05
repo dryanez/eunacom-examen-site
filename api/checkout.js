@@ -7,7 +7,7 @@
 //   { action: 'manual', skus, email, name, method }          → { orderId }  (transfer; becomes a purchase when the team
 //                                                              marks it paid after seeing the receipt)
 import { CATALOG, db, env, paypal, usdFor, bad, readBody } from './_lib.js';
-import { applyCoupon, resolveCoupon } from './_coupons.js';
+import { applyCoupon, resolveCoupon, couponFits } from './_coupons.js';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { afterPaid, activateLinkToken } from './_paid.js';
 
@@ -29,9 +29,10 @@ function priceOf(skus, code) {
   const clean = [...new Set((skus || []).filter(s => CATALOG.products[s]))];
   if (!clean.length || clean.length !== new Set(skus).size) return null;
   const list = clean.reduce((n, s) => n + CATALOG.products[s].price, 0);
-  const coupon = resolveCoupon(code);
+  const c = resolveCoupon(code);
+  const coupon = couponFits(c, clean) ? c : null; // REGALO solo vale para manuales
   const title = clean.map(s => CATALOG.products[s].name).join(' + ') + (coupon ? ` (${coupon.code} -${coupon.percent}%)` : '');
-  return { skus: clean, clp: applyCoupon(list, code), title };
+  return { skus: clean, clp: applyCoupon(list, code, clean), title };
 }
 
 const SITE = (process.env.SITE_URL || 'https://eunacom-examen.cl').replace(/\/$/, '');
