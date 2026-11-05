@@ -160,11 +160,13 @@ function VariantThumb({ v }) {
 
 export default function TiendaPage() {
   const cart = useCart();
-  // #tienda/<especialidad> (p. ej. desde el libro gratis de Instagram) abre esa especialidad
+  // #tienda/<especialidad|todo>[/<sku>] (p. ej. desde el libro gratis de Instagram) abre esa especialidad
+  // y, con sku, deja ese formato elegido con su «qué trae + pagar» abierto, como si lo hubieran tocado
   const hashKey = () => {
     const k = window.location.hash.split('?')[0].split('/')[1];
-    return SPECIALTIES.some(s => s.key === k) ? k : null;
+    return k === 'todo' || SPECIALTIES.some(s => s.key === k) ? k : null;
   };
+  const hashSku = () => window.location.hash.split('?')[0].split('/')[2] || null;
   const [productKey, setProductKey] = useState(() => hashKey() || 'todo');
   const product = useMemo(() => buildProduct(productKey), [productKey]);
   const [variant, setVariant] = useState(product.variants[0].sku);
@@ -182,7 +184,11 @@ export default function TiendaPage() {
     setTimeout(() => productRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
   };
 
-  useEffect(() => { setVariant(product.variants[0].sku); setSlide(0); setShowAll(false); setOpenSku(null); }, [product]);
+  useEffect(() => {
+    const i = product.variants.findIndex(v => v.sku === hashSku());
+    const v = product.variants[Math.max(i, 0)];
+    setVariant(v.sku); setSlide(i >= 0 ? v.slide : 0); setShowAll(i >= 3); setOpenSku(i >= 0 ? v.sku : null);
+  }, [product]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (hashKey()) setTimeout(() => productRef.current?.scrollIntoView({ block: 'start' }), 300);
     const onHash = () => { const k = hashKey(); if (k) pick(k); };
