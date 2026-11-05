@@ -10,8 +10,10 @@ import '../styles/regalo.css';
 // Libro gratis de los reels «Comenta PALABRA»: eunacom-examen.cl/?regalo=<slug>&t=… (link del DM de ManyChat).
 // 1) nombre + correo → el PDF se descarga ahí mismo (api/regalo.js). 2) Segunda pantalla: UNA oferta, el Manual de la
 // especialidad con SHORTS20, pagable en la misma página. Sin el link del DM: «síguenos y comenta la palabra».
+// Modo público (utm_source=youtube|tiktok): sin token, directo al formulario; Instagram sigue con el token del DM.
 const IG_USER = 'academiaeunacom';
 const IG_URL = `https://www.instagram.com/${IG_USER}/`;
+const PUBLIC_SOURCES = { youtube: 'YouTube', tiktok: 'TikTok' };
 const AEE_KEY = { respiratorio: 'neumologia', otorrinolaringologia: 'otorrino' };
 const keyOf = specialty => { const k = specialty.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); return AEE_KEY[k] || k; };
 
@@ -29,9 +31,12 @@ export default function RegaloPage({ slug }) {
   const r = REGALOS[slug];
   const params = new URLSearchParams(window.location.search);
   const t = params.get('t'), u = params.get('u');
-  const utm = { source: params.get('utm_source') || 'instagram', medium: params.get('utm_medium') || 'dm', campaign: params.get('utm_campaign') || slug };
+  // YouTube / TikTok no tienen comentario→DM: el link de la descripción no trae token y el formulario se muestra directo
+  const src = (params.get('utm_source') || '').toLowerCase();
+  const red = PUBLIC_SOURCES[src];
+  const utm = { source: src || 'instagram', medium: params.get('utm_medium') || (red ? 'shorts' : 'dm'), campaign: params.get('utm_campaign') || slug };
   const storeKey = `aee_regalo_${slug}`;
-  const [gate, setGate] = useState(t ? 'checking' : 'no'); // checking | ok | no
+  const [gate, setGate] = useState(red ? 'ok' : t ? 'checking' : 'no'); // checking | ok | no
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [state, setState] = useState({ status: 'idle' }); // idle | sending | ready | error
@@ -49,7 +54,7 @@ export default function RegaloPage({ slug }) {
     document.head.appendChild(robots);
     setCode('REGALO'); // precio de regalo del Manual ($9.990); la librería completa vuelve a SHORTS20
     track('regalo_view', { slug, ...utm });
-    if (t) {
+    if (t && !red) {
       fetch(`/api/regalo?action=check&slug=${encodeURIComponent(slug)}&t=${encodeURIComponent(t)}${u ? `&u=${encodeURIComponent(u)}` : ''}`)
         .then(x => x.json()).then(d => setGate(d.ok ? 'ok' : 'no')).catch(() => setGate('no'));
     }
@@ -140,7 +145,7 @@ export default function RegaloPage({ slug }) {
   return (
     <div className="st rg"><div className="rg-wrap">
       <a href="/" className="rg-logo"><img src="/logo.svg" alt="Academia Examen EUNACOM" /></a>
-      <span className="rg-chip">🎁 Regalo de Instagram</span>
+      <span className="rg-chip">🎁 Regalo de {red || 'Instagram'}</span>
       <h1>{r.title}</h1>
       <p className="rg-lead">{r.blurb}</p>
       <div className="rg-cover rg-float"><img className="st-book" src={cover} alt={`Portada: ${r.title}`} /></div>
