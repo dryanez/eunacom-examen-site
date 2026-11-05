@@ -23,7 +23,7 @@ const PACK_PRICE_BY_KEY = { cardiologia: 129990 };
 
 // What each kind of product is for. Shown in the store so buyers see these are different books.
 export const TYPES = {
-  tomo: { short: 'Manual', name: 'Manual', blurb: 'La teoría completa de la especialidad.', bullets: ['Todo el Perfil V3 de la especialidad', 'Algoritmos, tablas y perlas EUNACOM', 'Fotos clínicas en contexto'] },
+  tomo: { short: 'Manual', name: 'Manual', blurb: 'La teoría completa de la especialidad.', bullets: ['Todo el Perfil V3 de la especialidad', 'Algoritmos, tablas y perlas EUNACOM', 'Fotos clínicas en contexto', 'Preguntas reales de años anteriores (EUNACOM 2013–2025)'] },
   clases: { short: 'Clases', name: 'Clases en video', blurb: 'Una clase por tema, con casos tipo examen.', bullets: ['Clases de 6 a 20 minutos', 'Diapositivas animadas y anatomía real', 'Casos clínicos EUNACOM al final'] },
   gordo: { short: '90 preguntas', name: 'Libro Gordo · 90 preguntas', blurb: 'Práctica tipo examen con explicación.', bullets: ['90 preguntas por especialidad', 'Clave y explicación de cada una', 'Código del Perfil V3 en cada pregunta'] },
   repaso: { short: 'Repaso Final', name: 'Repaso Final', blurb: 'Un tema por página para la última semana.', bullets: ['Lo que más se pregunta', 'Plan de repaso de 7 días', 'Ideal la semana antes del examen'] },
