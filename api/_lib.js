@@ -35,7 +35,7 @@ export function expand(skus) {
 }
 
 export async function ownedItems(email) {
-  const { data } = await db().from('purchases').select('sku').eq('status', 'paid').ilike('email', email);
+  const { data } = await db().from('aee_purchases').select('sku').eq('status', 'paid').ilike('email', email);
   const skus = [...new Set((data || []).map(r => r.sku))];
   return { skus, items: expand(skus) };
 }

@@ -37,7 +37,7 @@ async function mp(pathname, body) {
 // The buyer's email is the one in the order (signed-in buyer) or, if empty, the one they paid with.
 async function recordMpPayment(id) {
   const pay = await mp(`${MP}/${encodeURIComponent(id)}`);
-  const { data: order } = await db().from('orders').select('*').eq('id', pay.external_reference).single();
+  const { data: order } = await db().from('aee_orders').select('*').eq('id', pay.external_reference).single();
   if (!order) return { status: 'unknown' };
   if (order.status === 'paid') return { order, status: 'paid' };
   if (pay.status !== 'approved') return { order, status: pay.status };
@@ -47,8 +47,8 @@ async function recordMpPayment(id) {
   }
   const payerEmail = pay.payer?.email?.toLowerCase() || null;
   const email = order.email || payerEmail;
-  await db().from('orders').update({ status: 'paid', paid_at: new Date().toISOString(), provider_ref: String(pay.id), payer_email: payerEmail, email }).eq('id', order.id);
-  if (email) await db().from('purchases').upsert(order.skus.map(sku => ({
+  await db().from('aee_orders').update({ status: 'paid', paid_at: new Date().toISOString(), provider_ref: String(pay.id), payer_email: payerEmail, email }).eq('id', order.id);
+  if (email) await db().from('aee_purchases').upsert(order.skus.map(sku => ({
     email, sku, amount_clp: CATALOG.products[sku]?.price, provider: 'mercadopago', provider_ref: String(pay.id), buyer_name: order.buyer_name,
   })), { onConflict: 'provider,provider_ref,sku', ignoreDuplicates: true });
   return { order: { ...order, email, status: 'paid' }, status: 'paid' };
@@ -83,7 +83,7 @@ export default async function handler(req, res) {
     const p = priceOf(b.skus, b.code);
     if (!p) return bad(res, 400, 'Producto no disponible');
     const usd = usdFor(p.clp);
-    const { data: order, error } = await db().from('orders').insert({
+    const { data: order, error } = await db().from('aee_orders').insert({
       email, buyer_name: String(b.name || '').slice(0, 120), phone: String(b.phone || '').slice(0, 40),
       skus: p.skus, amount_clp: p.clp, amount_usd: usd,
       provider: b.action === 'manual' ? String(b.method || 'manual') : b.action === 'mp-create' ? 'mercadopago' : 'paypal',
@@ -103,7 +103,7 @@ export default async function handler(req, res) {
           notification_url: `${SITE}/api/checkout?mp=webhook`,
           statement_descriptor: 'AEE EUNACOM',
         });
-        await db().from('orders').update({ provider_ref: pref.id }).eq('id', order.id);
+        await db().from('aee_orders').update({ provider_ref: pref.id }).eq('id', order.id);
         return res.json({ init_point: pref.init_point, orderId: order.id });
       } catch (e) {
         console.error(e.message, e.details);
@@ -121,7 +121,7 @@ export default async function handler(req, res) {
           return_url: `${SITE}/?paypal=return`, cancel_url: `${SITE}/?paypal=cancel`,
         },
       });
-      await db().from('orders').update({ provider_ref: pp.id }).eq('id', order.id);
+      await db().from('aee_orders').update({ provider_ref: pp.id }).eq('id', order.id);
       const approve = pp.links?.find(l => l.rel === 'approve' || l.rel === 'payer-action')?.href;
       return res.json({ paypalOrderId: pp.id, approve_url: approve });
     } catch (e) {
@@ -134,7 +134,7 @@ export default async function handler(req, res) {
     const id = String(b.paypalOrderId || '');
     if (!id) return bad(res, 400, 'Falta la orden');
     // Already captured (the buyer reloaded the thank-you page): answer from the order
-    const { data: prev } = await db().from('orders').select('*').eq('provider_ref', id).single();
+    const { data: prev } = await db().from('aee_orders').select('*').eq('provider_ref', id).single();
     if (prev?.status === 'paid') return done(res, prev);
     let cap;
     try { cap = await paypal(`/v2/checkout/orders/${encodeURIComponent(id)}/capture`); }
@@ -144,15 +144,15 @@ export default async function handler(req, res) {
     if (cap.status !== 'COMPLETED' || !capture) return bad(res, 402, 'El pago no se completó');
 
     const orderId = capture.custom_id || unit?.custom_id;
-    const { data: order } = await db().from('orders').select('*').eq('id', orderId).single();
+    const { data: order } = await db().from('aee_orders').select('*').eq('id', orderId).single();
     if (!order) return bad(res, 404, 'Orden no encontrada');
     if (Number(capture.amount?.value) + 0.001 < Number(order.amount_usd)) return bad(res, 402, 'Monto pagado incorrecto');
 
     const payerEmail = cap.payer?.email_address?.toLowerCase() || null;
     const email = order.email || payerEmail;
     if (order.status !== 'paid') {
-      await db().from('orders').update({ status: 'paid', paid_at: new Date().toISOString(), payer_email: payerEmail, email }).eq('id', order.id);
-      await db().from('purchases').upsert(order.skus.map(sku => ({
+      await db().from('aee_orders').update({ status: 'paid', paid_at: new Date().toISOString(), payer_email: payerEmail, email }).eq('id', order.id);
+      await db().from('aee_purchases').upsert(order.skus.map(sku => ({
         email, sku, amount_clp: CATALOG.products[sku]?.price, provider: 'paypal', provider_ref: capture.id, buyer_name: order.buyer_name,
       })), { onConflict: 'provider,provider_ref,sku', ignoreDuplicates: true });
     }
@@ -162,7 +162,7 @@ export default async function handler(req, res) {
   // Back from Mercado Pago (?payment_id=…&external_reference=…): confirm right away instead of waiting for the webhook.
   if (b.action === 'mp-confirm') {
     if (!b.orderId) return bad(res, 400, 'Falta la orden');
-    const { data: order } = await db().from('orders').select('*').eq('id', String(b.orderId)).single();
+    const { data: order } = await db().from('aee_orders').select('*').eq('id', String(b.orderId)).single();
     if (!order) return bad(res, 404, 'Orden no encontrada');
     if (order.status !== 'paid' && b.paymentId && process.env.MP_ACCESS_TOKEN) {
       try { const r = await recordMpPayment(String(b.paymentId)); if (r.order?.id === order.id) return done(res, r.order); }
