@@ -126,7 +126,9 @@ export default function RegaloPage({ slug }) {
         )}
 
         <div className="rg-more">
-          <a href={`/#tienda/${spec?.key || ''}`} onClick={() => track('regalo_tienda', { slug, cta: 'ver-todo' })}><BookOpen size={15} /> Ver todos los libros de {r.specialty}</a>
+          <a className="rg-lib" href="/?code=SHORTS20#tienda" onClick={() => track('regalo_tienda', { slug, cta: 'libreria' })}>
+            <BookOpen size={18} /><span><b>Ver la librería completa</b><small>Manuales, clases en video, Libros Gordos, Repaso Final, Atlas y banco de preguntas</small></span><span aria-hidden="true">→</span>
+          </a>
           <a href={IG_URL} target="_blank" rel="noopener noreferrer"><AtSign size={15} /> Síguenos: cada semana una guía gratis nueva</a>
         </div>
       </div></div>

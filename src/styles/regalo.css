@@ -45,3 +45,6 @@
 .rg-float img, img.rg-float { animation: rg-float 4.6s ease-in-out infinite; }
 @keyframes rg-float { 0%, 100% { translate: 0 0; rotate: 0deg; } 50% { translate: 0 -9px; rotate: 1.2deg; } }
 @media (prefers-reduced-motion: reduce) { .rg-float img, img.rg-float { animation: none; } }
+.rg-more .rg-lib { display: flex; align-items: center; gap: 12px; text-align: left; padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--soft); }
+.rg-lib span:nth-child(2) { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.rg-lib small { font: 500 12px/1.35 var(--font-body, inherit); color: var(--mute); }
