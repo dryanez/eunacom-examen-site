@@ -5,6 +5,24 @@ import RegaloPage from './components/RegaloPage';
 import { AccountProvider } from './lib/account';
 import { CartProvider } from './components/Cart';
 import './index.css';
+import REGALOS from './data/regalos.json';
+
+// Links cortos para descripciones de YouTube/TikTok (no se pueden hipervincular): ?yt=<slug> / ?tt=<slug>
+// = ?regalo=<slug>&utm_source=youtube|tiktok&utm_medium=shorts (modo público, sin token). Un valor que no es
+// un regalo (p. ej. ?yt=clases) abre el sitio normal con la misma UTM. Se reescribe la URL antes de renderizar.
+{
+  const q = new URLSearchParams(window.location.search);
+  const key = q.has('yt') ? 'yt' : q.has('tt') ? 'tt' : null;
+  if (key) {
+    const val = (q.get(key) || '').trim().toLowerCase();
+    q.delete(key);
+    q.set('utm_source', key === 'yt' ? 'youtube' : 'tiktok');
+    if (!q.has('utm_medium')) q.set('utm_medium', 'shorts');
+    if (!q.has('utm_campaign')) q.set('utm_campaign', val || 'link');
+    if (val && /^[\w-]+$/.test(val) && REGALOS[val]) q.set('regalo', val);
+    window.history.replaceState(null, '', `${window.location.pathname}?${q}${window.location.hash}`);
+  }
+}
 
 // Código de descuento en el link (p. ej. eunacom-examen.cl/?code=SHORTS20 desde la bio de Instagram):
 // queda guardado para el checkout aunque la persona navegue por el sitio.
