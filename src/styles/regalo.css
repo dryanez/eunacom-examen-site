@@ -1,0 +1,50 @@
+/* /regalo/<slug>: libro gratis de Instagram (RegaloPage.jsx). Celular primero, mismo look claro de la tienda (.st). */
+.rg { min-height: 100vh; background: linear-gradient(180deg, #eef4fb 0%, #fff 320px); padding: 0 0 64px; }
+.rg-wrap { max-width: 520px; margin: 0 auto; padding: 18px 18px 0; text-align: center; }
+.rg-logo img { height: 46px; width: auto; display: block; margin: 0 auto 14px; }
+.rg h1 { font: 800 27px/1.15 var(--font-heading); margin: 8px 0 6px; }
+.rg h2 { font: 800 23px/1.15 var(--font-heading); margin: 4px 0 12px; }
+.rg h3 { font: 800 17px/1.25 var(--font-heading); color: var(--ink); margin: 0 0 12px; }
+.rg-lead { color: var(--mute); font-size: 15px; line-height: 1.45; margin: 0 auto; max-width: 440px; }
+.rg-chip { display: inline-block; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; font: 700 12px var(--font-heading); color: var(--ink); box-shadow: 0 4px 14px rgba(8,54,95,.08); }
+.rg-cover { width: 58%; max-width: 240px; margin: 18px auto 0; }
+.rg-cover img { width: 100%; aspect-ratio: 210 / 297; }
+.rg-meta { color: var(--mute); font-size: 12px; margin: 12px 0 0; }
+.rg-card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 18px; margin-top: 18px; text-align: left; box-shadow: 0 14px 34px -18px rgba(8,54,95,.35); display: flex; flex-direction: column; gap: 10px; }
+.rg-card h3 { margin: 0; }
+.rg-input { width: 100%; box-sizing: border-box; padding: 14px; border-radius: 12px; border: 1px solid #cbd5e1; font: 500 16px var(--font-body, inherit); color: var(--ink); background: #fff; }
+.rg-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+.rg-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 15px; border: 0; border-radius: 12px; background: var(--ink); color: #fff; font: 800 17px var(--font-heading); cursor: pointer; text-decoration: none; box-shadow: 0 12px 24px -12px rgba(8,54,95,.7); }
+.rg-btn:disabled { opacity: .65; }
+.rg-note { color: var(--mute); font-size: 12px; line-height: 1.45; margin: 2px 0 0; }
+.rg-error { color: var(--sale); font-size: 14px; font-weight: 600; margin: 0; }
+.rg-steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; color: var(--ink-2); font-size: 15px; line-height: 1.4; }
+.rg-ig { display: inline-flex; align-items: center; gap: 5px; margin-left: 4px; padding: 3px 10px; border-radius: 999px; background: linear-gradient(135deg, #f58529, #dd2a7b 50%, #8134af); color: #fff; font-weight: 700; font-size: 13px; text-decoration: none; }
+
+/* segunda pantalla */
+.rg-done { display: flex; gap: 16px; align-items: center; text-align: left; margin: 4px 0 4px; }
+.rg-done h1 { font-size: 22px; margin-top: 0; }
+.rg-done .rg-lead { font-size: 13px; margin: 0; }
+.rg-mini { position: relative; flex: none; width: 92px; }
+.rg-mini img { width: 100%; aspect-ratio: 210 / 297; border-radius: 3px 6px 6px 3px; box-shadow: 0 14px 26px -12px rgba(8,30,60,.6); display: block; }
+.rg-ok { position: absolute; right: -8px; top: -8px; width: 28px; height: 28px; border-radius: 50%; background: var(--ok); color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,.25); }
+.rg-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font: 700 14px var(--font-heading); color: var(--accent); text-decoration: none; }
+.rg-offer { margin-top: 22px; background: #fff; border: 2px solid var(--ink); border-radius: 20px; padding: 18px; text-align: left; box-shadow: 0 18px 40px -20px rgba(8,54,95,.5); }
+.rg-kicker { display: inline-block; background: #fff4e5; color: #b45309; border-radius: 999px; padding: 4px 10px; font: 800 12px var(--font-heading); }
+.rg-offer-body { display: flex; gap: 16px; align-items: flex-start; }
+.rg-manual { flex: none; width: 38%; max-width: 150px; aspect-ratio: 210 / 297; }
+.rg-offer ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 7px; font-size: 14px; line-height: 1.4; color: var(--ink-2); }
+.rg-price { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin: 16px 0 10px; }
+.rg-price s { color: var(--mute); font-size: 15px; }
+.rg-price b { font: 800 30px var(--font-heading); color: var(--ink); }
+.rg-price span { background: #fde8ef; color: #be185d; border-radius: 999px; padding: 3px 9px; font: 800 12px var(--font-heading); }
+.rg-more { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+.rg-more a { display: inline-flex; align-items: center; justify-content: center; gap: 7px; color: var(--ink); font: 700 14px var(--font-heading); text-decoration: none; }
+
+/* portadas flotando suave */
+.rg-float img, img.rg-float { animation: rg-float 4.6s ease-in-out infinite; }
+@keyframes rg-float { 0%, 100% { translate: 0 0; rotate: 0deg; } 50% { translate: 0 -9px; rotate: 1.2deg; } }
+@media (prefers-reduced-motion: reduce) { .rg-float img, img.rg-float { animation: none; } }
+.rg-more .rg-lib { display: flex; align-items: center; gap: 12px; text-align: left; padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--soft); }
+.rg-lib span:nth-child(2) { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.rg-lib small { font: 500 12px/1.35 var(--font-body, inherit); color: var(--mute); }
