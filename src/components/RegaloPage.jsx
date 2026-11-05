@@ -8,7 +8,7 @@ import EmbeddedCheckout from './EmbeddedCheckout';
 import '../styles/regalo.css';
 
 // Libro gratis de los reels «Comenta PALABRA»: eunacom-examen.cl/?regalo=<slug>&t=… (link del DM de ManyChat).
-// 1) nombre + correo → el PDF se descarga ahí mismo (api/regalo.js). 2) Segunda pantalla: UNA oferta, el Manual de la
+// 1) nombre + correo → el PDF llega al correo y la persona se queda en la página (api/regalo.js). 2) Segunda pantalla: UNA oferta, el Manual de la
 // especialidad con SHORTS20, pagable en la misma página. Sin el link del DM: «síguenos y comenta la palabra».
 // Modo público (utm_source=youtube|tiktok): sin token, directo al formulario; Instagram sigue con el token del DM.
 const IG_USER = 'academiaeunacom';
@@ -19,12 +19,6 @@ const keyOf = specialty => { const k = specialty.normalize('NFD').replace(/[̀-�
 
 function track(event, props) {
   try { window.posthog?.capture?.(event, props); } catch { /* sin analytics */ }
-}
-// El link firmado viene con Content-Disposition: attachment, así que se baja sin salir de la página
-function startDownload(url) {
-  const a = document.createElement('a');
-  a.href = url; a.rel = 'noopener';
-  document.body.appendChild(a); a.click(); a.remove();
 }
 
 export default function RegaloPage({ slug }) {
@@ -77,8 +71,9 @@ export default function RegaloPage({ slug }) {
       if (!res.ok || !d.url) throw new Error(d.error || 'No pudimos preparar tu descarga');
       localStorage.setItem(storeKey, d.token);
       track('regalo_lead', { slug, ...utm });
-      startDownload(d.url);
-      setState({ status: 'ready', url: d.url, emailed: d.emailed, fresh: true });
+      // El libro va al correo y la persona se queda aquí con la oferta (en el teléfono, abrir el PDF la sacaba del sitio).
+      // Solo si el correo no salió se ofrece la descarga directa.
+      setState({ status: 'ready', url: d.url, emailed: d.emailed, fresh: true, email });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       setState({ status: 'error', error: err.message });
@@ -106,11 +101,16 @@ export default function RegaloPage({ slug }) {
         <div className="rg-done">
           <div className="rg-mini rg-float"><img src={cover} alt="" /><span className="rg-ok"><Check size={18} strokeWidth={3} /></span></div>
           <div>
-            <h1>{state.fresh ? 'Tu guía se está descargando' : 'Tu guía está lista'}</h1>
-            <p className="rg-lead">{r.title} · PDF · {r.pages} páginas{state.emailed ? ' · también te la mandamos a tu correo' : ''}</p>
-            <a className="rg-link" href={state.url} rel="noopener" onClick={() => track('regalo_download', { slug, cta: 'pantalla2' })}>
-              <Download size={15} /> {state.fresh ? '¿No empezó? Descárgala aquí' : 'Descargar la guía'}
-            </a>
+            {state.fresh && state.emailed ? (<>
+              <h1>Revisa tu correo 📩</h1>
+              <p className="rg-lead">Te mandamos el {r.title} ({r.pages} páginas, PDF) a <b>{state.email}</b>. Si no lo ves en unos minutos, mira en Spam o Promociones.</p>
+            </>) : (<>
+              <h1>Tu guía está lista</h1>
+              <p className="rg-lead">{r.title} · PDF · {r.pages} páginas</p>
+              <a className="rg-link" href={state.url} rel="noopener" onClick={() => track('regalo_download', { slug, cta: 'pantalla2' })}>
+                <Download size={15} /> Descargar la guía
+              </a>
+            </>)}
           </div>
         </div>
 
@@ -164,11 +164,11 @@ export default function RegaloPage({ slug }) {
         </div>
       ) : (
         <form className="rg-card" onSubmit={submit}>
-          <h3>Déjanos tu nombre y correo, y se descarga al tiro</h3>
+          <h3>Déjanos tu nombre y correo, y te lo mandamos al tiro</h3>
           <input className="rg-input" type="text" autoComplete="name" required minLength={2} placeholder="Tu nombre" value={nombre} onChange={e => setNombre(e.target.value)} />
           <input className="rg-input" type="email" inputMode="email" autoComplete="email" required placeholder="tucorreo@gmail.com" value={email} onChange={e => setEmail(e.target.value)} />
           <button className="rg-btn" type="submit" disabled={state.status === 'sending'}>
-            <Download size={18} /> {state.status === 'sending' ? 'Preparando tu descarga…' : 'Descargar gratis'}
+            <Download size={18} /> {state.status === 'sending' ? 'Enviando…' : 'Enviármelo gratis'}
           </button>
           {state.status === 'error' && <p className="rg-error">{state.error}</p>}
           <p className="rg-note">Te escribiremos de vez en cuando con material para el EUNACOM; puedes darte de baja cuando quieras.</p>
