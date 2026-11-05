@@ -17,8 +17,10 @@ const back = new URLSearchParams(window.location.search);
 if (back.get('pago') === 'error' || back.get('paypal') === 'cancel') window.location.hash = '#tienda';
 else if (back.get('pago') || back.get('paypal') === 'return') window.location.hash = '#gracias';
 
-// eunacom-examen.cl/regalo/<slug>: libro gratis de los reels, página sola (sin menú) con la oferta y el pago
-const regalo = window.location.pathname.match(/^\/regalo\/([\w-]+)/);
+// Libro gratis de los reels, página sola (sin menú) con la oferta y el pago: eunacom-examen.cl/?regalo=<slug>
+// (también /regalo/<slug> donde el hosting sirva rutas; en Vercel hoy solo responde la raíz)
+const regaloSlug = new URLSearchParams(window.location.search).get('regalo') || (window.location.pathname.match(/^\/regalo\/([\w-]+)/) || [])[1];
+const regalo = regaloSlug && /^[\w-]+$/.test(regaloSlug) ? [null, regaloSlug] : null;
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

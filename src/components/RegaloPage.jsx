@@ -6,7 +6,7 @@ import { useCoupon } from '../data/useCoupon';
 import EmbeddedCheckout from './EmbeddedCheckout';
 import '../styles/regalo.css';
 
-// Libro gratis de los reels «Comenta PALABRA»: eunacom-examen.cl/regalo/<slug>?t=… (link del DM de ManyChat).
+// Libro gratis de los reels «Comenta PALABRA»: eunacom-examen.cl/?regalo=<slug>&t=… (link del DM de ManyChat).
 // 1) nombre + correo → el PDF se descarga ahí mismo (api/regalo.js). 2) Segunda pantalla: UNA oferta, el Manual de la
 // especialidad con SHORTS20, pagable en la misma página. Sin el link del DM: «síguenos y comenta la palabra».
 const IG_USER = 'academiaeunacom';
