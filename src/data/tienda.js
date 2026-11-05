@@ -6,7 +6,7 @@ import { BOOKS_COLLECTION } from './booksData';
 import TOMOS_DATA from './tomosCatalog.json';
 
 export const PRICES = {
-  tomo: 29990,
+  tomo: 19990,
   clases: 24990,
   gordo: 14990,
   repaso: 12990,

@@ -3,6 +3,7 @@ import { Check, Download, AtSign, BookOpen } from 'lucide-react';
 import REGALOS from '../data/regalos.json';
 import { SPECIALTIES, PRODUCTS, TYPES, fmtClp } from '../data/tienda';
 import { useCoupon } from '../data/useCoupon';
+import { applyCoupon } from '../../api/_coupons.js';
 import EmbeddedCheckout from './EmbeddedCheckout';
 import '../styles/regalo.css';
 
@@ -34,7 +35,7 @@ export default function RegaloPage({ slug }) {
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [state, setState] = useState({ status: 'idle' }); // idle | sending | ready | error
-  const { setCode, price } = useCoupon();
+  const { setCode } = useCoupon();
 
   const spec = r && SPECIALTIES.find(s => s.key === keyOf(r.specialty));
   const manualSku = spec && `tomo-${spec.key}`;
@@ -46,7 +47,7 @@ export default function RegaloPage({ slug }) {
     document.title = `${r.title} gratis | Academia Examen EUNACOM`;
     const robots = document.createElement('meta'); robots.name = 'robots'; robots.content = 'noindex';
     document.head.appendChild(robots);
-    setCode('SHORTS20'); // el descuento de redes ya aplicado en la oferta y en la tienda
+    setCode('REGALO'); // precio de regalo del Manual ($9.990); la librería completa vuelve a SHORTS20
     track('regalo_view', { slug, ...utm });
     if (t) {
       fetch(`/api/regalo?action=check&slug=${encodeURIComponent(slug)}&t=${encodeURIComponent(t)}${u ? `&u=${encodeURIComponent(u)}` : ''}`)
@@ -120,7 +121,7 @@ export default function RegaloPage({ slug }) {
                 <li>Lo descargas al tiro, en PDF</li>
               </ul>
             </div>
-            <div className="rg-price"><s>{fmtClp(manual.price)}</s> <b>{fmtClp(price(manual.price))}</b> <span>−20 % SHORTS20</span></div>
+            <div className="rg-price"><s>{fmtClp(manual.price)}</s> <b>{fmtClp(applyCoupon(manual.price, 'REGALO', [manualSku]))}</b> <span>Precio de regalo</span></div>
             <EmbeddedCheckout compact item={{ sku: manualSku, name: `Manual · ${spec.title}`, price: manual.price, cover: manualItem?.cover }} />
           </section>
         )}
