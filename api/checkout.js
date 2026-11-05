@@ -6,8 +6,22 @@
 //   POST /api/checkout?mp=webhook                            ← Mercado Pago notification: approved → purchase recorded
 //   { action: 'manual', skus, email, name, method }          → { orderId }  (transfer; becomes a purchase when the team
 //                                                              marks it paid after seeing the receipt)
-import { CATALOG, db, paypal, usdFor, bad, readBody } from './_lib.js';
+import { CATALOG, db, env, paypal, usdFor, bad, readBody } from './_lib.js';
 import { applyCoupon, resolveCoupon } from './_coupons.js';
+import { createHmac, timingSafeEqual } from 'node:crypto';
+import { afterPaid, activateLinkToken } from './_paid.js';
+
+// "Claim": a secret the server gives the browser that started the checkout. Back on the thank-you page that same
+// browser sends it, and gets a one-time activation token for the purchase email, so the account it creates there
+// (password, or Google / Apple with ANY email) gets the purchase, even if they paid with another email.
+const claimFor = id => createHmac('sha256', process.env.SUPABASE_SERVICE_ROLE_KEY || 'aee-dev').update(`claim:${id}`).digest('base64url');
+async function activarFor(order, claim) {
+  if (!claim || !order?.id || order.status !== 'paid' || !order.email) return null;
+  const want = Buffer.from(claimFor(order.id)), got = Buffer.from(String(claim));
+  if (want.length !== got.length || !timingSafeEqual(want, got)) return null;
+  const { data: u } = await db().from('aee_users').select('email_verified_at').ilike('email', order.email).maybeSingle();
+  return u?.email_verified_at ? null : activateLinkToken(order.email); // existing account: they just sign in
+}
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -37,7 +51,7 @@ async function mp(pathname, body) {
 // The buyer's email is the one in the order (signed-in buyer) or, if empty, the one they paid with.
 async function recordMpPayment(id) {
   const pay = await mp(`${MP}/${encodeURIComponent(id)}`);
-  const { data: order } = await db().from('orders').select('*').eq('id', pay.external_reference).single();
+  const { data: order } = await db().from('aee_orders').select('*').eq('id', pay.external_reference).single();
   if (!order) return { status: 'unknown' };
   if (order.status === 'paid') return { order, status: 'paid' };
   if (pay.status !== 'approved') return { order, status: pay.status };
@@ -47,10 +61,14 @@ async function recordMpPayment(id) {
   }
   const payerEmail = pay.payer?.email?.toLowerCase() || null;
   const email = order.email || payerEmail;
-  await db().from('orders').update({ status: 'paid', paid_at: new Date().toISOString(), provider_ref: String(pay.id), payer_email: payerEmail, email }).eq('id', order.id);
-  if (email) await db().from('purchases').upsert(order.skus.map(sku => ({
-    email, sku, amount_clp: CATALOG.products[sku]?.price, provider: 'mercadopago', provider_ref: String(pay.id), buyer_name: order.buyer_name,
-  })), { onConflict: 'provider,provider_ref,sku', ignoreDuplicates: true });
+  // Only the call that flips pending → paid records it and sends the email (the return and the webhook can race).
+  const { data: flipped } = await db().from('aee_orders').update({ status: 'paid', paid_at: new Date().toISOString(), provider_ref: String(pay.id), payer_email: payerEmail, email }).eq('id', order.id).eq('status', 'pending').select('id');
+  if (email && flipped?.length) {
+    await db().from('aee_purchases').upsert(order.skus.map(sku => ({
+      email, sku, amount_clp: CATALOG.products[sku]?.price, provider: 'mercadopago', provider_ref: String(pay.id), buyer_name: order.buyer_name,
+    })), { onConflict: 'provider,provider_ref,sku', ignoreDuplicates: true });
+    await afterPaid({ ...order, provider: 'mercadopago' }, email);
+  }
   return { order: { ...order, email, status: 'paid' }, status: 'paid' };
 }
 
@@ -68,13 +86,20 @@ async function mpWebhook(req, res) {
   }
 }
 
-const done = (res, order) => res.json({ status: order.status, email: order.email || order.payer_email || null, skus: order.skus, names: order.skus.map(s => CATALOG.products[s]?.name) });
+const done = async (res, order, claim) => res.json({ status: order.status, email: order.email || order.payer_email || null, skus: order.skus, names: order.skus.map(s => CATALOG.products[s]?.name), activar: await activarFor(order, claim) });
 
 export default async function handler(req, res) {
   if (req.query?.mp === 'webhook') return mpWebhook(req, res);
   if (req.method !== 'POST') return bad(res, 405, 'POST only');
   if (!db()) return bad(res, 503, 'La tienda aún no está conectada a la base de datos.');
   const b = await readBody(req);
+
+  // Apple Pay / Google Pay (through PayPal) need the amount before the order exists: same price math as paypal-create.
+  if (b.action === 'wallet-quote') {
+    const p = priceOf(b.skus, b.code);
+    if (!p || !env('PAYPAL_CLIENT_ID')) return bad(res, 400, 'No disponible');
+    return res.json({ clientId: env('PAYPAL_CLIENT_ID'), mode: env('PAYPAL_ENV') || 'live', usd: usdFor(p.clp) });
+  }
 
   if (b.action === 'paypal-create' || b.action === 'manual' || b.action === 'mp-create') {
     // Email is optional: a signed-in buyer sends theirs; otherwise the payer's email from Mercado Pago / PayPal is used.
@@ -83,7 +108,7 @@ export default async function handler(req, res) {
     const p = priceOf(b.skus, b.code);
     if (!p) return bad(res, 400, 'Producto no disponible');
     const usd = usdFor(p.clp);
-    const { data: order, error } = await db().from('orders').insert({
+    const { data: order, error } = await db().from('aee_orders').insert({
       email, buyer_name: String(b.name || '').slice(0, 120), phone: String(b.phone || '').slice(0, 40),
       skus: p.skus, amount_clp: p.clp, amount_usd: usd,
       provider: b.action === 'manual' ? String(b.method || 'manual') : b.action === 'mp-create' ? 'mercadopago' : 'paypal',
@@ -103,15 +128,15 @@ export default async function handler(req, res) {
           notification_url: `${SITE}/api/checkout?mp=webhook`,
           statement_descriptor: 'AEE EUNACOM',
         });
-        await db().from('orders').update({ provider_ref: pref.id }).eq('id', order.id);
-        return res.json({ init_point: pref.init_point, orderId: order.id });
+        await db().from('aee_orders').update({ provider_ref: pref.id }).eq('id', order.id);
+        return res.json({ init_point: pref.init_point, orderId: order.id, claim: claimFor(order.id) });
       } catch (e) {
         console.error(e.message, e.details);
         return bad(res, 502, 'No se pudo iniciar el pago con Mercado Pago');
       }
     }
 
-    if (!process.env.PAYPAL_CLIENT_ID || !process.env.PAYPAL_CLIENT_SECRET) return bad(res, 503, 'PayPal no está configurado');
+    if (!env('PAYPAL_CLIENT_ID') || !env('PAYPAL_CLIENT_SECRET')) return bad(res, 503, 'PayPal no está configurado');
     try {
       const pp = await paypal('/v2/checkout/orders', {
         intent: 'CAPTURE',
@@ -121,9 +146,9 @@ export default async function handler(req, res) {
           return_url: `${SITE}/?paypal=return`, cancel_url: `${SITE}/?paypal=cancel`,
         },
       });
-      await db().from('orders').update({ provider_ref: pp.id }).eq('id', order.id);
+      await db().from('aee_orders').update({ provider_ref: pp.id }).eq('id', order.id);
       const approve = pp.links?.find(l => l.rel === 'approve' || l.rel === 'payer-action')?.href;
-      return res.json({ paypalOrderId: pp.id, approve_url: approve });
+      return res.json({ paypalOrderId: pp.id, approve_url: approve, claim: claimFor(order.id) });
     } catch (e) {
       console.error(e.message, e.details);
       return bad(res, 502, 'No se pudo iniciar el pago con PayPal');
@@ -134,8 +159,8 @@ export default async function handler(req, res) {
     const id = String(b.paypalOrderId || '');
     if (!id) return bad(res, 400, 'Falta la orden');
     // Already captured (the buyer reloaded the thank-you page): answer from the order
-    const { data: prev } = await db().from('orders').select('*').eq('provider_ref', id).single();
-    if (prev?.status === 'paid') return done(res, prev);
+    const { data: prev } = await db().from('aee_orders').select('*').eq('provider_ref', id).single();
+    if (prev?.status === 'paid') return done(res, prev, b.claim);
     let cap;
     try { cap = await paypal(`/v2/checkout/orders/${encodeURIComponent(id)}/capture`); }
     catch (e) { console.error(e.message, e.details); return bad(res, 402, 'El pago no se completó'); }
@@ -144,31 +169,46 @@ export default async function handler(req, res) {
     if (cap.status !== 'COMPLETED' || !capture) return bad(res, 402, 'El pago no se completó');
 
     const orderId = capture.custom_id || unit?.custom_id;
-    const { data: order } = await db().from('orders').select('*').eq('id', orderId).single();
+    const { data: order } = await db().from('aee_orders').select('*').eq('id', orderId).single();
     if (!order) return bad(res, 404, 'Orden no encontrada');
     if (Number(capture.amount?.value) + 0.001 < Number(order.amount_usd)) return bad(res, 402, 'Monto pagado incorrecto');
 
     const payerEmail = cap.payer?.email_address?.toLowerCase() || null;
     const email = order.email || payerEmail;
-    if (order.status !== 'paid') {
-      await db().from('orders').update({ status: 'paid', paid_at: new Date().toISOString(), payer_email: payerEmail, email }).eq('id', order.id);
-      await db().from('purchases').upsert(order.skus.map(sku => ({
+    const { data: flipped } = await db().from('aee_orders').update({ status: 'paid', paid_at: new Date().toISOString(), payer_email: payerEmail, email }).eq('id', order.id).eq('status', 'pending').select('id');
+    if (flipped?.length) {
+      await db().from('aee_purchases').upsert(order.skus.map(sku => ({
         email, sku, amount_clp: CATALOG.products[sku]?.price, provider: 'paypal', provider_ref: capture.id, buyer_name: order.buyer_name,
       })), { onConflict: 'provider,provider_ref,sku', ignoreDuplicates: true });
+      await afterPaid({ ...order, provider: 'paypal' }, email);
     }
-    return res.json({ email, payerEmail, skus: order.skus, names: order.skus.map(s => CATALOG.products[s]?.name) });
+    return res.json({ email, payerEmail, skus: order.skus, names: order.skus.map(s => CATALOG.products[s]?.name), activar: await activarFor({ ...order, email, status: 'paid' }, b.claim) });
   }
 
   // Back from Mercado Pago (?payment_id=…&external_reference=…): confirm right away instead of waiting for the webhook.
   if (b.action === 'mp-confirm') {
     if (!b.orderId) return bad(res, 400, 'Falta la orden');
-    const { data: order } = await db().from('orders').select('*').eq('id', String(b.orderId)).single();
+    const { data: order } = await db().from('aee_orders').select('*').eq('id', String(b.orderId)).single();
     if (!order) return bad(res, 404, 'Orden no encontrada');
     if (order.status !== 'paid' && b.paymentId && process.env.MP_ACCESS_TOKEN) {
-      try { const r = await recordMpPayment(String(b.paymentId)); if (r.order?.id === order.id) return done(res, r.order); }
+      try { const r = await recordMpPayment(String(b.paymentId)); if (r.order?.id === order.id) return done(res, r.order, b.claim); }
       catch (e) { console.error('[MP confirm]', e.message, e.details); }
     }
-    return done(res, order);
+    return done(res, order, b.claim);
+  }
+
+  // Local dev only: what the team does by hand for a transfer (SETUP_CUENTAS.md §4), to test purchases end to end.
+  if (b.action === 'dev-mark-paid' && process.env.AEE_DEV_DB === '1' && !process.env.SUPABASE_URL) {
+    const { data: order } = await db().from('aee_orders').select('*').eq('id', String(b.orderId || '')).single();
+    if (!order) return bad(res, 404, 'Orden no encontrada');
+    const { data: flipped } = await db().from('aee_orders').update({ status: 'paid', paid_at: new Date().toISOString() }).eq('id', order.id).eq('status', 'pending').select('id');
+    if (flipped?.length) {
+      await db().from('aee_purchases').upsert(order.skus.map(sku => ({
+        email: order.email, sku, amount_clp: CATALOG.products[sku]?.price, provider: order.provider, provider_ref: order.id, buyer_name: order.buyer_name,
+      })), { onConflict: 'provider,provider_ref,sku', ignoreDuplicates: true });
+      await afterPaid(order, order.email);
+    }
+    return done(res, { ...order, status: 'paid' }, b.claim);
   }
 
   return bad(res, 400, 'Acción desconocida');

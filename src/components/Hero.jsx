@@ -1,19 +1,75 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { CheckCircle2, ArrowRight, Play } from 'lucide-react';
 
 const CHECKLIST = [
   'Más de 460 clases en video del temario oficial',
-  'Más de 6.000 preguntas con justificación',
+  'Más de 10.800 preguntas con explicación',
   '16 exámenes reales reconstruidos (2013-2025)',
   'Seguimiento semanal con devolución escrita',
 ];
 
 const METRICS = [
-  { value: '6.000+', label: 'Preguntas comentadas' },
+  { value: '10.800+', label: 'Preguntas comentadas' },
   { value: '468', label: 'Clases en video' },
   { value: '16', label: 'Exámenes reales reconstruidos' },
   { value: '12 meses', label: 'Acompañamiento continuo' },
 ];
+
+// Mix of every book type so visitors see manuales, atlas, reconstrucciones, Perfil V3, Libro Gordo, repasos.
+const TOMOS = [
+  'tomo_pediatria', 'tomo_cardiologia', 'atlas_dermatologia', 'reconstrucciones', 'perfil_neurologia',
+  'gordo_cirugia', 'repaso_ginecologia', 'atlas_cardiologia', 'tomo_neurologia', 'perfil-v3-completo',
+  'gordo_obstetricia', 'atlas_traumatologia', 'repaso_infectologia', 'gran-libro-gordo', 'tomo_cirugia',
+  'perfil_pediatria', 'atlas_oftalmologia', 'repaso_cardiologia', 'gordo_psiquiatria', 'atlas_neumologia',
+].map(k => `/covers/${k}.jpg`);
+
+// Slot by position relative to the current index: 0 left, 1 front, 2 right; the rest hidden.
+const SLOTS = {
+  left: { transform: 'translate(-38%, 6%) rotate(-8deg) scale(.9)', zIndex: 1, opacity: 1, filter: 'brightness(.8)' },
+  front: { transform: 'translate(0, 0) rotate(0deg) scale(1)', zIndex: 3, opacity: 1, filter: 'brightness(1)' },
+  right: { transform: 'translate(38%, 6%) rotate(8deg) scale(.9)', zIndex: 2, opacity: 1, filter: 'brightness(.8)' },
+  outLeft: { transform: 'translate(-70%, 10%) rotate(-16deg) scale(.78)', zIndex: 0, opacity: 0, filter: 'brightness(.6)' },
+  inRight: { transform: 'translate(70%, 10%) rotate(16deg) scale(.78)', zIndex: 0, opacity: 0, filter: 'brightness(.6)' },
+};
+
+function HeroBooks() {
+  const n = TOMOS.length;
+  const [idx, setIdx] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    if (paused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const t = setInterval(() => setIdx(i => (i + 1) % n), 3200);
+    return () => clearInterval(t);
+  }, [paused, n]);
+
+  const slotFor = pos => ['left', 'front', 'right', 'inRight'][pos] || (pos === n - 1 ? 'outLeft' : null);
+
+  return (
+    <a
+      href="#manuales"
+      aria-label="Ver manuales, atlas y reconstrucciones"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      style={{ display: 'flex', justifyContent: 'center' }}
+    >
+      <div style={{ position: 'relative', width: '100%', maxWidth: '400px', aspectRatio: '4/4.2' }}>
+        {TOMOS.map((src, i) => {
+          const slot = slotFor((i - idx + n) % n);
+          if (!slot) return null;
+          return (
+            <img key={src} src={src} alt="Portada de manual EUNACOM" style={{
+              position: 'absolute', left: '21%', top: 0, width: '58%', aspectRatio: '210/297', objectFit: 'cover',
+              borderRadius: '3px', boxShadow: '0 18px 40px rgba(0,0,0,.35)',
+              transition: 'transform .9s cubic-bezier(.65,0,.25,1), opacity .9s ease, filter .9s ease',
+              ...SLOTS[slot],
+            }} />
+          );
+        })}
+      </div>
+    </a>
+  );
+}
 
 export default function Hero({ onOpenMentorship, onStartDiagnostic }) {
   return (
@@ -58,7 +114,7 @@ export default function Hero({ onOpenMentorship, onStartDiagnostic }) {
             </p>
 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: '36px' }}>
-              <a href="#cursos" className="btn" style={{ backgroundColor: '#ffffff', color: '#08365f' }}>
+              <a href="#tienda" className="btn" style={{ backgroundColor: '#ffffff', color: '#08365f' }}>
                 <span>Ver cursos online</span>
                 <ArrowRight size={16} />
               </a>
@@ -88,21 +144,8 @@ export default function Hero({ onOpenMentorship, onStartDiagnostic }) {
             </div>
           </div>
 
-          {/* Three real tomo covers, fanned */}
-          <a href="#manuales" aria-label="Ver los 21 manuales" style={{ display: 'flex', justifyContent: 'center' }}>
-            <div style={{ position: 'relative', width: '100%', maxWidth: '400px', aspectRatio: '4/4.2' }}>
-              {[
-                { src: '/covers/tomo_pediatria.jpg', style: { left: 0, top: '8%', transform: 'rotate(-8deg)' } },
-                { src: '/covers/tomo_neurologia.jpg', style: { right: 0, top: '8%', transform: 'rotate(8deg)' } },
-                { src: '/covers/tomo_cardiologia.jpg', style: { left: '50%', top: 0, transform: 'translateX(-50%)', zIndex: 1 } },
-              ].map(c => (
-                <img key={c.src} src={c.src} alt="Portada de manual EUNACOM" style={{
-                  position: 'absolute', width: '58%', aspectRatio: '210/297', objectFit: 'cover',
-                  borderRadius: '3px', boxShadow: '0 18px 40px rgba(0,0,0,.35)', ...c.style,
-                }} />
-              ))}
-            </div>
-          </a>
+          {/* Real tomo covers, fanned and rotating */}
+          <HeroBooks />
         </div>
 
         <div style={{

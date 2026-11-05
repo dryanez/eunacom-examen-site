@@ -340,3 +340,35 @@
 .ck-pay--pp { background: #ffc439; color: #111827; }
 .st-pill--code { background: #ec4899; }
 .st-codebar { margin: 4px 0 6px; padding: 8px 12px; border-radius: 10px; background: #fdf2f8; border: 1px dashed #ec4899; color: #9d174d; font-size: 13.5px; }
+
+/* Branded payment buttons (EmbeddedCheckout): one per method, in its own colors and logo. */
+.ck-paybtns { display: flex; flex-direction: column; gap: 10px; }
+.ck-brand { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 54px; padding: 8px 16px; border-radius: 12px; border: 0; cursor: pointer; font: inherit; transition: filter .15s, transform .15s, box-shadow .15s; }
+.ck-brand:hover:not(:disabled) { filter: brightness(1.05); transform: translateY(-1px); box-shadow: 0 8px 18px -10px rgba(8,54,95,.5); }
+.ck-brand:disabled { opacity: .65; cursor: wait; }
+.ck-brand b { font: 700 16px var(--font-heading); }
+.ck-brand--mp { background: #009ee3; color: #fff; }
+.ck-brand__txt { display: flex; flex-direction: column; align-items: flex-start; text-align: left; line-height: 1.2; }
+.ck-brand__txt small { font-size: 12.5px; opacity: .92; }
+.ck-brand--pp { background: #ffc439; color: #003087; }
+.ck-pp { display: inline-flex; align-items: center; gap: 6px; font: 600 16px var(--font-heading); }
+.ck-pp i { font: italic 800 21px/1 'Verdana', 'Helvetica Neue', Arial, sans-serif; letter-spacing: -.5px; }
+.ck-pp i span:first-child { color: #003087; }
+.ck-pp i span:last-child { color: #009cde; }
+.ck-brand--tr { background: #fff; color: var(--ink); border: 1.5px solid var(--line); }
+.ck-brand--tr.on { border-color: var(--ink); }
+.ck-brand__chev { transition: transform .2s; margin-left: auto; }
+.ck-brand--tr { justify-content: flex-start; }
+.ck-brand--tr.on .ck-brand__chev { transform: rotate(180deg); }
+.ck-cards { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: -2px 0 2px; }
+.ck-card { display: inline-flex; align-items: center; justify-content: center; height: 26px; min-width: 40px; padding: 0 7px; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+.ck-card--txt { font: 700 11.5px var(--font-heading); color: var(--mute); }
+.ck--compact .ck-brand { min-height: 48px; }
+.ck--compact .ck-brand b, .ck--compact .ck-pp { font-size: 15px; }
+.ck-brand--tr b, .ck-pp { white-space: nowrap; }
+@media (max-width: 420px) { .ck-brand b, .ck-pp { font-size: 15px; } .ck-brand__txt small { font-size: 11.5px; } }
+/* Apple Pay / Google Pay (WalletPay): empty until the wallet is available on this device */
+.ck-wallet:empty { display: none; }
+.ck-wallet--g { height: 52px; }
+.ck-wallet--g:empty { display: none; }
+.ck-wallet--g button { border-radius: 12px !important; }

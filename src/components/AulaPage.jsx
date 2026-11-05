@@ -1,8 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, CheckCircle2, ChevronDown, ChevronRight, Circle, Clock, Lock, PlayCircle, Search } from 'lucide-react';
-import { COURSES } from '../data/coursesData';
+import { SPECIALTIES, aulaKeyOf } from '../data/tienda';
+import { useAccount } from '../lib/account';
+import { CartButton } from './Cart';
 
-// Classes open without enrolling in each specialty (0 = none; the landing's clase magistral has the samples).
+// Classes open without buying in each specialty (0 = none; the landing's clase magistral has the samples).
+// Everything else opens with the specialty's `clases-<key>` SKU, which every bigger product also includes
+// (specialty pack, module, Las 468 clases, Pack Total, Curso Teórico); see api/_catalog.json.
 const FREE_PER_SPECIALTY = 0;
 const STORAGE_KEY = 'aee-aula-progress';
 
@@ -15,7 +19,8 @@ const idFromHash = () => {
   return m ? decodeURIComponent(m[1]) : null;
 };
 
-export default function AulaPage({ onNavigateHome, onEnroll }) {
+export default function AulaPage({ onNavigateHome }) {
+  const { user, owned } = useAccount();
   const [catalog, setCatalog] = useState(null);
   const [error, setError] = useState(false);
   const [progress, setProgress] = useState(loadProgress);
@@ -39,10 +44,12 @@ export default function AulaPage({ onNavigateHome, onEnroll }) {
   // Flat ordered list with the context each lesson needs (specialty, module, free/locked).
   const lessons = useMemo(() => {
     if (!catalog) return [];
-    return catalog.modules.flatMap(m => m.specialties.flatMap(s => s.lessons.map((l, i) => ({
-      ...l, specialty: s.name, accent: s.accent, module: m.name, locked: i >= FREE_PER_SPECIALTY,
-    }))));
-  }, [catalog]);
+    return catalog.modules.flatMap(m => m.specialties.flatMap(s => s.lessons.map((l, i) => {
+      const key = aulaKeyOf(l.id);
+      return { ...l, key, specialty: s.name, accent: s.accent, module: m.name, locked: i >= FREE_PER_SPECIALTY && !owned.items.has(`clases-${key}`) };
+    })));
+  }, [catalog, owned]);
+  const ownedSpecialties = new Set(lessons.filter(l => !l.locked).map(l => l.key)).size;
 
   const current = lessons.find(l => l.id === currentId) || lessons[0];
   const index = current ? lessons.indexOf(current) : -1;
@@ -93,6 +100,7 @@ export default function AulaPage({ onNavigateHome, onEnroll }) {
             </p>
           </div>
           <div style={{ minWidth: 240 }}>
+            {user && <div style={{ fontSize: 13, color: '#0bd9e7', marginBottom: 6, fontWeight: 700 }}>Tienes acceso a {ownedSpecialties} de {catalog.modules.reduce((n, m) => n + m.specialties.length, 0)} especialidades</div>}
             <div style={{ fontSize: 13, color: 'var(--on-navy)', marginBottom: 6 }}>Tu avance: {doneCount}/{lessons.length} clases ({pct}%)</div>
             <div style={{ height: 8, background: 'rgba(255,255,255,.15)', borderRadius: 4 }}>
               <div style={{ width: `${pct}%`, height: '100%', background: '#0bd9e7', borderRadius: 4 }} />
@@ -106,7 +114,7 @@ export default function AulaPage({ onNavigateHome, onEnroll }) {
         <section>
           <div style={{ background: '#000', borderRadius: 'var(--radius-lg)', overflow: 'hidden', aspectRatio: '16/9', position: 'relative' }}>
             {current.locked ? (
-              <LockedPanel lesson={current} onEnroll={() => onEnroll(COURSES[0])} />
+              <LockedPanel lesson={current} signedIn={!!user} />
             ) : current.video ? (
               <video
                 key={current.id}
@@ -222,15 +230,21 @@ export default function AulaPage({ onNavigateHome, onEnroll }) {
   );
 }
 
-function LockedPanel({ lesson, onEnroll }) {
+function LockedPanel({ lesson, signedIn }) {
+  const spec = SPECIALTIES.find(s => s.key === lesson.key);
+  const item = spec?.items.find(i => i.type === 'clases');
   return (
-    <div style={{ ...centerPanel, flexDirection: 'column', gap: 14, background: 'var(--navy-deep)', padding: 24, textAlign: 'center' }}>
-      <Lock size={32} color="#0bd9e7" />
-      <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 18 }}>Clase incluida en el Curso Teórico</div>
-      <div style={{ color: 'var(--on-navy)', fontSize: 14, maxWidth: 420 }}>
-        Inscríbete para ver las 468 clases del curso completo, ordenadas por módulo y especialidad.
+    <div style={{ ...centerPanel, flexDirection: 'column', gap: 12, background: 'var(--navy-deep)', padding: 24, textAlign: 'center' }}>
+      <Lock size={30} color="#0bd9e7" />
+      <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 18 }}>Clase de {lesson.specialty}</div>
+      <div style={{ color: 'var(--on-navy)', fontSize: 14, maxWidth: 440 }}>
+        Se abre con las clases de {spec?.title || lesson.specialty}, su pack, el módulo, Las 468 clases, el Pack Total o el Curso Teórico.
       </div>
-      <button className="btn btn-primary" onClick={onEnroll}>Inscribirme</button>
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+        {item && <CartButton sku={item.sku} className="btn btn-primary" label={`Agregar ${item.label}`} />}
+        <a className="btn btn-secondary" href={`#tienda/${lesson.key}`} style={{ textDecoration: 'none' }}>Ver packs</a>
+      </div>
+      {!signedIn && <a href="#mi-cuenta" style={{ color: '#0bd9e7', fontSize: 13 }}>¿Ya compraste? Entra con el correo de tu compra</a>}
     </div>
   );
 }

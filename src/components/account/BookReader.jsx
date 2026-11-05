@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { X, ZoomIn, ZoomOut, Loader2 } from 'lucide-react';
+import { X, ZoomIn, ZoomOut, Loader2, Smartphone } from 'lucide-react';
 import { useAccount } from '../../lib/account';
+import BookReaderMovil from './BookReaderMovil';
 
 // Online-only reader (ported from eunacomapp's LectorLibro): pages are drawn on <canvas> (no text to copy), with
 // the reader's email as a watermark; right-click, drag, selection and save/print/copy shortcuts are blocked.
@@ -45,7 +46,28 @@ function Page({ pdf, n, width, ratio, mark }) {
   );
 }
 
-export default function BookReader({ item, title, onClose }) {
+// Modo celular para los manuales (tomo-*): en el teléfono parte en ese modo, en el computador en el PDF.
+// Teléfono = pantalla táctil y chica. La elección se recuerda por separado en cada tipo de equipo.
+export function tipoEquipo() {
+  if (!window.matchMedia) return window.innerWidth < 640 ? 'telefono' : 'computador';
+  const corto = Math.min(window.screen?.width || 9999, window.screen?.height || 9999);
+  return window.matchMedia('(pointer: coarse)').matches && corto < 600 ? 'telefono' : 'computador';
+}
+export default function BookReader(props) {
+  const movilOk = /^tomo-/.test(props.item);
+  const equipo = tipoEquipo();
+  const key = `lector-modo-${equipo}`;
+  const [modo, setModo] = useState(() => {
+    let p = null;
+    try { p = localStorage.getItem(key); } catch { /* modo privado */ }
+    return movilOk && (p ? p === 'movil' : equipo === 'telefono') ? 'movil' : 'pdf';
+  });
+  const cambiar = m => { setModo(m); try { localStorage.setItem(key, m); } catch { /* modo privado */ } };
+  if (movilOk && modo === 'movil') return <BookReaderMovil item={props.item} title={props.title} equipo={equipo} onClose={props.onClose} onPdf={() => cambiar('pdf')} />;
+  return <BookReaderPdf {...props} onMovil={movilOk ? () => cambiar('movil') : null} />;
+}
+
+function BookReaderPdf({ item, title, onClose, onMovil }) {
   const { user, authHeader } = useAccount();
   const [pdf, setPdf] = useState(null);
   const [error, setError] = useState(null);
@@ -64,32 +86,35 @@ export default function BookReader({ item, title, onClose }) {
   }, [onClose]);
 
   useEffect(() => {
-    let doc, cancelled = false;
+    let doc, task, cancelled = false;
     (async () => {
       try {
         const r = await fetch(`/api/library?item=${encodeURIComponent(item)}`, { headers: authHeader() });
         if (!r.ok) throw new Error(String(r.status));
         const { url } = await r.json();
         const lib = await loadPdfjs();
-        doc = await lib.getDocument({ url, disableAutoFetch: true }).promise;
+        task = lib.getDocument({ url, disableAutoFetch: true });
+        doc = await task.promise;
         const first = (await doc.getPage(1)).getViewport({ scale: 1 });
-        if (cancelled) return doc.destroy();
+        if (cancelled) return task.destroy?.();
         setRatio(first.height / first.width); setPdf(doc);
       } catch (e) {
         if (!cancelled) setError(e.message === '403' ? 'Este libro no está en tu cuenta.' : e.message === '503' ? 'El lector se está configurando. Vuelve en un rato.' : 'No pudimos abrir el libro. Inténtalo de nuevo.');
       }
     })();
-    return () => { cancelled = true; doc?.destroy(); };
+    // pdf.js 6: se libera con la tarea de carga (el documento ya no tiene destroy())
+    return () => { cancelled = true; task?.destroy?.(); };
   }, [item]);
 
   const width = Math.round(boxW * zoom);
   return (
-    <div className="rd" onContextMenu={block} onDragStart={block} onCopy={block}>
+    <div className="rd" onContextMenu={block} onDragStart={block} onCopy={block} data-version="pdf">
       <div className="rd-bar">
         <b>{title}</b>
         <span className="rd-tools">
           <button onClick={() => setZoom(z => Math.max(.6, z - .2))} aria-label="Alejar"><ZoomOut size={18} /></button>
           <button onClick={() => setZoom(z => Math.min(2, z + .2))} aria-label="Acercar"><ZoomIn size={18} /></button>
+          {onMovil && <button onClick={onMovil} aria-label="Modo celular" style={{ gap: 5, alignItems: 'center', background: '#2563eb', fontWeight: 700, fontSize: 13, padding: '7px 10px' }}><Smartphone size={16} />Celular</button>}
           <button onClick={onClose} aria-label="Cerrar"><X size={20} /></button>
         </span>
       </div>

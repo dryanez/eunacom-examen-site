@@ -65,6 +65,16 @@ export const SPECIALTIES = BOOKS_COLLECTION.map(b => {
   };
 });
 
+// Aula class ids are "<prefix>-NN" (public/aula/catalog.json); the prefix says which specialty's
+// `clases-<key>` SKU unlocks the class.
+export const AULA_SPECIALTY = {
+  cardio: 'cardiologia', gastro: 'gastroenterologia', resp: 'neumologia', nefro: 'nefrologia', diab: 'diabetes',
+  endo: 'endocrinologia', hem: 'hematologia', infecto: 'infectologia', reuma: 'reumatologia', neuro: 'neurologia',
+  cirugia: 'cirugia', trauma: 'traumatologia', uro: 'urologia', orl: 'otorrino', oftal: 'oftalmologia', derma: 'dermatologia',
+  psiq: 'psiquiatria', ped: 'pediatria', ob: 'obstetricia', gin: 'ginecologia', sp: 'saludpublica',
+};
+export const aulaKeyOf = classId => AULA_SPECIALTY[String(classId).replace(/-\d+$/, '')];
+
 // Books of one kind by module, with real page counts (shown when someone opens a collection in the store).
 // type: 'tomo' | 'repaso' | 'atlas' | 'gordo'. Specialties without that book are left out.
 export function booksByModule(type) {

@@ -155,7 +155,11 @@ export default function Footer({ onOpenMentorship, onOpenSEOStudio, onNavigateHo
           fontSize: '12.5px',
           color: '#6f93b5',
         }}>
-          <span>{BRAND.nombre} © 2026. Todos los derechos reservados.</span>
+          <span>
+            {BRAND.nombre} © 2026. Todos los derechos reservados. ·{' '}
+            <a href="/privacidad" style={{ color: 'inherit' }}>Política de privacidad</a> ·{' '}
+            <a href="/terminos" style={{ color: 'inherit' }}>Términos y condiciones</a>
+          </span>
           <span>Programa independiente, no afiliado a ASOFAMECH.</span>
         </div>
       </div>

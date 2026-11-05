@@ -15,6 +15,7 @@
     "@aws-sdk/s3-request-presigner": "^3.1158.0",
     "@supabase/supabase-js": "^2.118.0",
     "lucide-react": "^1.39.0",
+    "nodemailer": "^10.3.1",
     "pdfjs-dist": "^6.4.299",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
