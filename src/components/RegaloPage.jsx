@@ -30,7 +30,9 @@ export default function RegaloPage({ slug }) {
   const red = PUBLIC_SOURCES[src];
   const utm = { source: src || 'instagram', medium: params.get('utm_medium') || (red ? 'shorts' : 'dm'), campaign: params.get('utm_campaign') || slug };
   const storeKey = `aee_regalo_${slug}`;
-  const [gate, setGate] = useState(red ? 'ok' : t ? 'checking' : 'no'); // checking | ok | no
+  // Con ?k= (link del correo) se muestra «Revisando…» mientras llega el link, no el «¿Cómo lo recibo?»
+  const fromEmail = !!params.get('k');
+  const [gate, setGate] = useState(fromEmail || (!red && t) ? 'checking' : red ? 'ok' : 'no'); // checking | ok | no
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [state, setState] = useState({ status: 'idle' }); // idle | sending | ready | error
@@ -56,8 +58,11 @@ export default function RegaloPage({ slug }) {
     const k = params.get('k') || localStorage.getItem(storeKey);
     if (k) {
       fetch(`/api/regalo?action=link&slug=${encodeURIComponent(slug)}&k=${encodeURIComponent(k)}`)
-        .then(x => x.json()).then(d => { if (d.url) { localStorage.setItem(storeKey, k); setState({ status: 'ready', url: d.url }); } })
-        .catch(() => {});
+        .then(x => x.json()).then(d => {
+          if (d.url) { localStorage.setItem(storeKey, k); setState({ status: 'ready', url: d.url }); }
+          else if (fromEmail && !t) setGate(red ? 'ok' : 'no');
+        })
+        .catch(() => { if (fromEmail && !t) setGate(red ? 'ok' : 'no'); });
     }
     return () => robots.remove();
   }, [slug]); // eslint-disable-line react-hooks/exhaustive-deps
