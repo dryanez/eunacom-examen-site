@@ -6,9 +6,12 @@ export const BRAND = {
   nombre: 'Academia Examen EUNACOM',
   sigla: 'AEE',
   bajada: 'Cursos, Ensayos & Revalidación Médica en Chile',
-  // Attribution for blog posts and course material. Never a personal name or
-  // a professional registry number unless it can be substantiated.
-  autor: 'Equipo académico AEE',
+  // Attribution for blog posts and course material. Felipe approved being named as author
+  // (2026-11-09). Only verifiable facts (degree, university) — never a registry number or
+  // a claim about his own EUNACOM result.
+  autor: 'Dr. Felipe Yáñez',
+  autorRol: 'Médico cirujano (Medical University of Lublin) · Fundador de AEE y EUNACOMapp',
+  autorUrl: '/dr-felipe-yanez',
 };
 
 // Bank details shown on the transfer/deposit checkout step. The design ships

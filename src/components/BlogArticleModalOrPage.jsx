@@ -17,14 +17,14 @@ export default function BlogArticleModalOrPage({ article, onClose, onSelectCours
     "@type": "MedicalWebPage",
     "headline": article.title,
     "description": article.excerpt,
-    "image": `https://eunacom-examen.cl/og-image.jpg`,
+    "image": `https://eunacom-examen.cl/og-banner.jpg`,
     "datePublished": "2026-08-15T09:00:00-04:00",
     "dateModified": "2026-08-31T12:00:00-04:00",
     "author": {
       "@type": "Physician",
       "name": article.author || "Equipo académico AEE",
       "areaServed": "Chile",
-      "jobTitle": "Equipo académico"
+      "jobTitle": "Médico cirujano, fundador de Academia Examen EUNACOM", "url": "https://eunacom-examen.cl/dr-felipe-yanez"
     },
     "publisher": {
       "@type": "EducationalOrganization",

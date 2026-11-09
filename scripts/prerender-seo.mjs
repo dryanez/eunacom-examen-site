@@ -17,6 +17,14 @@ const TODAY = new Date().toISOString().slice(0, 10);
 const WHATSAPP = '+56976694606';
 const SAME_AS = ['https://www.instagram.com/academiaeunacom/', 'https://www.youtube.com/@academiaeunacom'];
 const ORG_ID = `${SITE}/#organizacion`;
+const AUTHOR_ID = `${SITE}/dr-felipe-yanez#persona`;
+// Only verifiable facts (from his CV). Never a registry number or a claim about his own EUNACOM result.
+const AUTHOR = { '@type': 'Person', '@id': AUTHOR_ID, name: 'Felipe Yáñez', honorificPrefix: 'Dr.', jobTitle: 'Médico cirujano', url: `${SITE}/dr-felipe-yanez`,
+  alumniOf: [{ '@type': 'CollegeOrUniversity', name: 'Medical University of Lublin' }, { '@type': 'CollegeOrUniversity', name: 'Buffalo State College' }],
+  hasCredential: { '@type': 'EducationalOccupationalCredential', credentialCategory: 'degree', name: 'Doctor of Medicine (MD)', recognizedBy: { '@type': 'CollegeOrUniversity', name: 'Medical University of Lublin' } },
+  worksFor: { '@id': ORG_ID }, knowsAbout: ['EUNACOM', 'Educación médica', 'Medicina interna', 'Inteligencia artificial en medicina'],
+  knowsLanguage: ['es', 'en', 'de'], sameAs: ['https://www.eunacomapp.cl', 'https://github.com/dryanez'] };
+const AUTHOR_REF = { '@type': 'Person', '@id': AUTHOR_ID, name: 'Dr. Felipe Yáñez', url: `${SITE}/dr-felipe-yanez` };
 
 const vite = await createServer({ root: ROOT, logLevel: 'error', server: { middlewareMode: true }, appType: 'custom' });
 const load = p => vite.ssrLoadModule(p);
@@ -105,7 +113,7 @@ ${[...schema, breadcrumb].map(ld).join('\n')}
 ${body}
 </main>
 <footer><div class="in">
-<p><b>${esc(BRAND.nombre)} (${esc(BRAND.sigla)})</b>: preparación online para el EUNACOM Teórico (ST) y Práctico (ECOE) en Chile. Clases en video, manuales por especialidad, banco de preguntas comentadas y reconstrucciones de exámenes.</p>
+<p><b>${esc(BRAND.nombre)} (${esc(BRAND.sigla)})</b>, fundada y dirigida por el <a href="/dr-felipe-yanez">Dr. Felipe Yáñez</a>: preparación online para el EUNACOM Teórico (ST) y Práctico (ECOE) en Chile. Clases en video, manuales por especialidad, banco de preguntas comentadas y reconstrucciones de exámenes.</p>
 <p><a href="/">Inicio</a> · ${NAV.map(([p, n]) => `<a href="${p}">${n}</a>`).join(' · ')} · <a href="/#tienda">Tienda</a> · <a href="https://wa.me/56976694606">WhatsApp</a> · <a href="${SAME_AS[0]}">Instagram</a> · <a href="${SAME_AS[1]}">YouTube</a> · <a href="https://www.eunacomapp.cl">App EUNACOMapp</a></p>
 <p>Información oficial del examen: <a href="https://www.eunacom.cl" rel="noopener">eunacom.cl (ASOFAMECH)</a>. <a href="/privacidad">Privacidad</a> · <a href="/terminos">Términos</a></p>
 </div></footer>
@@ -125,7 +133,7 @@ const offer = (price, path) => ({ '@type': 'Offer', price: String(price), priceC
 for (const a of BLOG_ARTICLES) {
   const path = `/blog/${a.slug}`;
   const date = isoDate(a.date);
-  const body = `<p class="meta">${esc(a.cat)} · ${esc(a.author)} · <time datetime="${date}">${esc(a.date)}</time> · ${esc(a.readTime)}</p>
+  const body = `<p class="meta">${esc(a.cat)} · Por <a href="/dr-felipe-yanez">${esc(a.author)}</a>, ${esc(a.authorRole)} · <time datetime="${date}">${esc(a.date)}</time> · ${esc(a.readTime)}</p>
 <p class="lead">${esc(a.excerpt)}</p>
 ${a.keyTakeaways?.length ? `<div class="box"><h2 style="margin-top:0">Lo clave</h2><ul>${a.keyTakeaways.map(k => `<li>${esc(k)}</li>`).join('')}</ul></div>` : ''}
 ${a.sections.map(s => `<h2>${esc(s.h)}</h2>${(Array.isArray(s.p) ? s.p : [s.p]).map(p => `<p>${esc(p)}</p>`).join('')}`).join('\n')}
@@ -134,7 +142,7 @@ ${a.faqs?.length ? `<h2>Preguntas frecuentes</h2>${a.faqs.map(f => `<h3>${esc(f.
 <p class="meta">Fechas, requisitos y puntajes oficiales: confirma siempre en <a href="https://www.eunacom.cl">eunacom.cl</a>.</p>
 <h2>Otras guías</h2><ul>${BLOG_ARTICLES.filter(b => b.slug !== a.slug).slice(0, 5).map(b => `<li><a href="/blog/${b.slug}">${esc(b.title)}</a></li>`).join('')}</ul>`;
   const schema = [
-    { '@context': 'https://schema.org', '@type': 'Article', headline: a.title, description: a.excerpt, datePublished: date, dateModified: date, inLanguage: 'es-CL', mainEntityOfPage: `${SITE}${path}`, image: `${SITE}/og-banner.jpg`, keywords: (a.keywords || []).join(', '), author: { '@type': 'Organization', name: a.author || BRAND.autor, url: `${SITE}/` }, publisher: PUBLISHER },
+    { '@context': 'https://schema.org', '@type': 'Article', headline: a.title, description: a.excerpt, datePublished: date, dateModified: date, inLanguage: 'es-CL', mainEntityOfPage: `${SITE}${path}`, image: `${SITE}/og-banner.jpg`, keywords: (a.keywords || []).join(', '), author: AUTHOR_REF, publisher: PUBLISHER },
     a.faqs?.length && { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: a.faqs.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
   ].filter(Boolean);
   page({ path, title: `${BLOG_TITLES[a.slug] || shortTitle(a.title)} | AEE`, description: a.excerpt, h1: a.title, body, schema, crumbs: [['/blog', 'Guías EUNACOM'], [path, a.title]], ogType: 'article', priority: 0.7, lastmod: date });
@@ -154,11 +162,12 @@ page({
 <div class="box"><b>Precio:</b> ${esc(c.precioClp)} CLP (${esc(c.precioUsd)}) · <b>Duración:</b> ${esc(c.duracion)} · <b>Modalidad:</b> ${esc(c.modalidad)} · <b>Examen:</b> ${esc(c.examen)}<br/><a class="cta" href="/#curso-teorico">Inscribirme</a><a class="cta alt" href="https://wa.me/56976694606">Preguntar por WhatsApp</a></div>
 <h2>Qué incluye</h2><ul>${c.incluye.map(i => `<li>${esc(i)}</li>`).join('')}</ul>
 <h2>Cómo funciona</h2><ol>${c.comoFunciona.map(i => `<li>${esc(i)}</li>`).join('')}</ol>
+<h2>Quién lo dicta</h2><p>El curso lo dirige el <a href="/dr-felipe-yanez">Dr. Felipe Yáñez</a>, médico cirujano y fundador de AEE y de EUNACOMapp.</p>
 <h2>Para quién es</h2><p>${esc(c.paraQuien)}</p>
 <h2>Temario</h2><p>${esc(c.temarioNota)}</p><table>${c.temario.map(m => `<tr><th>${esc(m.s)}</th><td><b>${esc(m.t)}</b><br/>${esc(m.d)}</td></tr>`).join('')}</table>
 <h2>¿Prefieres estudiar por tu cuenta?</h2><p>También puedes comprar por separado las <a href="/manuales-eunacom">clases, manuales y libros de preguntas</a> de cada especialidad, o el <a href="/banco-de-preguntas-eunacom">banco de preguntas</a>.</p>
 <p><a class="cta" href="/#curso-teorico">Ver el curso y pagar</a></p>`;
-  const schema = [{ '@context': 'https://schema.org', '@type': 'Course', name: c.nombre, description: c.resumen, inLanguage: 'es', url: `${SITE}${path}`, provider: PUBLISHER,
+  const schema = [{ '@context': 'https://schema.org', '@type': 'Course', name: c.nombre, description: c.resumen, inLanguage: 'es', url: `${SITE}${path}`, provider: PUBLISHER, instructor: AUTHOR_REF, author: AUTHOR_REF,
     offers: { ...offer(359000, path), category: 'Paid' },
     hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'Online', courseWorkload: 'PT96H', startDate: '2026-09-14' },
     teaches: c.temario.map(m => m.t) }];
@@ -201,6 +210,19 @@ ${qHtml}
   page({ path, title: `Preguntas EUNACOM de ${s.title} con respuestas`, description: `${qs.length} preguntas tipo EUNACOM de ${s.title} gratis, con respuesta correcta, explicación y código del Perfil V3. Más de ${N(bank?.total || 0)} en el banco AEE.`, h1: `Preguntas EUNACOM de ${s.title}`, body, schema, crumbs: [['/banco-de-preguntas-eunacom', 'Banco de preguntas'], [path, s.title]], priority: 0.8 });
 }
 
+// ── Autor ────────────────────────────────────────────────────────────────────
+page({
+  path: '/dr-felipe-yanez', title: 'Dr. Felipe Yáñez, fundador de Academia Examen EUNACOM',
+  description: 'Dr. Felipe Yáñez, médico cirujano (Medical University of Lublin), fundador de Academia Examen EUNACOM y de EUNACOMapp. Autor de las guías y del curso EUNACOM de AEE.',
+  h1: 'Dr. Felipe Yáñez', crumbs: [['/dr-felipe-yanez', 'Dr. Felipe Yáñez']], ogType: 'profile', priority: 0.6,
+  body: `<p class="lead">Médico cirujano, fundador y director académico de Academia Examen EUNACOM (AEE) y fundador de <a href="https://www.eunacomapp.cl">EUNACOMapp</a>, la app de preguntas para el EUNACOM.</p>
+<h2>Formación</h2><ul><li>Doctor of Medicine (MD), Medical University of Lublin, Polonia (2018–2023).</li><li>Internado de posgrado en hospitales afiliados a la Medical University of Warsaw (2023–2024).</li><li>B.A. en Psicología, Buffalo State College, Nueva York (2013–2017).</li></ul>
+<h2>Trabajo en educación médica</h2><ul><li>Fundador de EUNACOMapp (2026), plataforma de preparación para el EUNACOM.</li><li>Fundador de FaMED Test Prep (2025), preparación para el examen FSP de médicos que revalidan en Alemania.</li><li>Head of XR &amp; AI del congreso iSMIT 2026 (Núremberg) y asesor académico de Kinesix VR.</li></ul>
+<h2>En AEE</h2><p>Dirige el <a href="/curso-eunacom">Curso EUNACOM online</a>, los <a href="/manuales-eunacom">manuales por especialidad</a> y el <a href="/banco-de-preguntas-eunacom">banco de preguntas</a>, y escribe las <a href="/blog">guías EUNACOM</a>. Habla español, inglés y alemán.</p>
+<h2>Guías escritas por el Dr. Yáñez</h2><ul>${BLOG_ARTICLES.map(a => `<li><a href="/blog/${a.slug}">${esc(a.title)}</a></li>`).join('')}</ul>`,
+  schema: [{ '@context': 'https://schema.org', '@type': 'ProfilePage', mainEntity: AUTHOR }],
+});
+
 // ── FAQ ──────────────────────────────────────────────────────────────────────
 page({
   path: '/preguntas-frecuentes', title: 'Preguntas frecuentes sobre el EUNACOM | AEE',
@@ -229,6 +251,7 @@ Datos clave:
 - 21 manuales por especialidad (${N(T.MANUALES_PAGINAS)} páginas) que siguen el Perfil EUNACOM V3; Libros Gordos con 1.890 preguntas tipo examen; Atlas, Repaso Final y mazos Anki.
 - Banco de preguntas: más de ${N(T.BANK.total)} preguntas comentadas por especialidad y ${T.BANK.exams} reconstrucciones de exámenes reales (${N(T.BANK.examQuestions)} preguntas). ${clp(T.PRICES.banco)} por especialidad o ${clp(T.PRICES.bancoCompleto)} el banco completo.
 - Pack Total (todo): ${clp(T.PACKS[0].price)} CLP.
+- Fundador y autor del contenido: Dr. Felipe Yáñez, médico cirujano (Medical University of Lublin), también fundador de EUNACOMapp (${SITE}/dr-felipe-yanez).
 - Contacto: WhatsApp ${WHATSAPP}. Instagram y YouTube: @academiaeunacom.
 - App de preguntas hermana: EUNACOMapp (https://www.eunacomapp.cl).
 - La información oficial del examen (fechas, inscripción, puntaje de corte) la publica ASOFAMECH en https://www.eunacom.cl.
@@ -238,6 +261,7 @@ Datos clave:
 - [Manuales EUNACOM](${SITE}/manuales-eunacom): manuales y packs por especialidad con precios.
 - [Banco de preguntas EUNACOM](${SITE}/banco-de-preguntas-eunacom): banco por especialidad y preguntas gratis.
 - [Preguntas frecuentes](${SITE}/preguntas-frecuentes)
+- [Dr. Felipe Yáñez](${SITE}/dr-felipe-yanez): fundador y autor.
 
 ## Preguntas EUNACOM gratis por especialidad
 ${specPages.map(p => `- [${p.s.title}](${SITE}/preguntas-eunacom/${p.slug}): ${p.qs.length} preguntas con explicación`).join('\n')}
