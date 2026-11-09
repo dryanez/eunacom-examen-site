@@ -41,7 +41,7 @@ PASO 2: Realizar el pago mediante Webpay (hasta 12 cuotas) o transferencia elect
 PASO 3: Enviar tu comprobante de pago con tu Nombre, RUT y WhatsApp.
 Recibirás tus credenciales y acceso inmediato a la plataforma E-Learning con los +300 videos, simulacros y seguimiento de estudio.
 
-Consultas WhatsApp: +56 9 7669 4606
+Consultas WhatsApp: +1 (929) 360-3799
 Plataforma: https://eunacom-examen.cl
 `;
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });

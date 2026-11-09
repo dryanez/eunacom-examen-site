@@ -12,7 +12,7 @@ import { useAccount } from '../lib/account';
 //   PayPal: PayPal's page (PayPal, tarjeta, and Apple Pay / Google Pay where PayPal offers them) → back (?paypal=return) → capture.
 //   Transferencia: the bank details are shown here; the order stays pending until the receipt is checked.
 // The purchase is saved under the signed-in account's email or, without an account, the email used to pay.
-const WHATSAPP = '56976694606';
+const WHATSAPP = '19293603799';
 
 const TRANSFER_ROWS = [
   ['Banco', TRANSFERENCIA.banco], ['Tipo de cuenta', TRANSFERENCIA.tipo], ['N° de cuenta', TRANSFERENCIA.numero],

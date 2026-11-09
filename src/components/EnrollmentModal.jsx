@@ -71,7 +71,7 @@ export default function EnrollmentModal({ course, onClose }) {
       `*Teléfono:* ${formData.phone}%0A` +
       `*Método:* ${methodNames[formData.paymentMethod] || formData.paymentMethod}`;
 
-    window.open(`https://wa.me/56976694606?text=${text}`, '_blank');
+    window.open(`https://wa.me/19293603799?text=${text}`, '_blank');
     onClose();
   };
 

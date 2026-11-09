@@ -30,7 +30,7 @@ export default function DoctorMentorshipModal({ onClose }) {
       `*Teléfono/Email:* ${formData.phone} / ${formData.email}%0A` +
       `*Consulta:* ${formData.message || 'Quisiera conocer el plan de estudio recomendado y fechas de inscripción.'}`;
 
-    window.open(`https://wa.me/56976694606?text=${text}`, '_blank');
+    window.open(`https://wa.me/19293603799?text=${text}`, '_blank');
     setSubmitted(true);
   };
 
@@ -333,7 +333,7 @@ export default function DoctorMentorshipModal({ onClose }) {
                 ¡Solicitud de Asesoría Iniciada!
               </h4>
               <p style={{ fontSize: '0.92rem', color: '#41556b', lineHeight: '1.5', maxWidth: '480px', margin: '0 auto 24px' }}>
-                Se ha abierto la ventana de WhatsApp para comunicarte directamente con Academia Examen EUNACOM. Si no se abrió automáticamente, puedes escribirle al +56 9 7669 4606.
+                Se ha abierto la ventana de WhatsApp para comunicarte directamente con Academia Examen EUNACOM. Si no se abrió automáticamente, puedes escribirle al +1 (929) 360-3799.
               </p>
               <button
                 onClick={onClose}

@@ -12,7 +12,7 @@ export default function CursoPracticoPage({ onNavigateHome, onOpenMentorship }) 
     setWaitlistSent(true);
   };
 
-  const whatsappWaitlistUrl = `https://wa.me/56976694606?text=${encodeURIComponent('Hola Academia EUNACOM, me gustaría inscribirme en la lista de espera prioritaria para el Curso Práctico ECOE.')}`;
+  const whatsappWaitlistUrl = `https://wa.me/19293603799?text=${encodeURIComponent('Hola Academia EUNACOM, me gustaría inscribirme en la lista de espera prioritaria para el Curso Práctico ECOE.')}`;
 
   return (
     <div style={{ backgroundColor: '#edf4f7', minHeight: '100vh', paddingBottom: '80px' }}>

@@ -26,9 +26,8 @@ export const TRANSFERENCIA = {
 };
 
 export const CONTACTO = {
-  // TODO: confirm these against the real lines before launch — they come from
-  // the design bundle's defaults, not from a verified source.
-  telefono: '+56 2 3263 2291 / +56 9 6663 5218',
+  // Felipe's US number, also on WhatsApp (confirmed 2026-11-09; the Chilean line may be gone).
+  telefono: '+1 (929) 360-3799',
   correo: 'contacto@eunacomapp.cl',
   instagram: 'https://www.instagram.com/academiaeunacom/',
 };

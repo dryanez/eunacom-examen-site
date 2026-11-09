@@ -14,7 +14,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
 const SITE = 'https://eunacom-examen.cl';
 const TODAY = new Date().toISOString().slice(0, 10);
-const WHATSAPP = '+56976694606';
+const WHATSAPP = '+19293603799';
 const SAME_AS = ['https://www.instagram.com/academiaeunacom/', 'https://www.youtube.com/@academiaeunacom'];
 const ORG_ID = `${SITE}/#organizacion`;
 const AUTHOR_ID = `${SITE}/dr-felipe-yanez#persona`;
@@ -114,7 +114,7 @@ ${body}
 </main>
 <footer><div class="in">
 <p><b>${esc(BRAND.nombre)} (${esc(BRAND.sigla)})</b>, fundada y dirigida por el <a href="/dr-felipe-yanez">Dr. Felipe Yáñez</a>: preparación online para el EUNACOM Teórico (ST) y Práctico (ECOE) en Chile. Clases en video, manuales por especialidad, banco de preguntas comentadas y reconstrucciones de exámenes.</p>
-<p><a href="/">Inicio</a> · ${NAV.map(([p, n]) => `<a href="${p}">${n}</a>`).join(' · ')} · <a href="/#tienda">Tienda</a> · <a href="https://wa.me/56976694606">WhatsApp</a> · <a href="${SAME_AS[0]}">Instagram</a> · <a href="${SAME_AS[1]}">YouTube</a> · <a href="https://www.eunacomapp.cl">App EUNACOMapp</a></p>
+<p><a href="/">Inicio</a> · ${NAV.map(([p, n]) => `<a href="${p}">${n}</a>`).join(' · ')} · <a href="/#tienda">Tienda</a> · <a href="https://wa.me/19293603799">WhatsApp</a> · <a href="${SAME_AS[0]}">Instagram</a> · <a href="${SAME_AS[1]}">YouTube</a> · <a href="https://www.eunacomapp.cl">App EUNACOMapp</a></p>
 <p>Información oficial del examen: <a href="https://www.eunacom.cl" rel="noopener">eunacom.cl (ASOFAMECH)</a>. <a href="/privacidad">Privacidad</a> · <a href="/terminos">Términos</a></p>
 </div></footer>
 </body>
@@ -159,7 +159,7 @@ page({
   const c = COURSES[0];
   const path = '/curso-eunacom';
   const body = `<p class="lead">${esc(c.resumen)}</p>
-<div class="box"><b>Precio:</b> ${esc(c.precioClp)} CLP (${esc(c.precioUsd)}) · <b>Duración:</b> ${esc(c.duracion)} · <b>Modalidad:</b> ${esc(c.modalidad)} · <b>Examen:</b> ${esc(c.examen)}<br/><a class="cta" href="/#curso-teorico">Inscribirme</a><a class="cta alt" href="https://wa.me/56976694606">Preguntar por WhatsApp</a></div>
+<div class="box"><b>Precio:</b> ${esc(c.precioClp)} CLP (${esc(c.precioUsd)}) · <b>Duración:</b> ${esc(c.duracion)} · <b>Modalidad:</b> ${esc(c.modalidad)} · <b>Examen:</b> ${esc(c.examen)}<br/><a class="cta" href="/#curso-teorico">Inscribirme</a><a class="cta alt" href="https://wa.me/19293603799">Preguntar por WhatsApp</a></div>
 <h2>Qué incluye</h2><ul>${c.incluye.map(i => `<li>${esc(i)}</li>`).join('')}</ul>
 <h2>Cómo funciona</h2><ol>${c.comoFunciona.map(i => `<li>${esc(i)}</li>`).join('')}</ol>
 <h2>Quién lo dicta</h2><p>El curso lo dirige el <a href="/dr-felipe-yanez">Dr. Felipe Yáñez</a>, médico cirujano y fundador de AEE y de EUNACOMapp.</p>
