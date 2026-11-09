@@ -37,6 +37,7 @@ const MESES = { enero: 1, febrero: 2, marzo: 3, abril: 4, mayo: 5, junio: 6, jul
 const isoDate = s => { const m = /(\d+)\s+([a-záéíóú]+),?\s+(\d{4})/i.exec(s || ''); return m ? `${m[3]}-${String(MESES[m[2].toLowerCase()]).padStart(2, '0')}-${m[1].padStart(2, '0')}` : TODAY; };
 const ld = obj => `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, '\\u003c')}</script>`;
 const LETTERS = 'ABCDE';
+const fit = t => (t.length > 60 && t.endsWith(' | AEE') ? t.slice(0, -6) : t);
 // SEO titles for the blog (the headlines are too long for a <title>), aimed at what people search.
 const BLOG_TITLES = {
   'cardiologia-eunacom-claves': 'Cardiología EUNACOM: los 5 temas que más se preguntan',
@@ -65,7 +66,7 @@ h1,h2,h3{font-family:Montserrat,system-ui,sans-serif;line-height:1.25;color:#0b1
 .cta{display:inline-block;background:#e11d48;color:#fff!important;text-decoration:none;font-weight:700;padding:12px 20px;border-radius:10px;margin:6px 8px 6px 0}
 .cta.alt{background:#0b5cad}.box{background:#f1f5f9;border-radius:12px;padding:16px 20px;margin:18px 0}
 table{width:100%;border-collapse:collapse;font-size:15px}td,th{border-bottom:1px solid #e2e8f0;padding:8px 6px;text-align:left;vertical-align:top}td.r,th.r{text-align:right;white-space:nowrap}
-.q{border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;margin:16px 0}.q ol{padding-left:22px}.q details{margin-top:8px}.q summary{cursor:pointer;font-weight:700;color:#0b5cad}
+h2{font-size:22px}.q h2{font-size:18px;margin:.2em 0 .5em}.q{border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;margin:16px 0}.q ol{padding-left:22px}.q details{margin-top:8px}.q summary{cursor:pointer;font-weight:700;color:#0b5cad}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;padding:0;list-style:none}.grid li{background:#f1f5f9;border-radius:10px;padding:10px 14px}
 footer{background:#0b1f3a;color:#cbd5e1;font-size:14px;padding:24px 0}footer a{color:#fff}`;
 
@@ -80,7 +81,7 @@ function page({ path, title, description, h1, body, schema = [], crumbs = [], og
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>${esc(title)}</title>
+<title>${esc(fit(title))}</title>
 <meta name="description" content="${esc(description)}" />
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
 <link rel="canonical" href="${url}" />
@@ -88,7 +89,7 @@ function page({ path, title, description, h1, body, schema = [], crumbs = [], og
 <meta property="og:type" content="${ogType}" />
 <meta property="og:site_name" content="${esc(BRAND.nombre)}" />
 <meta property="og:url" content="${url}" />
-<meta property="og:title" content="${esc(title)}" />
+<meta property="og:title" content="${esc(fit(title))}" />
 <meta property="og:description" content="${esc(description)}" />
 <meta property="og:image" content="${SITE}/og-banner.jpg" />
 <meta property="og:locale" content="es_CL" />
@@ -140,7 +141,7 @@ ${a.faqs?.length ? `<h2>Preguntas frecuentes</h2>${a.faqs.map(f => `<h3>${esc(f.
 }
 page({
   path: '/blog', title: 'Guías EUNACOM 2026–2027: fechas, puntajes, ECOE y revalidación | AEE',
-  description: 'Guías gratuitas para el EUNACOM: fechas e inscripción, puntaje de corte, cómo estudiar el Teórico, el Práctico (ECOE) y cómo revalidar el título de médico en Chile.',
+  description: 'Guías gratis del EUNACOM: fechas e inscripción, puntaje de corte, cómo estudiar el Teórico y el Práctico (ECOE) y cómo revalidar el título de médico en Chile.',
   h1: 'Guías EUNACOM', crumbs: [['/blog', 'Guías EUNACOM']], priority: 0.8,
   body: `<p class="lead">Todo lo que necesitas saber para rendir el EUNACOM, escrito por el equipo académico de AEE.</p><ul>${BLOG_ARTICLES.map(a => `<li><a href="/blog/${a.slug}"><b>${esc(a.title)}</b></a><br/><span class="meta">${esc(a.cat)} · ${esc(a.date)}</span><br/>${esc(a.excerpt)}</li>`).join('')}</ul>`,
 });
@@ -161,7 +162,7 @@ page({
     offers: { ...offer(359000, path), category: 'Paid' },
     hasCourseInstance: { '@type': 'CourseInstance', courseMode: 'Online', courseWorkload: 'PT96H', startDate: '2026-09-14' },
     teaches: c.temario.map(m => m.t) }];
-  page({ path, title: 'Curso EUNACOM online 2026–2027: 468 clases y simulacros | AEE', description: `Curso teórico EUNACOM online: 468 clases en video (96 h), exámenes tipo EUNACOM con feedback, manuales PDF, simulacros de 180 preguntas y reconstrucciones. ${c.precioClp} CLP.`, h1: 'Curso EUNACOM online (Teórico ST)', body, schema, crumbs: [[path, 'Curso EUNACOM']], priority: 0.9 });
+  page({ path, title: 'Curso EUNACOM online 2026–2027: 468 clases y simulacros | AEE', description: `Curso EUNACOM online: 468 clases en video (96 h), exámenes tipo EUNACOM con feedback, manuales PDF, simulacros de 180 preguntas. ${c.precioClp} CLP.`, h1: 'Curso EUNACOM online (Teórico ST)', body, schema, crumbs: [[path, 'Curso EUNACOM']], priority: 0.9 });
 }
 
 // ── Manuales / tienda ────────────────────────────────────────────────────────
@@ -190,14 +191,14 @@ const specPages = T.SPECIALTIES.filter(s => MUESTRA[s.key]?.length).map(s => ({ 
 }
 for (const { s, slug, qs, bank } of specPages) {
   const path = `/preguntas-eunacom/${slug}`;
-  const qHtml = qs.map((q, i) => `<div class="q"><h3>Pregunta ${i + 1}${q.topic ? `: ${esc(q.topic)}` : ''}</h3><p>${esc(q.stem)}</p><ol type="A">${q.options.map(o => `<li>${esc(o)}</li>`).join('')}</ol><details><summary>Ver respuesta y explicación</summary><p><b>Respuesta correcta: ${LETTERS[q.correct]}.</b> ${esc(q.why || '')}</p>${q.code ? `<p class="meta">Código Perfil EUNACOM V3: ${esc(q.code)}</p>` : ''}</details></div>`).join('');
+  const qHtml = qs.map((q, i) => `<div class="q"><h2>Pregunta ${i + 1}${q.topic ? `: ${esc(q.topic)}` : ''}</h2><p>${esc(q.stem)}</p><ol type="A">${q.options.map(o => `<li>${esc(o)}</li>`).join('')}</ol><details><summary>Ver respuesta y explicación</summary><p><b>Respuesta correcta: ${LETTERS[q.correct]}.</b> ${esc(q.why || '')}</p>${q.code ? `<p class="meta">Código Perfil EUNACOM V3: ${esc(q.code)}</p>` : ''}</details></div>`).join('');
   const body = `<p class="lead">${qs.length} preguntas tipo EUNACOM de ${esc(s.title)} (${esc(s.sub)}) con respuesta y explicación. Son una muestra del banco AEE, que tiene más de ${N(bank?.total || 0)} preguntas de ${esc(s.title)}${bank?.real ? `, ${N(bank.real)} de ellas de exámenes reales reconstruidos` : ''}.</p>
 ${qHtml}
 <div class="box"><b>Sigue practicando ${esc(s.title)}</b><br/>Banco de ${esc(s.title)}: ${clp(T.PRICES.banco)} · Pack ${esc(s.title)} (manual, clases y libros): ${clp(s.pack.price)}<br/><a class="cta" href="/#tienda/${s.key}">Ver todo de ${esc(s.title)}</a><a class="cta alt" href="/#banco">Banco de preguntas</a></div>
 <h2>Otras especialidades</h2><p>${specPages.filter(p => p.slug !== slug).map(p => `<a href="/preguntas-eunacom/${p.slug}">${esc(p.s.title)}</a>`).join(' · ')}</p>`;
   const schema = [{ '@context': 'https://schema.org', '@type': 'Quiz', name: `Preguntas EUNACOM de ${s.title}`, about: { '@type': 'Thing', name: s.title }, educationalLevel: 'Médico cirujano', inLanguage: 'es', provider: PUBLISHER,
     hasPart: qs.map(q => ({ '@type': 'Question', eduQuestionType: 'Multiple choice', text: q.stem, acceptedAnswer: { '@type': 'Answer', text: q.options[q.correct] }, suggestedAnswer: q.options.filter((_, i) => i !== q.correct).map(o => ({ '@type': 'Answer', text: o })) })) }];
-  page({ path, title: `Preguntas EUNACOM de ${s.title} con respuestas y explicación | AEE`, description: `${qs.length} preguntas tipo EUNACOM de ${s.title} gratis, con respuesta correcta, explicación y código del Perfil V3. Más de ${N(bank?.total || 0)} en el banco AEE.`, h1: `Preguntas EUNACOM de ${s.title}`, body, schema, crumbs: [['/banco-de-preguntas-eunacom', 'Banco de preguntas'], [path, s.title]], priority: 0.8 });
+  page({ path, title: `Preguntas EUNACOM de ${s.title} con respuestas`, description: `${qs.length} preguntas tipo EUNACOM de ${s.title} gratis, con respuesta correcta, explicación y código del Perfil V3. Más de ${N(bank?.total || 0)} en el banco AEE.`, h1: `Preguntas EUNACOM de ${s.title}`, body, schema, crumbs: [['/banco-de-preguntas-eunacom', 'Banco de preguntas'], [path, s.title]], priority: 0.8 });
 }
 
 // ── FAQ ──────────────────────────────────────────────────────────────────────
