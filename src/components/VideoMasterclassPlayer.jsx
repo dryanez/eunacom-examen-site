@@ -81,7 +81,7 @@ export default function VideoMasterclassPlayer() {
                   src={`${active.video}#t=${active.start}`}
                   poster={poster(active)}
                   controls
-                  preload="metadata"
+                  preload="none"
                   onLoadedMetadata={e => { if (e.currentTarget.currentTime < active.start - 1) e.currentTarget.currentTime = active.start; }}
                   playsInline
                   controlsList="nodownload"

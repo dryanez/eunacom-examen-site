@@ -145,36 +145,7 @@ export default function App() {
     }
   };
 
-  // Global EducationalOrganization Schema
-  const organizationSchema = {
-    "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
-    "name": "EUNACOM Examen Chile",
-    "alternateName": ["Academia Examen EUNACOM", "AEE"],
-    "url": "https://eunacom-examen.cl",
-    "logo": "https://eunacom-examen.cl/logo.png",
-    "description": "Academia de alto rendimiento médico y preparación para el Examen Único Nacional de Conocimientos de Medicina (EUNACOM Teórico ST y ECOE Práctico SP) en Chile.",
-    "founder": {
-      "@type": "Physician",
-      "name": "Academia Examen EUNACOM",
-      "jobTitle": "Equipo académico",
-      "areaServed": "Chile"
-    },
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "Santiago",
-      "addressCountry": "CL"
-    },
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "telephone": "+56976694606",
-      "contactType": "Academic Advising & Enrollment",
-      "availableLanguage": ["Spanish"]
-    },
-    "sameAs": [
-      "https://wa.me/56976694606"
-    ]
-  };
+  // Organization/WebSite JSON-LD lives in index.html (static, readable without JS).
 
   const handleStartDiagnostic = () => {
     if (currentView !== 'home') setCurrentView('home');
@@ -188,10 +159,6 @@ export default function App() {
     <AccountProvider>
     <CartProvider>
     <div className="site-wrapper" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-      />
 
       {/* Navbar */}
       <Navbar

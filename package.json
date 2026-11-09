@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/prerender-seo.mjs",
     "preview": "vite preview",
     "smoke": "node scripts/smoke.mjs",
     "design": "python3 scripts/convert-design.py ../unpacked-eunacom-sitio.html /tmp/design-out && python3 scripts/generate-pages.py /tmp/design-out/design.jsx.txt"

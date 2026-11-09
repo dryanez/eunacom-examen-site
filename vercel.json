@@ -40,12 +40,34 @@
           "value": "application/octet-stream"
         }
       ]
+    },
+    {
+      "source": "/llms.txt",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        }
+      ]
     }
   ],
   "rewrites": [
     {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/:path(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.eunacom-examen.cl"
+        }
+      ],
+      "destination": "https://eunacom-examen.cl/:path",
+      "permanent": true
     }
   ]
 }
